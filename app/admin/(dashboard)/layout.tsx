@@ -1,20 +1,14 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import { signOut } from '@/app/admin/actions'
 import { 
   Home, 
   Plus, 
   Library, 
-  Image as ImageIcon, 
-  Mail, 
-  Zap, 
-  Activity, 
-  Brain, 
-  PenTool, 
-  DollarSign, 
-  Settings, 
   Globe,
   Menu,
-  Settings2
+  Settings2,
+  LogOut
 } from 'lucide-react'
 
 const navGroups = [
@@ -33,25 +27,12 @@ const navGroups = [
   {
     name: 'CONTENT',
     items: [
-      { name: 'Content Library', href: '/admin/content', icon: Library },
-      { name: 'Media', href: '/admin/media', icon: ImageIcon },
-      { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
-    ]
-  },
-  {
-    name: 'CHANNELS',
-    items: [
-      { name: 'Forge', href: '/admin/channels/forge', icon: Zap },
-      { name: 'Signal', href: '/admin/channels/signal', icon: Activity },
-      { name: 'Inside the Head', href: '/admin/channels/inside-the-head', icon: Brain },
-      { name: 'Scribble', href: '/admin/channels/scribble', icon: PenTool }
+      { name: 'Posts', href: '/admin/posts', icon: Library }
     ]
   },
   {
     name: 'SYSTEM',
     items: [
-      { name: 'Fund Records', href: '/admin/fund-records', icon: DollarSign },
-      { name: 'Settings', href: '/admin/settings', icon: Settings },
       { name: 'View Website', href: '/', icon: Globe }
     ]
   }
@@ -93,10 +74,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-[#1a1a1a] mt-auto">
-           <Link href="/admin/settings" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#111] text-[#666] transition-colors ml-auto mr-0">
-             <Settings2 size={18} />
-           </Link>
+        <div className="p-4 border-t border-[#1a1a1a] mt-auto flex items-center justify-between">
+            <Link href="/admin/settings" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#111] text-[#666] transition-colors">
+              <Settings2 size={18} />
+            </Link>
+            <form action={signOut}>
+              <button type="submit" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#111] text-[#666] hover:text-red-500 transition-colors">
+                <LogOut size={18} />
+              </button>
+            </form>
         </div>
       </div>
 

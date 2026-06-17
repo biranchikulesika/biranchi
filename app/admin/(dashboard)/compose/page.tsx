@@ -17,9 +17,11 @@ function ComposeContent() {
   const [content, setContent] = useState('')
   const [isPreview, setIsPreview] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handlePublish = async () => {
     setIsSaving(true)
+    setError(null)
     try {
       const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `post-${Date.now()}`
       await createPost({
@@ -30,8 +32,9 @@ function ComposeContent() {
         draft: false
       })
       router.push('/admin/posts')
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
+      setError(e.message || 'Failed to publish post. Please try again.')
     } finally {
       setIsSaving(false)
     }
@@ -185,6 +188,11 @@ function ComposeContent() {
 
             {/* Editor Input Area */}
             <div className="flex flex-col gap-6">
+              {error && (
+                <div className="bg-red-900/20 border border-red-900/50 p-4 rounded-md text-red-500 text-sm">
+                  {error}
+                </div>
+              )}
               <input
                 type="text"
                 value={title}
