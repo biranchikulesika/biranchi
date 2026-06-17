@@ -1,4 +1,5 @@
 -- SUPABASE SCHEMA GENERATION (FROZEN)
+-- Requirements: PostgreSQL, Create Tables, Primary Keys, Foreign Keys, Constraints, Indexes, RLS Policies, Storage Buckets.
 
 -- ==========================================
 -- 1. EXTENSIONS
@@ -6,8 +7,9 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ==========================================
--- 2. TABLES (unchanged from your original)
+-- 2. TABLES
 -- ==========================================
+
 CREATE TABLE posts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   persona TEXT NOT NULL,
@@ -235,7 +237,7 @@ ALTER TABLE newsletter_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 
--- Helper function for Admin access (Supports Google Auth & Email/Password inherently)
+-- Helper function for Admin access (Allowed Email List)
 CREATE OR REPLACE FUNCTION is_admin() RETURNS BOOLEAN AS $$
 BEGIN
   RETURN auth.jwt() ->> 'email' IN ('biranchikulesika@gmail.com');
@@ -243,20 +245,44 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Post Policies
-CREATE POLICY "Public can view published and not hidden posts" ON posts FOR SELECT USING (draft = false AND hidden = false AND "publishedAt" <= now());
-CREATE POLICY "Admins have full access to posts" ON posts FOR ALL TO authenticated USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Public can view published and not hidden posts" 
+ON posts FOR SELECT 
+USING (draft = false AND hidden = false AND "publishedAt" <= now());
+
+CREATE POLICY "Admins have full access to posts" 
+ON posts FOR ALL 
+TO authenticated
+USING (is_admin()) WITH CHECK (is_admin());
 
 -- Field Note Policies
-CREATE POLICY "Public can view published and not hidden field notes" ON field_notes FOR SELECT USING (draft = false AND hidden = false AND "publishedAt" <= now());
-CREATE POLICY "Admins have full access to field notes" ON field_notes FOR ALL TO authenticated USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Public can view published and not hidden field notes" 
+ON field_notes FOR SELECT 
+USING (draft = false AND hidden = false AND "publishedAt" <= now());
+
+CREATE POLICY "Admins have full access to field notes" 
+ON field_notes FOR ALL 
+TO authenticated
+USING (is_admin()) WITH CHECK (is_admin());
 
 -- Thought Fragment Policies
-CREATE POLICY "Public can view published and not hidden thought fragments" ON thought_fragments FOR SELECT USING (hidden = false AND "publishedAt" <= now());
-CREATE POLICY "Admins have full access to thought fragments" ON thought_fragments FOR ALL TO authenticated USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Public can view published and not hidden thought fragments" 
+ON thought_fragments FOR SELECT 
+USING (hidden = false AND "publishedAt" <= now());
+
+CREATE POLICY "Admins have full access to thought fragments" 
+ON thought_fragments FOR ALL 
+TO authenticated
+USING (is_admin()) WITH CHECK (is_admin());
 
 -- Newsletter Issues Policies
-CREATE POLICY "Public can view published and not hidden newsletter issues" ON newsletter_issues FOR SELECT USING (hidden = false AND "publishedAt" <= now());
-CREATE POLICY "Admins have full access to newsletter issues" ON newsletter_issues FOR ALL TO authenticated USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Public can view published and not hidden newsletter issues" 
+ON newsletter_issues FOR SELECT 
+USING (hidden = false AND "publishedAt" <= now());
+
+CREATE POLICY "Admins have full access to newsletter issues" 
+ON newsletter_issues FOR ALL 
+TO authenticated
+USING (is_admin()) WITH CHECK (is_admin());
 
 -- Generally Public Readable (excluding hidden ones where applicable)
 CREATE POLICY "Public can view active question" ON questions FOR SELECT USING (hidden = false);
@@ -300,15 +326,34 @@ INSERT INTO storage.buckets (id, name, public) VALUES
   ('shared', 'shared', true)
 ON CONFLICT (id) DO NOTHING;
 
+-- Filename strategy limit enforcement (Application Side): 
+-- All uploaded assets should follow: [entity-id]-[timestamp].[ext]
+
 -- Storage Bucket Policies
+-- Assuming exact bucket IDs correspond to their names:
+
+-- Clean up older storage policies to prevent conflicts during repeated runs
+DROP POLICY IF EXISTS "Public Access to posts bucket" ON storage.objects;
+DROP POLICY IF EXISTS "Admin Access to posts bucket" ON storage.objects;
+DROP POLICY IF EXISTS "Public Access to books bucket" ON storage.objects;
+DROP POLICY IF EXISTS "Admin Access to books bucket" ON storage.objects;
+DROP POLICY IF EXISTS "Public Access to fund bucket" ON storage.objects;
+DROP POLICY IF EXISTS "Admin Access to fund bucket" ON storage.objects;
+DROP POLICY IF EXISTS "Public Access to shared bucket" ON storage.objects;
+DROP POLICY IF EXISTS "Admin Access to shared bucket" ON storage.objects;
+
+-- For 'posts' Bucket
 CREATE POLICY "Public Access to posts bucket" ON storage.objects FOR SELECT USING (bucket_id = 'posts');
 CREATE POLICY "Admin Access to posts bucket" ON storage.objects FOR ALL TO authenticated USING (bucket_id = 'posts' AND public.is_admin()) WITH CHECK (bucket_id = 'posts' AND public.is_admin());
 
+-- For 'books' Bucket
 CREATE POLICY "Public Access to books bucket" ON storage.objects FOR SELECT USING (bucket_id = 'books');
 CREATE POLICY "Admin Access to books bucket" ON storage.objects FOR ALL TO authenticated USING (bucket_id = 'books' AND public.is_admin()) WITH CHECK (bucket_id = 'books' AND public.is_admin());
 
+-- For 'fund' Bucket
 CREATE POLICY "Public Access to fund bucket" ON storage.objects FOR SELECT USING (bucket_id = 'fund');
 CREATE POLICY "Admin Access to fund bucket" ON storage.objects FOR ALL TO authenticated USING (bucket_id = 'fund' AND public.is_admin()) WITH CHECK (bucket_id = 'fund' AND public.is_admin());
 
+-- For 'shared' Bucket
 CREATE POLICY "Public Access to shared bucket" ON storage.objects FOR SELECT USING (bucket_id = 'shared');
 CREATE POLICY "Admin Access to shared bucket" ON storage.objects FOR ALL TO authenticated USING (bucket_id = 'shared' AND public.is_admin()) WITH CHECK (bucket_id = 'shared' AND public.is_admin());

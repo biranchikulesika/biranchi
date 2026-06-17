@@ -26,6 +26,8 @@ export async function login(formData: FormData) {
 export async function signInWithGoogle() {
   const supabase = await createSupabaseServerClient()
 
+  // Generate OAuth link instead of directly redirecting through Next.js
+  // because Supabase returns a URL as a string.
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
