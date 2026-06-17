@@ -242,7 +242,7 @@ export default function BuilderPage() {
         }
 
         if (allPosts) {
-          const builderPosts = allPosts.filter((p:any) => p.persona?.toLowerCase() === 'builder' && p.hidden !== true && p.draft !== true);
+          const builderPosts = allPosts.filter((p:any) => p.persona?.toLowerCase() === 'builder' && p.hidden !== true && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft'));
           const sortedPosts = builderPosts.sort((a:any, b:any) => {
              if (a.featured && !b.featured) return -1;
              if (!a.featured && b.featured) return 1;

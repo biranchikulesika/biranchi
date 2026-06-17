@@ -46,10 +46,10 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
   }, []);
 
   useEffect(() => {
-    // Collect static database posts
+    // Collect static database posts and filter out hidden + draft posts
     const dbPosts = persona === 'main'
-      ? databasePosts.filter(p => !p.hidden)
-      : databasePosts.filter(p => p.persona === persona && !p.hidden);
+      ? databasePosts.filter(p => !p.hidden && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft'))
+      : databasePosts.filter(p => p.persona === persona && !p.hidden && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft'));
 
     setTimeout(() => {
       setPosts(dbPosts);

@@ -49,7 +49,7 @@ export default function ThinkerPage() {
           setCurrentReads(visibleBooks);
         }
         if (pData) {
-          let thinkerPosts = pData.filter((p:any) => p.persona?.toLowerCase() === 'thinker' && !p.hidden && !p.draft);
+          let thinkerPosts = pData.filter((p:any) => p.persona?.toLowerCase() === 'thinker' && !p.hidden && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft'));
           thinkerPosts.sort((a:any, b:any) => {
              if (a.featured && !b.featured) return -1;
              if (!a.featured && b.featured) return 1;

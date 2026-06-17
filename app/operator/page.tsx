@@ -26,7 +26,7 @@ export default function OperatorPage() {
         
         let visibleNotes: any[] = [];
         if (pData) {
-          const operatorPosts = pData.filter((p:any) => p.persona?.toLowerCase() === 'operator' && !p.hidden && !p.draft);
+          const operatorPosts = pData.filter((p:any) => p.persona?.toLowerCase() === 'operator' && !p.hidden && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft'));
           operatorPosts.sort((a:any, b:any) => {
              if (a.featured && !b.featured) return -1;
              if (!a.featured && b.featured) return 1;
