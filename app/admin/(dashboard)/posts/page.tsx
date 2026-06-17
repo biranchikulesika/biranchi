@@ -537,6 +537,85 @@ export default function PostPage() {
     setIsEditing(true);
   };
 
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error' | 'unsaved'>('idle');
+  const lastSavedData = React.useRef<any>(null);
+  const autoSaveTimer = React.useRef<NodeJS.Timeout | null>(null);
+
+  const extractCoverImage = (payload: any) => {
+    if (payload.autoCoverImage && payload.content) {
+      const match = payload.content.match(/<ImageBlock([^>]*)>/);
+      if (match) {
+        const propsStr = match[1];
+        const src = propsStr.match(/src="([^"]+)"/);
+        const alt = propsStr.match(/alt="([^"]+)"/);
+        const caption = propsStr.match(/caption="([^"]+)"/);
+        const location = propsStr.match(/location="([^"]+)"/);
+        const credit = propsStr.match(/credit="([^"]+)"/);
+        
+        if (src && !payload.coverImageUrl) payload.coverImageUrl = src[1];
+        if (alt && !payload.coverImageAlt) payload.coverImageAlt = alt[1];
+        if (caption && !payload.coverImageCaption) payload.coverImageCaption = caption[1];
+        if (location && !payload.coverImageLocation) payload.coverImageLocation = location[1];
+        if (credit && !payload.coverImageCredit) payload.coverImageCredit = credit[1];
+      }
+    }
+    return payload;
+  };
+
+  useEffect(() => {
+    if (!isEditing) return;
+    
+    // Check if form changed
+    const currentDataStr = JSON.stringify(formData);
+    const lastSavedDataStr = JSON.stringify(lastSavedData.current);
+    
+    if (currentDataStr === lastSavedDataStr || !lastSavedData.current) return;
+    
+    setSaveState('unsaved');
+    setDbError(null);
+    
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    
+    autoSaveTimer.current = setTimeout(async () => {
+      // Don't auto-save if completely empty to avoid junk records, 
+      // but do if there's at least a title or some content
+      if (!formData.title?.trim() && !formData.content?.trim()) return;
+
+      setSaveState('saving');
+      try {
+        let payload = extractCoverImage({ ...formData, draft: true }); 
+
+        if (!payload.slug && payload.title) {
+            payload.slug = payload.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        }
+
+        if (editingId && editingId !== 'none') {
+          await updatePost(editingId, payload);
+          lastSavedData.current = { ...formData, draft: true, slug: payload.slug };
+          setFormData(prev => ({ ...prev, slug: payload.slug, draft: true }));
+        } else {
+          const res = await createPost(payload);
+          if (res && res.id) {
+            setEditingId(res.id);
+            lastSavedData.current = { ...formData, id: res.id, draft: true, slug: payload.slug };
+            setFormData(prev => ({ ...prev, id: res.id, draft: true, slug: payload.slug }));
+            // load data in background to update the table
+            loadData();
+          }
+        }
+        setSaveState('saved');
+        setTimeout(() => setSaveState(s => s === 'saved' ? 'idle' : s), 2000);
+      } catch (err: any) {
+        setSaveState('error');
+        setDbError(parseDbError(err) || "Failed to auto-save");
+      }
+    }, 1500);
+
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [formData, isEditing, editingId]);
+
   const errors: Record<string, string> = {};
   if (!formData.persona?.trim()) {
     errors.persona = "Persona context is required (e.g. wanderer, builder).";
@@ -575,42 +654,62 @@ export default function PostPage() {
 
   const isValid = Object.keys(errors).length === 0;
 
-  const handleSave = async () => {
+  const handlePublish = async () => {
     setShowValidation(true);
     if (!isValid) return;
     setDbError(null);
 
-    let payload = { ...formData };
-    
-    // Auto Cover Extraction
-    if (payload.autoCoverImage && payload.content) {
-      const match = payload.content.match(/<ImageBlock([^>]*)>/);
-      if (match) {
-        const propsStr = match[1];
-        const src = propsStr.match(/src="([^"]+)"/);
-        const alt = propsStr.match(/alt="([^"]+)"/);
-        const caption = propsStr.match(/caption="([^"]+)"/);
-        const location = propsStr.match(/location="([^"]+)"/);
-        const credit = propsStr.match(/credit="([^"]+)"/);
-        
-        if (src) payload.coverImageUrl = src[1];
-        if (alt) payload.coverImageAlt = alt[1];
-        if (caption) payload.coverImageCaption = caption[1];
-        if (location) payload.coverImageLocation = location[1];
-        if (credit) payload.coverImageCredit = credit[1];
-      }
+    let payload = extractCoverImage({ ...formData, draft: false });
+    if (!payload.publishedAt) {
+      payload.publishedAt = new Date().toISOString();
     }
 
     try {
+      setSaveState('saving');
       if (editingId && editingId !== 'none') {
-        await updatePost(editingId, payload);
+        const res = await updatePost(editingId, payload);
+        lastSavedData.current = res;
       } else {
-        await createPost(payload);
+        const res = await createPost(payload);
+        lastSavedData.current = res;
       }
       setIsEditing(false);
+      setSaveState('idle');
       loadData();
     } catch (err: any) {
-      setDbError(parseDbError(err));
+      setSaveState('error');
+      setDbError(parseDbError(err) || "Failed to publish");
+    }
+  };
+
+  const handleSaveDraftManual = async () => {
+    setDbError(null);
+    let payload = extractCoverImage({ ...formData, draft: true });
+    
+    if (!payload.slug && payload.title) {
+        payload.slug = payload.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    try {
+      setSaveState('saving');
+      if (editingId && editingId !== 'none') {
+        const res = await updatePost(editingId, payload);
+        lastSavedData.current = res;
+        setFormData(res);
+      } else {
+        const res = await createPost(payload);
+        if (res) {
+          setEditingId(res.id);
+          lastSavedData.current = res;
+          setFormData(res);
+        }
+      }
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 2000);
+      loadData();
+    } catch (err: any) {
+      setSaveState('error');
+      setDbError(parseDbError(err) || "Failed to save draft");
     }
   };
 
@@ -718,26 +817,42 @@ export default function PostPage() {
           )}
 
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-medium tracking-tight text-neutral-100">
+            <h2 className="text-xl font-medium tracking-tight text-neutral-100 flex items-center gap-3">
               {editingId ? 'Edit Item' : 'New Item'}
+              {isEditing && (
+                <div className="flex items-center gap-2 text-xs font-mono ml-4">
+                  {saveState === 'saving' && <span className="text-amber-400 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin"/> Saving...</span>}
+                  {saveState === 'saved' && <span className="text-emerald-400 flex items-center gap-1"><Check className="w-3 h-3"/> Saved automatically</span>}
+                  {saveState === 'unsaved' && <span className="text-neutral-400 flex items-center gap-1"><RefreshCw className="w-3 h-3"/> Unsaved changes</span>}
+                  {saveState === 'error' && <span className="text-rose-400 flex items-center gap-1"><X className="w-3 h-3"/> Save failed</span>}
+                </div>
+              )}
             </h2>
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => setIsEditing(false)}
                 className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-[#111111] text-neutral-300 hover:bg-[#1a1a1a] border border-[#222]"
               >
-                Cancel
+                Close
               </button>
               <div className="flex flex-col items-end gap-1">
-                <button 
-                  onClick={handleSave}
-                  className="px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 bg-white text-black hover:bg-neutral-200 cursor-pointer"
-                >
-                  <Save className="w-4 h-4" />
-                  Save
-                </button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={handleSaveDraftManual}
+                    className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-[#222] text-white hover:bg-[#333] cursor-pointer"
+                  >
+                    Save Draft
+                  </button>
+                  <button 
+                    onClick={handlePublish}
+                    className="px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 bg-[#FF8E53] text-black hover:bg-[#FF8E53]/90 cursor-pointer"
+                  >
+                    <Save className="w-4 h-4" />
+                    Publish
+                  </button>
+                </div>
                 {showValidation && !isValid && (
-                  <span className="text-[10px] text-rose-400 font-mono">Complete required fields to save.</span>
+                  <span className="text-[10px] text-rose-400 font-mono">Complete required fields to publish.</span>
                 )}
               </div>
             </div>
