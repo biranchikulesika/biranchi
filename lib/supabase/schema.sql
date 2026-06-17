@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS "public"."posts" (
     "title" TEXT,
     "subtitle" TEXT,
     "byline" TEXT,
-    "slug" TEXT UNIQUE,
+    "slug" TEXT,
     "content" TEXT,
     "excerpt" TEXT,
     "cover_image_url" TEXT,
@@ -234,7 +234,8 @@ CREATE TABLE IF NOT EXISTS "public"."posts" (
     "published_at" TIMESTAMPTZ,
     "tags" TEXT[],
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE NULLS NOT DISTINCT ("persona", "slug")
 );
 DROP TRIGGER IF EXISTS update_posts_updated_at ON "public"."posts";
 CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON "public"."posts" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

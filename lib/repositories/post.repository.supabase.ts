@@ -3,14 +3,13 @@ import { IRepository } from './registry';
 import { supabaseServer } from '../supabase/server';
 
 function toDbFormat(data: Partial<Post>) {
-  return {
+  const result: any = {
     title: data.title,
     subtitle: data.subtitle,
     byline: data.byline,
     slug: data.slug,
     content: data.content,
     excerpt: data.excerpt,
-    status: data.draft !== undefined ? (data.draft ? 'draft' : 'published') : (data.status || 'published'),
     persona: data.persona,
     cover_image_url: data.coverImageUrl,
     cover_image_alt: data.coverImageAlt,
@@ -21,9 +20,20 @@ function toDbFormat(data: Partial<Post>) {
     reading_time: data.readingTime,
     featured: data.featured,
     hidden: data.hidden,
-    published_at: data.publishedAt || null,
     tags: data.tags
   };
+
+  if (data.draft !== undefined) {
+    result.status = data.draft ? 'draft' : 'published';
+  } else if (data.status !== undefined) {
+    result.status = data.status;
+  }
+
+  if (data.publishedAt !== undefined) {
+    result.published_at = data.publishedAt;
+  }
+
+  return result;
 }
 
 function fromDbFormat(dbData: any): Post {

@@ -316,8 +316,7 @@ function ComposePageContent() {
           setFormData({
             ...found,
             tags: found.tags || [],
-            oldSlugs: found.oldSlugs || [],
-            byline: '' // Remove completely
+            oldSlugs: found.oldSlugs || []
           });
           setCurrentPostId(found.id);
           setInitialSlug(found.slug || '');
