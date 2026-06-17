@@ -340,7 +340,7 @@ export default function PostPage() {
     }, 250);
 
     try {
-      const { publicUrl } = await uploadImage({ bucket: 'posts', file });
+      const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
       clearInterval(progressInterval);
       
       setComposerBlocks(prev => {
@@ -401,7 +401,7 @@ export default function PostPage() {
     setIsUploading(true);
     setUploadError('');
     try {
-        const { publicUrl } = await uploadImage({ bucket: 'posts', file });
+        const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
         setFormData({ ...formData, coverImageUrl: publicUrl });
     } catch (err: any) {
         setUploadError(err.message || String(err));
@@ -417,7 +417,7 @@ export default function PostPage() {
     setIsUploading(true);
     setUploadError('');
     try {
-        const { publicUrl } = await uploadImage({ bucket: 'posts', file });
+        const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
         setImageModalData({ ...imageModalData, src: publicUrl });
     } catch (err: any) {
         setUploadError(err.message || String(err));

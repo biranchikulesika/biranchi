@@ -707,7 +707,7 @@ function ComposePageContent() {
     }, 200);
 
     try {
-      const { publicUrl } = await uploadImage({ bucket: 'posts', file });
+      const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
       clearInterval(interval);
       
       setComposerBlocks(prev => {
@@ -777,7 +777,7 @@ function ComposePageContent() {
     if (!file) return;
     setIsUploading(true);
     try {
-      const { publicUrl } = await uploadImage({ bucket: 'posts', file });
+      const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
       setFormData({ ...formData, coverImageUrl: publicUrl });
     } catch (err: any) {
       alert('Cover image upload error: ' + err.message);

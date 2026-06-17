@@ -1,6 +1,6 @@
 import { supabaseClient } from '@/lib/supabase/client';
 
-export type StorageBucket = 'posts' | 'books' | 'fund' | 'shared';
+export type StorageBucket = 'media' | 'post-images' | 'cover-images' | 'persona-assets' | 'profile-assets' | 'newsletter-assets';
 
 export interface UploadOptions {
   bucket: StorageBucket;

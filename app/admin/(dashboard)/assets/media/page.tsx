@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 export default function MediaAssetsPage() {
-  const [activeBucket, setActiveBucket] = useState<StorageBucket>('posts');
+  const [activeBucket, setActiveBucket] = useState<StorageBucket>('post-images');
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -105,7 +105,7 @@ export default function MediaAssetsPage() {
 
       {/* Bucket Tabs Selection */}
       <div className="flex border-b border-[#1b1b1b] mb-8 gap-4 overflow-x-auto scrollbar-hide">
-        {(['posts', 'books', 'fund', 'shared'] as StorageBucket[]).map((bucket) => (
+        {(['media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets'] as StorageBucket[]).map((bucket) => (
           <button
             key={bucket}
             onClick={() => setActiveBucket(bucket)}
