@@ -2,9 +2,8 @@
 
 import { useActionState } from 'react'
 import { login, signInWithGoogle } from './actions'
-import { AlertCircle, Chrome } from 'lucide-react'
+import { AlertCircle, User } from 'lucide-react'
 
-// Wrap login to match useActionState signature
 async function loginAction(prevState: any, formData: FormData) {
   const result = await login(formData)
   if (result?.error) {
@@ -22,9 +21,6 @@ export default function AdminLoginPage() {
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
           Admin Portal
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Sign in to access the management dashboard
-        </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -57,7 +53,6 @@ export default function AdminLoginPage() {
                   id="email"
                   name="email"
                   type="email"
-                  autoComplete="email"
                   required
                   className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-black focus:outline-none focus:ring-black sm:text-sm"
                 />
@@ -73,7 +68,6 @@ export default function AdminLoginPage() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
                   required
                   className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-black focus:outline-none focus:ring-black sm:text-sm"
                 />
@@ -107,7 +101,7 @@ export default function AdminLoginPage() {
                 type="button"
                 className="flex w-full justify-center items-center gap-3 rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors"
               >
-                <Chrome className="h-5 w-5 text-gray-500" />
+                <User className="h-5 w-5 text-gray-500" />
                 Sign in with Google
               </button>
             </div>
