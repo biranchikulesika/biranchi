@@ -1,102 +1,82 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
-import { signOut } from '@/app/admin/actions'
 import { 
-  Home, 
-  Plus, 
-  Library, 
-  Globe,
-  Menu,
-  Settings2,
-  LogOut
+  LayoutDashboard, 
+  FileText, 
+  PenTool, 
+  Lightbulb, 
+  BookOpen, 
+  Mail, 
+  Settings, 
+  LogOut,
+  Menu
 } from 'lucide-react'
+import { signOut } from '@/app/admin/actions'
 
-const navGroups = [
-  {
-    name: 'WORKSPACE',
-    items: [
-      { name: 'Home', href: '/admin', icon: Home }
-    ]
-  },
-  {
-    name: 'CREATE',
-    items: [
-      { name: 'New Article', href: '/admin/compose', icon: Plus }
-    ]
-  },
-  {
-    name: 'CONTENT',
-    items: [
-      { name: 'Posts', href: '/admin/posts', icon: Library }
-    ]
-  },
-  {
-    name: 'SYSTEM',
-    items: [
-      { name: 'View Website', href: '/', icon: Globe }
-    ]
-  }
+const navigation = [
+  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Posts', href: '/admin/posts', icon: FileText },
+  { name: 'Field Notes', href: '/admin/field-notes', icon: PenTool },
+  { name: 'Thought Fragments', href: '/admin/thought-fragments', icon: Lightbulb },
+  { name: 'Library', href: '/admin/books', icon: BookOpen },
+  { name: 'Newsletter', href: '/admin/newsletter', icon: Mail },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen bg-[#0a0a0a] text-[#8a8a8a] overflow-hidden sm:flex-col md:flex-row font-sans">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex md:w-[260px] md:flex-col border-r border-[#1a1a1a] bg-[#0a0a0a] h-full">
-        <div className="flex flex-col flex-1 min-h-0 overflow-y-auto custom-scrollbar">
-          
-          <div className="p-4 py-6">
-            {navGroups.map((group, idx) => (
-              <div key={group.name} className={idx > 0 ? "mt-8" : ""}>
-                <h3 className="px-3 text-[10px] font-semibold tracking-[0.2em] text-[#444] uppercase mb-3">
-                  {group.name}
-                </h3>
-                <nav className="space-y-0.5">
-                  {group.items.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-[#888] hover:bg-[#111] hover:text-[#dedede] transition-colors"
-                    >
-                      <item.icon
-                        className="mr-3 h-[18px] w-[18px] text-[#666] group-hover:text-[#dedede]"
-                        aria-hidden="true"
-                        strokeWidth={1.5}
-                      />
-                      {item.name}
-                    </Link>
-                  ))}
-                </nav>
-              </div>
-            ))}
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-gray-200">
+        <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex items-center h-16 flex-shrink-0 px-4 border-b border-gray-200">
+            <span className="text-lg font-bold">Admin Portal</span>
           </div>
-
-        </div>
-
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-[#1a1a1a] mt-auto flex items-center justify-between">
-            <Link href="/admin/settings" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#111] text-[#666] transition-colors">
-              <Settings2 size={18} />
-            </Link>
-            <form action={signOut}>
-              <button type="submit" className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#111] text-[#666] hover:text-red-500 transition-colors">
-                <LogOut size={18} />
-              </button>
-            </form>
+          <div className="flex-1 flex flex-col overflow-y-auto">
+            <nav className="flex-1 px-2 py-4 space-y-1">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                >
+                  <item.icon
+                    className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                    aria-hidden="true"
+                  />
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+            <div className="p-4 border-t border-gray-200">
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="group flex w-full items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                >
+                  <LogOut className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+                  Sign Out
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Mobile header */}
-      <div className="md:hidden flex-shrink-0 w-full z-10 bg-[#0a0a0a] border-b border-[#1a1a1a] flex items-center h-16 justify-between px-4">
-        <span className="text-sm font-medium text-[#dedede]">Admin Portal</span>
-        <button className="p-2 -mr-2 text-[#888] hover:text-[#dedede]">
-          <Menu className="h-5 w-5" />
+      <div className="md:hidden fixed top-0 w-full z-10 bg-white border-b border-gray-200 flex items-center h-16 justify-between px-4">
+        <span className="text-lg font-bold">Admin Portal</span>
+        {/* Simple hamburger placeholder, can add full mobile nav later */}
+        <button className="p-2 -mr-2 text-gray-500 hover:text-gray-600">
+          <Menu className="h-6 w-6" />
         </button>
       </div>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col h-full bg-[#0a0a0a] overflow-hidden">
-        {children}
+      <div className="flex flex-1 flex-col md:pl-64 h-screen mt-16 md:mt-0">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          {children}
+        </main>
       </div>
     </div>
   )
