@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
 import { 
   Home, Plus, Image as ImageIcon, Mail, Terminal, 
   Activity, Settings, PanelLeftClose, PanelLeft, Sparkles, Menu, X, Info,
   HelpCircle, Book, Quote, Component, ShieldAlert, Wallet,
-  Library, Brain, Map, Hash, BookOpen, Zap, Search
+  Library, Brain, Map, Hash, BookOpen, Zap, Search, LogOut
 } from 'lucide-react';
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,16 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState('');
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    await supabase.auth.signOut();
+    router.push('/admin/login');
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed');
@@ -182,7 +193,19 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
           ))}
         </div>
         
-        {/* Collapse Toggle Removed */}
+        {/* Footer actions */}
+        <div className={`p-3 border-t border-[#1a1a1a] ${isCollapsed ? 'flex justify-center' : ''}`}>
+          <button
+            onClick={handleLogout}
+            className={`flex items-center gap-2 px-2.5 py-1.5 w-full rounded transition-all text-neutral-400 hover:bg-[#161616] hover:text-white border border-transparent ${isCollapsed ? 'justify-center' : ''}`}
+            title={isCollapsed ? "Sign Out" : undefined}
+          >
+            <div className="flex-shrink-0">
+              <LogOut className="w-4 h-4" />
+            </div>
+            {!isCollapsed && <span className="whitespace-nowrap text-xs">Sign Out</span>}
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Wrapper */}

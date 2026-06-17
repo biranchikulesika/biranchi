@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
 
 export const config = {
   matcher: [
@@ -14,7 +15,7 @@ export const config = {
   ],
 };
 
-export default function proxy(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const url = req.nextUrl;
 
   // Get hostname of request (e.g. builder.biranchi.kulesika.in)
@@ -43,6 +44,11 @@ export default function proxy(req: NextRequest) {
     url.pathname.startsWith('/admin/') || 
     url.pathname.startsWith('/p/') || 
     isFileRequest;
+
+  // Protect Admin Dashboard Routes
+  if (url.pathname === '/admin' || url.pathname.startsWith('/admin/')) {
+    return await updateSession(req);
+  }
 
   // If a subdomain is matched and path is not a bypass path, rewrite the URL to that specific path directory.
   // We avoid rewriting if the URL already starts with that path to avoid infinite loops.

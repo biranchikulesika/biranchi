@@ -1,50 +1,30 @@
--- ==========================================
--- SUPABASE RESET SCRIPT (DISPOSABLE DATABASE STATE)
--- ==========================================
+-- FILE: reset.sql
+-- PURPOSE: Completely remove database schema for clean slate.
 
--- NOTE: This script intentionally DOES NOT touch the `auth` schema.
--- Admin users, passwords, and Google OAuth identities in `auth.users` 
--- will remain perfectly intact across database resets.
+-- Drop all tables (Cascade handles foreign keys and views)
+DROP TABLE IF EXISTS "public"."subscriptions" CASCADE;
+DROP TABLE IF EXISTS "public"."subscribers" CASCADE;
+DROP TABLE IF EXISTS "public"."redistribution_records" CASCADE;
+DROP TABLE IF EXISTS "public"."questions" CASCADE;
+DROP TABLE IF EXISTS "public"."posts" CASCADE;
+DROP TABLE IF EXISTS "public"."operator_focuses" CASCADE;
+DROP TABLE IF EXISTS "public"."newsletter_profiles" CASCADE;
+DROP TABLE IF EXISTS "public"."newsletter_issues" CASCADE;
+DROP TABLE IF EXISTS "public"."journal_moments" CASCADE;
+DROP TABLE IF EXISTS "public"."thought_fragments" CASCADE;
+DROP TABLE IF EXISTS "public"."fragments" CASCADE;
+DROP TABLE IF EXISTS "public"."field_notes" CASCADE;
+DROP TABLE IF EXISTS "public"."builder_status" CASCADE;
+DROP TABLE IF EXISTS "public"."build_logs" CASCADE;
+DROP TABLE IF EXISTS "public"."books" CASCADE;
+DROP TABLE IF EXISTS "public"."active_systems" CASCADE;
 
--- 1. DELETE STORAGE OBJECTS AND BUCKETS SECURELY
--- Delete all object metadata references in specific buckets
-DELETE FROM storage.objects 
-WHERE bucket_id IN ('posts', 'books', 'fund', 'shared');
+-- Drop Enums
+DROP TYPE IF EXISTS "public"."post_status" CASCADE;
+DROP TYPE IF EXISTS "public"."newsletter_status" CASCADE;
+DROP TYPE IF EXISTS "public"."book_status" CASCADE;
+DROP TYPE IF EXISTS "public"."persona_type" CASCADE;
 
--- Delete the custom storage buckets
-DELETE FROM storage.buckets 
-WHERE id IN ('posts', 'books', 'fund', 'shared');
-
--- Drop storage policies to ensure a totally clean slate for schema.sql
-DROP POLICY IF EXISTS "Public Access to posts bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Admin Access to posts bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Public Access to books bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Admin Access to books bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Public Access to fund bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Admin Access to fund bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Public Access to shared bucket" ON storage.objects;
-DROP POLICY IF EXISTS "Admin Access to shared bucket" ON storage.objects;
-
--- 2. DROP APPLICATION TABLES (CASCADE AUTOMATICALLY REMOVES FOREIGN KEYS, INDEXES, AND POLICIES)
-DROP TABLE IF EXISTS subscriptions CASCADE;
-DROP TABLE IF EXISTS subscribers CASCADE;
-DROP TABLE IF EXISTS newsletter_profiles CASCADE;
-DROP TABLE IF EXISTS newsletter_issues CASCADE;
-DROP TABLE IF EXISTS redistribution_records CASCADE;
-DROP TABLE IF EXISTS operator_focuses CASCADE;
-DROP TABLE IF EXISTS build_logs CASCADE;
-DROP TABLE IF EXISTS active_systems CASCADE;
-DROP TABLE IF EXISTS builder_statuses CASCADE;
-DROP TABLE IF EXISTS books CASCADE;
-DROP TABLE IF EXISTS fragments CASCADE;
-DROP TABLE IF EXISTS journal_moments CASCADE;
-DROP TABLE IF EXISTS thought_fragments CASCADE;
-DROP TABLE IF EXISTS questions CASCADE;
-DROP TABLE IF EXISTS field_notes CASCADE;
-DROP TABLE IF EXISTS posts CASCADE;
-
--- 3. DROP CUSTOM FUNCTIONS
-DROP FUNCTION IF EXISTS is_admin() CASCADE;
-
--- 4. ENSURE CLEAN SYSTEM STATE FOR RE-CREATION
--- The system is now reset and ready to fully run schema.sql from scratch.
+-- Drop Functions
+DROP FUNCTION IF EXISTS "public"."update_updated_at_column" CASCADE;
+DROP FUNCTION IF EXISTS "public"."generate_unique_slug" CASCADE;
