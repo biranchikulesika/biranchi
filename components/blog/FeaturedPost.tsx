@@ -1,0 +1,163 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'motion/react';
+import { Post } from '@/lib/types';
+import { PERSONA_BLOG_THEMES } from './themes';
+
+export interface FeaturedPostProps {
+  post: Post;
+  persona: 'main' | 'wanderer' | 'thinker' | 'builder' | 'operator';
+}
+
+export function FeaturedPost({ post, persona }: FeaturedPostProps) {
+  const theme = PERSONA_BLOG_THEMES[persona] || PERSONA_BLOG_THEMES.wanderer;
+
+  const isOperator = persona === 'operator';
+
+  // Adaptive dark background colors
+  const getBannerBgBorder = () => {
+    switch (persona) {
+      case 'operator':
+        return 'bg-[#050706] border-[#1e2722]';
+      case 'builder':
+        return 'bg-neutral-950 border-neutral-950 dark:border-neutral-900/60';
+      case 'thinker':
+        return 'bg-[#0C0E11] border-stone-850';
+      case 'wanderer':
+      case 'main':
+      default:
+        return 'bg-[#070809] border-[#212328]';
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1.0, ease: 'easeOut' }}
+      className={`group relative w-full overflow-hidden border rounded-xl shadow-2xl flex flex-col-reverse lg:grid lg:grid-cols-12 min-h-[380px] ${getBannerBgBorder()}`}
+      id="unified-hero-banner"
+    >
+      {/* Dynamic blurred image backdrop that covers the entire banner for a cohesive editorial style */}
+      <div className="absolute inset-0 overflow-hidden rounded-xl z-0 pointer-events-none select-none">
+        {(post.coverImageUrl) ? (
+          <Image
+            src={post.coverImageUrl || ""}
+            alt=""
+            fill
+            referrerPolicy="no-referrer"
+            priority
+            className="object-cover w-full h-full opacity-55 scale-125 saturate-[130%] brightness-50"
+            style={{ filter: 'blur(80px)' }}
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-tr from-[#1a1c22] to-[#0A0C0E] opacity-55 scale-125 saturate-[130%] brightness-50" />
+        )}
+        {/* Gradients ensuring perfect contrast on text and balancing the photo light */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-transparent lg:block hidden z-10" />
+        <div className="absolute inset-y-0 right-0 w-2/5 bg-gradient-to-l from-black/45 via-black/10 to-transparent lg:block hidden z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/55 to-black/90 lg:hidden block z-10" />
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        #hero-image-sharp-transition {
+          mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+        }
+        @media (min-width: 1024px) {
+          #hero-image-sharp-transition {
+            mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.1) 8%, rgba(0,0,0,0.95) 30%, black 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.1) 8%, rgba(0,0,0,0.95) 30%, black 100%);
+          }
+        }
+      `}} />
+
+      {/* LEFT COMPONENT: INTENTIONAL TEXT & CALL TO ACTION */}
+      <div className="relative z-20 lg:col-span-5 flex flex-col justify-between p-5 sm:p-10 lg:p-12 space-y-5">
+        <div className="space-y-3 sm:space-y-4">
+          <span
+            id="hero-banner-eyebrow"
+            className={`font-mono text-[9px] uppercase tracking-[0.35em] block font-bold opacity-90 ${theme.accentColor}`}
+          >
+            FEATURED DISPATCH
+          </span>
+
+          <Link href={`/p/${post.slug}`}>
+            <h2
+              id="hero-banner-title"
+              className={`text-2xl sm:text-4xl lg:text-4.5xl text-white tracking-tight leading-[1.15] hover:opacity-95 transition-opacity ${theme.titleFont}`}
+            >
+              {post.title}
+            </h2>
+          </Link>
+
+          <p
+            id="hero-banner-excerpt"
+            className="text-[13.5px] sm:text-[15px] font-sans leading-relaxed text-[#D2D4D8] font-light"
+            style={{ fontFamily: isOperator ? 'var(--font-mono)' : 'inherit' }}
+          >
+            {post.excerpt || post.subtitle}
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 sm:pt-4">
+          {/* Round Arrow Button & Text label */}
+          <Link
+            href={`/p/${post.slug}`}
+            className="flex items-center gap-3 select-none"
+            id="hero-read-latest-btn"
+          >
+            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-transform group-hover:scale-[1.03] ${
+              persona === 'builder'
+                ? 'bg-orange-500/10 border-orange-500 text-orange-500'
+                : persona === 'operator'
+                ? 'bg-emerald-950/20 border-emerald-800 text-emerald-400'
+                : persona === 'thinker'
+                ? 'bg-stone-850 border-stone-750 text-stone-300'
+                : 'bg-white/10 border-white/10 text-white'
+            }`}>
+              <span className="text-sm sm:text-base">→</span>
+            </div>
+            <span className={`font-sans text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-bold ${
+              persona === 'builder'
+                ? 'text-orange-500'
+                : persona === 'operator'
+                ? 'text-emerald-450 font-mono'
+                : persona === 'thinker'
+                ? 'text-stone-300'
+                : 'text-[#EAEAEA]'
+            }`}>
+              {theme.readBtnText || 'READ DISPATCH'}
+            </span>
+          </Link>
+
+          <span className="font-mono text-[9px] sm:text-[9.5px] uppercase tracking-wider text-[#9A9EA5]">
+            {post.publishedAt?.split('T')[0] || post.createdAt?.split('T')[0] || ''}
+          </span>
+        </div>
+      </div>
+
+      {/* RIGHT COMPONENT: COVER OUTDOOR PHOTOGRAPHY WITH GRADIENT BLEND */}
+      <div id="hero-image-sharp-transition" className="relative lg:col-span-7 h-[180px] sm:h-[260px] lg:h-auto overflow-hidden z-10">
+        {(post.coverImageUrl) ? (
+          <Image
+            src={post.coverImageUrl || ""}
+            alt={post.title}
+            fill
+            priority
+            referrerPolicy="no-referrer"
+            className="object-cover object-center w-full h-full filter saturate-[92%] brightness-[85%]"
+            sizes="(max-w-1024px) 100vw, 750px"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-tr from-[#15171e] to-[#0A0C0E]" />
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+export default FeaturedPost;

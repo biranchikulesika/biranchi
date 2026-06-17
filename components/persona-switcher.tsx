@@ -1,0 +1,76 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import Link from 'next/link';
+import { getPersonaUrl } from '@/lib/utils';
+
+const PERSONAS = [
+  { name: 'Builder', path: getPersonaUrl('builder'), color: 'dark:text-neutral-300 text-[#222222]', font: 'font-mono', highlight: 'bg-neutral-400 shadow-[0_0_10px_rgba(163,163,163,0.5)]' },
+  { name: 'Operator', path: getPersonaUrl('operator'), color: 'text-emerald-500', font: 'font-mono', highlight: 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
+  { name: 'Wanderer', path: getPersonaUrl('wanderer'), color: 'text-orange-500', font: 'font-serif', highlight: 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' },
+  { name: 'Thinker', path: getPersonaUrl('thinker'), color: 'text-gray-400', font: 'font-sans', highlight: 'bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]' },
+];
+
+export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPersona: string, currentStyle: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const activePersona = PERSONAS.find(p => p.name === currentPersona);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative flex items-center z-50">
+      <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
+        BIRANCHI
+      </Link>
+      
+      <div className="mx-2 flex items-center justify-center">
+        <span className={`w-1.5 h-1.5 rotate-45 ${activePersona?.highlight || 'bg-current'} opacity-90 transition-all duration-500`}></span>
+      </div>
+
+      <div className="relative" ref={menuRef}>
+        <motion.button
+          onClick={() => setIsOpen(!isOpen)}
+          whileHover={{ scale: 1.05, x: 2 }}
+          whileTap={{ scale: 0.95 }}
+          className={`uppercase tracking-widest text-sm flex items-center gap-1 ${currentStyle} transition-colors`}
+        >
+          {currentPersona}
+        </motion.button>
+        
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute top-full left-0 mt-4 dark:bg-[#0a0a0a] bg-[#F3F2EE] backdrop-blur-xl border border-white/10 rounded-lg p-2 shadow-2xl min-w-[180px] flex flex-col gap-1 overflow-hidden"
+            >
+              {PERSONAS.map(p => (
+                <Link
+                  key={p.name}
+                  href={p.path}
+                  onClick={() => setIsOpen(false)}
+                  className={`px-4 py-3 text-sm transition-all rounded-md flex items-center gap-2 ${p.font} ${p.color} hover:bg-white/10 ${p.name === currentPersona ? 'bg-white/5 opacity-50 cursor-default pointer-events-none' : ''}`}
+                >
+                  <span className="uppercase tracking-wider">{p.name}</span>
+                </Link>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}

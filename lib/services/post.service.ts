@@ -1,0 +1,92 @@
+import { Post } from "../types";
+import { repositoryRegistry, IRepository } from '../repositories/registry';
+
+export class PostService {
+  private repository: IRepository<Post>;
+
+  constructor() {
+    this.repository = repositoryRegistry.getPostRepository();
+  }
+
+  async getAll(): Promise<Post[]> {
+    try {
+      return await this.repository.getAll();
+    } catch (error) {
+      console.error("Failed to get posts:", error);
+      throw error;
+    }
+  }
+
+  async getById(id: string): Promise<Post | null> {
+    try {
+      return await this.repository.getById(id);
+    } catch (error) {
+      console.error("Failed to get post:", error);
+      throw error;
+    }
+  }
+
+  async create(data: Omit<Post, "id">): Promise<Post | null> {
+    try {
+      // Add validation logic here
+      return await this.repository.create(data);
+    } catch (error) {
+      console.error("Failed to create post:", error);
+      throw error;
+    }
+  }
+
+  async update(id: string, data: Partial<Post>): Promise<Post | null> {
+    try {
+      return await this.repository.update(id, data);
+    } catch (error) {
+      console.error("Failed to update post:", error);
+      throw error;
+    }
+  }
+
+  async delete(id: string): Promise<boolean> {
+    try {
+      return await this.repository.delete(id);
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      throw error;
+    }
+  }
+  
+  async hide(id: string): Promise<Post | null> {
+    try {
+      return await this.repository.update(id, { hidden: true } as Partial<Post>);
+    } catch (error) {
+      console.error("Failed to hide post:", error);
+      throw error;
+    }
+  }
+
+  async unhide(id: string): Promise<Post | null> {
+    try {
+      return await this.repository.update(id, { hidden: false } as Partial<Post>);
+    } catch (error) {
+      console.error("Failed to unhide post:", error);
+      throw error;
+    }
+  }
+
+  async feature(id: string): Promise<Post | null> {
+    try {
+      return await this.repository.update(id, { featured: true } as Partial<Post>);
+    } catch (error) {
+      console.error("Failed to feature post:", error);
+      throw error;
+    }
+  }
+
+  async unfeature(id: string): Promise<Post | null> {
+    try {
+      return await this.repository.update(id, { featured: false } as Partial<Post>);
+    } catch (error) {
+      console.error("Failed to unfeature post:", error);
+      throw error;
+    }
+  }
+}

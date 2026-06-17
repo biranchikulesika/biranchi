@@ -1,0 +1,44 @@
+'use client';
+
+import { motion } from 'motion/react';
+import Link from 'next/link';
+
+export default function WandererAboutPage() {
+  return (
+    <div className="max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-20 md:pt-10 md:pb-32 relative flex flex-col font-spectral">
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+        className="max-w-xl"
+      >
+        <div className="mb-10 md:mb-12">
+          <span className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.25em] dark:text-[#B97A56] text-[#B67A55] block mb-6 md:mb-8 opacity-90">
+            SCRIBBLE
+          </span>
+          <h1 className="text-4xl md:text-5xl italic dark:text-[#E1D5C8] text-[#43382F] font-cormorant tracking-tight">
+            Why Scribble Exists
+          </h1>
+        </div>
+        
+        <div className="space-y-8 md:space-y-12 dark:text-[#B6A798] text-[#8A7C70] leading-relaxed text-[15px] md:text-lg font-light">
+          <p>
+            Wanderer is where stories, memories, lived moments, observations, and fragments of life are quietly collected and preserved. Some things feel too human to disappear into timelines and temporary posts.
+          </p>
+          <p>
+            This space exists to document places, conversations, moods, journeys, and moments that stay longer than expected. It is less about performance and more about remembering things honestly before they fade with time.
+          </p>
+          <p>
+            I enjoy observing people, collecting emotional details, writing things down, and turning fleeting experiences into stories that can survive a little longer.
+          </p>
+          
+          <div className="pt-8 md:pt-12">
+            <p className="text-sm md:text-base dark:text-[#B97A56] text-[#B67A55] tracking-wide font-cormorant italic opacity-90">
+              Some moments deserve a quieter archive.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}

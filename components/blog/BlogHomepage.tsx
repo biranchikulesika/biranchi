@@ -1,0 +1,445 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'motion/react';
+import { ArrowRight, BookOpen } from 'lucide-react';
+
+import { Post } from '@/lib/types';
+import { PERSONA_BLOG_THEMES } from './themes';
+import { FeaturedPost } from './FeaturedPost';
+import { Search } from './Search';
+import { getPersonaUrl } from '@/lib/utils';
+
+export interface BlogHomepageProps {
+  persona: 'main' | 'wanderer' | 'thinker' | 'builder' | 'operator';
+  databasePosts: any[];
+}
+
+export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
+  const theme = PERSONA_BLOG_THEMES[persona] || PERSONA_BLOG_THEMES.wanderer;
+  const [posts, setPosts] = useState<any[]>([]);
+
+  // Interactive UI states for the Substack-style feed
+  const [activeTab, setActiveTab] = useState<string>(persona === 'main' ? 'all' : 'latest');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(12);
+
+  // Responsive limit handler for mobile & desktop view constraints
+  useEffect(() => {
+    const updateLimit = () => {
+      if (window.innerWidth < 640) {
+        setDisplayLimit(6); // Mobile: 6 posts max
+      } else if (window.innerWidth >= 1024) {
+        setDisplayLimit(12); // Desktop: 3 cols * 4 rows = 12 posts max
+      } else {
+        setDisplayLimit(8); // Tablet: 2 cols * 4 rows = 8 posts max
+      }
+    };
+    updateLimit();
+    window.addEventListener('resize', updateLimit);
+    return () => window.removeEventListener('resize', updateLimit);
+  }, []);
+
+  useEffect(() => {
+    // Collect static database posts
+    const dbPosts = persona === 'main'
+      ? databasePosts.filter(p => !p.hidden)
+      : databasePosts.filter(p => p.persona === persona && !p.hidden);
+
+    setTimeout(() => {
+      setPosts(dbPosts);
+    }, 0);
+  }, [persona]);
+
+  // Sort posts chronologically by Date
+  const sortedPosts = [...posts].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  const featured = sortedPosts.find(p => p.featured) || sortedPosts[0];
+  
+  // Exclude featured from other flows
+  const remainingPosts = sortedPosts.filter(p => p.slug !== featured?.slug);
+
+  // 4 Popular Articles for the top journal strip row
+  // We don't have real analytics, so we just take the first 4 for now.
+  let popularPosts = remainingPosts.slice(0, 4);
+
+  // The stream / list feed (all posts, excluding the featured banner, filtered by searchQuery and tab)
+  const feedPosts = remainingPosts.filter(p => {
+    // If searching, let search override
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      return (
+        p.title.toLowerCase().includes(q) ||
+        p.subtitle.toLowerCase().includes(q) ||
+        p.excerpt.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      );
+    }
+    
+    // Main Site consolidated persona tabs or individual Latest/Popular tabs
+    if (persona === 'main') {
+      if (activeTab === 'all') return true;
+      return p.persona === activeTab;
+    } else {
+      if (activeTab === 'top') {
+        return remainingPosts.slice(0, 4).map(post => post.slug).includes(p.slug);
+      }
+      return true; // Latest feed
+    }
+  });
+
+  const archiveUrl = getPersonaUrl(persona, '/blogs/archive');
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setSubscribed(true);
+      setTimeout(() => setSubscribed(false), 5000);
+      setEmail('');
+    }
+  };
+
+  return (
+    <div className={`w-full min-h-screen ${theme.containerClass}`}>
+      {/* Dynamic Substack Navigation and Masthead Space */}
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-12">
+        
+        {/* 1. HERO BANNER */}
+        {featured && (
+          <section id="substack-hero-section">
+            <FeaturedPost post={featured} persona={persona === 'main' ? featured.persona : persona} />
+          </section>
+        )}
+
+        {/* 2. MOST POPULAR ROW */}
+        {popularPosts.length > 0 && (
+          <section id="substack-popular-section" className="hidden md:block space-y-6 pt-4">
+            <div className={`flex items-center justify-between border-b pb-2 ${theme.borderColor}`}>
+              <h2 className={`text-xs uppercase tracking-[0.2em] font-bold ${
+                persona === 'operator' ? 'font-mono text-[#7f9e8a]' : 'font-sans opacity-70'
+              }`}>
+                {theme.stripTitle}
+              </h2>
+              <Link
+                href={archiveUrl}
+                className={`text-[10px] sm:text-[10.5px] uppercase tracking-wider font-bold transition-colors ${theme.accentColor} ${theme.hoverColor}`}
+              >
+                {theme.stripLinkText} →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                  {popularPosts.map((post) => {
+                    const postImage = post.heroImage || post.coverImageUrl || post.coverImage;
+                    return (
+                      <div 
+                        key={post.slug} 
+                        className={`flex gap-4 items-start justify-between border-b sm:border-b-0 pb-4 sm:pb-0 sm:border-r last:border-0 pr-0 sm:pr-4 lg:pr-6 ${theme.borderColor}`}
+                      >
+                        <div className="space-y-2">
+                          <Link href={`/p/${post.slug}`}>
+                            <h3 className={`text-[14.5px] font-bold leading-snug line-clamp-2 hover:opacity-80 transition-opacity ${theme.titleFont} ${theme.primaryColor}`}>
+                              {post.title}
+                            </h3>
+                          </Link>
+                          <div className="text-[9.5px] font-mono uppercase tracking-wider opacity-50">
+                            {post.date}
+                          </div>
+                        </div>
+                        {postImage && (
+                          <div className={`w-14 h-14 relative rounded-md overflow-hidden flex-shrink-0 bg-neutral-900 border shadow-inner ${theme.borderColor}`}>
+                            <Image 
+                              src={postImage} 
+                              fill 
+                              className="object-cover saturate-[85%] filter" 
+                              alt={post.title} 
+                              referrerPolicy="no-referrer"
+                              sizes="60px"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+            </div>
+          </section>
+        )}
+
+        <div className={`hidden md:block border-t my-8 ${theme.borderColor}`} />
+
+        {/* 3. TABS BAR & SEARCH BOX */}
+        <section className="space-y-6">
+          <div className={`flex items-center justify-between border-b pb-1.5 select-none gap-4 ${theme.borderColor}`}>
+            {!mobileSearchOpen ? (
+              <>
+                {/* Category selector loops */}
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8 font-sans text-xs uppercase tracking-wider font-bold text-zinc-500">
+                  {persona === 'main' ? (
+                    <>
+                      <button
+                        onClick={() => setActiveTab('all')}
+                        className={`pb-2 transition-colors relative ${activeTab === 'all' ? 'text-zinc-900 dark:text-white border-b-2 border-stone-500' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('builder')}
+                        className={`pb-2 transition-colors relative ${activeTab === 'builder' ? 'text-zinc-900 dark:text-white border-b-2 border-orange-500' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                      >
+                        Forge
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('operator')}
+                        className={`pb-2 transition-colors relative ${activeTab === 'operator' ? 'text-[#7f9e8a] dark:text-[#a0bfab] border-b-2 border-emerald-600' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                      >
+                        Signal
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('wanderer')}
+                        className={`pb-2 transition-colors relative ${activeTab === 'wanderer' ? 'text-[#A66039] dark:text-[#C58059] border-b-2 border-[#A66039]' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                      >
+                        Scribble
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('thinker')}
+                        className={`pb-2 transition-colors relative ${activeTab === 'thinker' ? 'text-[#7F786F] dark:text-[#9A9388] border-b-2 border-[#7F786F]' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                      >
+                        Inside The Head
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setActiveTab('latest')}
+                        className={`pb-2 transition-colors relative ${
+                          activeTab === 'latest' 
+                            ? `text-zinc-900 dark:text-white border-b-2 ${
+                                persona === 'builder' ? 'border-orange-500' : persona === 'operator' ? 'border-emerald-600' : persona === 'thinker' ? 'border-[#928a7e]' : 'border-[#C58059]'
+                              }` 
+                            : 'hover:text-zinc-700 dark:hover:text-zinc-300'
+                        }`}
+                      >
+                        Latest
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('top')}
+                        className={`pb-2 transition-colors relative ${
+                          activeTab === 'top' 
+                            ? `text-zinc-900 dark:text-white border-b-2 ${
+                                persona === 'builder' ? 'border-orange-500' : persona === 'operator' ? 'border-[#7f9e8a]' : persona === 'thinker' ? 'border-[#928a7e]' : 'border-[#C58059]'
+                              }`
+                            : 'hover:text-zinc-700 dark:hover:text-zinc-300'
+                        }`}
+                      >
+                        Popular
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Desktop & Tablet Search Box aligning perfectly on the right side */}
+                <div className="hidden sm:block sm:min-w-[280px] lg:min-w-[320px]">
+                  <Search value={searchQuery} onChange={setSearchQuery} persona={persona === 'main' ? 'wanderer' : persona} />
+                </div>
+
+                {/* Compact Mobile Search Toggle Icon */}
+                <button
+                  onClick={() => {
+                    setMobileSearchOpen(true);
+                    if (persona === 'main') setActiveTab('all');
+                    else setActiveTab('latest'); 
+                  }}
+                  className="sm:hidden p-2 text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Search dispatches"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="w-full flex items-center gap-3 sm:hidden pb-1"
+              >
+                <div className="flex-1">
+                  <Search value={searchQuery} onChange={setSearchQuery} persona={persona === 'main' ? 'wanderer' : persona} />
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileSearchOpen(false);
+                    setSearchQuery('');
+                  }}
+                  className={`p-1 text-xs uppercase tracking-wider font-sans font-bold shrink-0 ${theme.accentColor}`}
+                >
+                  Cancel
+                </button>
+              </motion.div>
+            )}
+          </div>
+
+          {/* 4. MAIN BODY COLUMN & SIDEBAR SPLIT */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 pt-4">
+            
+            {/* PRIMARY PUBLICATIONS FEED STREAM (Cols 1 to 9 on big screens) */}
+            <div className="lg:col-span-9 space-y-12">
+              {feedPosts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+                  {feedPosts.slice(0, displayLimit).map((post, idx) => {
+                    const postCardImage = post.heroImage || post.coverImageUrl || post.coverImage;
+                    return (
+                      <motion.article
+                        key={post.slug}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: Math.min(idx * 0.05, 0.4) }}
+                        className={`group flex flex-col justify-between space-y-4 border-b pb-6 last:border-b-0 ${theme.borderColor}`}
+                      >
+                        <div className="space-y-3.5">
+                          {/* Card Thumbnail */}
+                          {postCardImage && (
+                            <Link href={`/p/${post.slug}`} className={`block relative aspect-[1.5] w-full overflow-hidden bg-zinc-950 border rounded-lg ${theme.borderColor}`}>
+                              <Image 
+                                src={postCardImage} 
+                                alt={post.title} 
+                                fill 
+                                referrerPolicy="no-referrer"
+                                className="object-cover saturate-[85%]"
+                                sizes="(max-w-768px) 100vw, 360px"
+                              />
+                            </Link>
+                          )}
+
+                        <div className="space-y-2">
+                          {/* Metadata */}
+                          <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 flex flex-wrap items-center gap-1.5">
+                            <span>{post.date}</span>
+                            <span>•</span>
+                            <span className={theme.accentColor}>{post.category}</span>
+                            {persona === 'main' && (
+                              <>
+                                <span>•</span>
+                                <span className="px-1 py-0.2 text-[8px] tracking-wider rounded bg-neutral-100 dark:bg-neutral-900 border dark:border-neutral-800 text-neutral-600 dark:text-neutral-400">
+                                  {post.persona === 'builder' ? 'Forge' : post.persona === 'operator' ? 'Signal' : post.persona === 'wanderer' ? 'Scribble' : 'Inside The Head'}
+                                </span>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Title */}
+                          <Link href={`/p/${post.slug}`}>
+                            <h3 className={`text-[18.2px] font-bold tracking-tight leading-snug line-clamp-2 ${theme.titleFont} ${theme.primaryColor} hover:opacity-85 duration-300`}>
+                              {post.title}
+                            </h3>
+                          </Link>
+
+                          {/* Excerpt */}
+                          <Link href={`/p/${post.slug}`} className="block">
+                            <p className="text-[14px] leading-relaxed opacity-75 font-light line-clamp-3 mt-1" style={{ fontFamily: persona === 'operator' ? 'var(--font-mono)' : 'inherit' }}>
+                              {post.excerpt || post.subtitle}
+                            </p>
+                          </Link>
+                        </div>
+                      </div>
+                    </motion.article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className={`py-20 text-center border border-dashed rounded-xl flex flex-col items-center justify-center gap-3 ${theme.borderColor}`}>
+                  <span className="font-mono text-xs opacity-50 font-medium select-none">
+                    {searchQuery ? '[ No papers match your search queries ]' : '[ No stories have been shared yet ]'}
+                  </span>
+                </div>
+              )}
+
+              {/* VIEW COMPLETE FEED LINK */}
+              <div className={`pt-8 select-none border-t flex justify-center sm:justify-start ${theme.borderColor}`}>
+                <Link
+                  href={archiveUrl}
+                  className={`group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest hover:underline ${theme.accentColor} ${theme.hoverColor}`}
+                  id="substack-feed-link-footer"
+                >
+                  <span>{theme.seeAllText}</span>
+                  <span className="font-sans inline-block transition-transform group-hover:translate-x-1">→</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* SECONDARY SIDEBAR COLUMN: PROFILE & EMAIL FORM (Cols 10 to 12) */}
+            <div className={`lg:col-span-3 space-y-8 select-none lg:border-l lg:pl-10 ${theme.borderColor}`}>
+              <div className="sticky top-28 space-y-8">
+                
+                {/* Substack Styled Email Signup Box */}
+                <div className="space-y-4 pt-2">
+                  <span className={`text-[10px] uppercase font-mono tracking-wider font-bold block ${theme.accentColor}`}>
+                    NEWSLETTER SUBSCRIPTION
+                  </span>
+                  <h5 className={`text-base font-bold leading-tight ${theme.titleFont} ${theme.primaryColor}`}>
+                    Receive dispatches directly into your inbox.
+                  </h5>
+                  
+                  <form onSubmit={handleSubscribe} className="space-y-3 pt-1">
+                    <input
+                      type="email"
+                      placeholder="Type your email..."
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className={`w-full bg-[#131418] border border-[#212328] rounded-md px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C58059] font-sans ${
+                        persona === 'operator' 
+                          ? 'font-mono text-[#7f9e8a] border-dashed border-[#1e2722]/80 bg-black/40 focus:border-solid rounded-none' 
+                          : persona === 'builder'
+                          ? 'font-mono border-neutral-350 dark:border-neutral-900 bg-[#E7E4DD]/50 dark:bg-neutral-900/40 text-neutral-950 dark:text-neutral-100 placeholder-stone-400 dark:placeholder-neutral-600 focus:border-orange-500/80 focus:ring-1 focus:ring-orange-500/10 rounded-md'
+                          : persona === 'thinker'
+                          ? 'border-0 border-b border-[#E2DFDA] dark:border-stone-850 bg-transparent text-neutral-800 dark:text-[#D7D4CE] rounded-none px-1 placeholder-stone-500/50 focus:border-stone-500'
+                          : 'bg-[#131418] border border-[#212328] focus:border-[#C58059]'
+                      }`}
+                    />
+                      <button
+                        type="submit"
+                        className={`w-full py-2.5 text-white text-xs font-bold uppercase tracking-widest font-sans transition-all duration-300 shadow-sm ${
+                          persona === 'builder'
+                            ? 'bg-orange-500 hover:bg-orange-600 rounded-md hover:shadow-orange-500/10'
+                            : persona === 'operator'
+                            ? 'bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800 text-emerald-400 rounded-none'
+                            : persona === 'thinker'
+                            ? 'bg-stone-850 hover:bg-stone-800 rounded-full border border-stone-750'
+                            : 'bg-[#A66039] hover:bg-[#B67A55] rounded-md hover:shadow-[#A66039]/10'
+                        }`}
+                      >
+                        Subscribe
+                      </button>
+                  </form>
+
+                  {subscribed && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-[11px] font-sans text-emerald-500 font-medium leading-normal"
+                    >
+                      ✓ Subscription recorded!
+                    </motion.p>
+                  )}
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  );
+}
+
+export default BlogHomepage;
