@@ -3,29 +3,55 @@ import { IRepository } from './registry';
 import { supabaseServer } from '../supabase/server';
 
 export class JournalMomentSupabaseRepository implements IRepository<JournalMoment> {
+  private mapToDB(data: Partial<JournalMoment>): any {
+    const dbObj: any = {};
+    if (data.body !== undefined) dbObj.content = data.body;
+    if (data.title !== undefined) dbObj.mood = data.title; // map title to mood
+    // For timeLabel, there is no good text field (date is TIMESTAMPTZ), let's just ignore or append
+    if (data.timeLabel !== undefined && !dbObj.mood) {
+       dbObj.mood = data.timeLabel;
+    } else if (data.timeLabel !== undefined && dbObj.mood) {
+       dbObj.mood = dbObj.mood + " | " + data.timeLabel;
+    }
+    return dbObj;
+  }
+
+  private mapToEntity(dbData: any): JournalMoment {
+    const moodSplit = dbData.mood ? dbData.mood.split(" | ") : ['', ''];
+    return {
+      id: dbData.id,
+      title: moodSplit[0] || '',
+      body: dbData.content || '',
+      timeLabel: moodSplit[1] || moodSplit[0] || '',
+      hidden: false,
+      createdAt: dbData.created_at,
+      updatedAt: dbData.updated_at,
+    };
+  }
+
   async getAll(): Promise<JournalMoment[]> {
     const { data, error } = await (supabaseServer as any).from('journal_moments').select('*');
     if (error) throw error;
-    return data as any as JournalMoment[];
+    return (data || []).map(this.mapToEntity);
   }
 
   async getById(id: string): Promise<JournalMoment | null> {
     const { data, error } = await (supabaseServer as any).from('journal_moments').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
-    return data as any as JournalMoment;
+    return this.mapToEntity(data);
   }
 
   async create(data: Omit<JournalMoment, 'id'>): Promise<JournalMoment | null> {
-    const { data: result, error } = await (supabaseServer as any).from('journal_moments').insert(data as any).select().single();
+    const { data: result, error } = await (supabaseServer as any).from('journal_moments').insert(this.mapToDB(data)).select().single();
     if (error) throw error;
-    return result as any as JournalMoment;
+    return this.mapToEntity(result);
   }
 
   async update(id: string, data: Partial<JournalMoment>): Promise<JournalMoment | null> {
-    const { data: result, error } = await (supabaseServer as any).from('journal_moments').update(data as any).eq('id', id).select().single();
+    const { data: result, error } = await (supabaseServer as any).from('journal_moments').update(this.mapToDB(data)).eq('id', id).select().single();
     if (error) throw error;
-    return result as any as JournalMoment;
+    return this.mapToEntity(result);
   }
 
   async delete(id: string): Promise<boolean> {
