@@ -1520,27 +1520,6 @@ export default function PostPage() {
                 <InlineWarning message={(!formData.tags || formData.tags.length === 0 || (formData.tags.length === 1 && !formData.tags[0])) ? "No tags are listed. Tags aggregate search capabilities across subjects." : undefined} />
               </div>
               <div>
-                <FormLabel label="Published At" />
-                <input 
-                  type="datetime-local" 
-                  value={formatToDatetimeLocal(formData.publishedAt)} 
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (!val) {
-                      setFormData({ ...formData, publishedAt: '' });
-                    } else {
-                      try {
-                        const iso = new Date(val).toISOString();
-                        setFormData({ ...formData, publishedAt: iso });
-                      } catch {
-                        setFormData({ ...formData, publishedAt: val });
-                      }
-                    }
-                  }} 
-                  className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 [color-scheme:dark]" 
-                />
-              </div>
-              <div>
                 <FormLabel label="Featured" />
                 <div className="flex items-center gap-2"><input type="checkbox" checked={formData.featured || false} onChange={(e) => setFormData({...formData, featured: e.target.checked})} className="bg-[#161616] border-[#222] rounded" /></div>
               </div>

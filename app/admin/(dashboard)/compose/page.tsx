@@ -829,7 +829,7 @@ function ComposePageContent() {
       tags: splitTags,
       coverImageUrl: coverUrl,
       draft: isNewDraftState,
-      publishedAt: isNewDraftState ? null : new Date().toISOString()
+      publishedAt: isNewDraftState ? null : (wasPublished ? formData.publishedAt : new Date().toISOString())
     };
 
     try {
@@ -1577,32 +1577,6 @@ function ComposePageContent() {
                   placeholder="tech, journals, philosophy"
                   className="w-full bg-[#141414] border border-[#222] focus:border-[#ff7700] rounded px-3 py-2 text-xs font-mono text-neutral-300 outline-none"
                 />
-              </div>
-
-              {/* Published At (Schedule / Backdate) Selection */}
-              <div>
-                <label className="block text-[10px] uppercase font-mono tracking-widest font-semibold text-neutral-500 mb-1.5">Published At (Schedule / Backdate)</label>
-                <input 
-                  type="datetime-local" 
-                  value={formatToDatetimeLocal(formData.publishedAt)}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (!val) {
-                      setFormData((prev: any) => ({ ...prev, publishedAt: '' }));
-                    } else {
-                      try {
-                        const iso = new Date(val).toISOString();
-                        setFormData((prev: any) => ({ ...prev, publishedAt: iso }));
-                      } catch {
-                        setFormData((prev: any) => ({ ...prev, publishedAt: val }));
-                      }
-                    }
-                  }}
-                  className="w-full bg-[#141414] border border-[#222] focus:border-[#ff7700] rounded px-3 py-2 text-xs font-mono text-neutral-300 outline-none select-all [color-scheme:dark]"
-                />
-                <p className="text-[10px] text-neutral-500 font-mono mt-1">
-                  Leave blank or clear to set dynamically relative to submission time.
-                </p>
               </div>
 
               {/* URL Customizable slugs */}
