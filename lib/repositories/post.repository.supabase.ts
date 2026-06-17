@@ -10,7 +10,7 @@ function toDbFormat(data: Partial<Post>) {
     slug: data.slug,
     content: data.content,
     excerpt: data.excerpt,
-    status: data.draft ? 'draft' : data.status || 'published',
+    status: data.draft !== undefined ? (data.draft ? 'draft' : 'published') : (data.status || 'published'),
     persona: data.persona,
     cover_image_url: data.coverImageUrl,
     cover_image_alt: data.coverImageAlt,
