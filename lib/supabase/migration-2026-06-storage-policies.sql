@@ -1,7 +1,6 @@
--- FILE: storage.sql
--- PURPOSE: Create and configure Supabase Storage buckets and policies.
+-- storage-migration.sql
 
--- 1. BUCKETS
+-- Insert buckets if they don't exist
 INSERT INTO storage.buckets (id, name, public) 
 VALUES 
     ('media', 'media', true),
@@ -12,19 +11,12 @@ VALUES
     ('newsletter-assets', 'newsletter-assets', true)
 ON CONFLICT (id) DO NOTHING;
 
--- 2. RLS POLICIES FOR STORAGE
--- Clear existing policies to maintain idempotency
-DROP POLICY IF EXISTS "Public Read Access All" ON storage.objects;
-DROP POLICY IF EXISTS "Public Insert Access All" ON storage.objects;
-DROP POLICY IF EXISTS "Public Update Access All" ON storage.objects;
-DROP POLICY IF EXISTS "Public Delete Access All" ON storage.objects;
-
--- Allow public to view any object in these public buckets
+-- Allow public read access
 CREATE POLICY "Public Read Access All"
 ON storage.objects FOR SELECT
 USING ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') );
 
--- Allow public insert access for development/admin UI
+-- Allow public insert access for development/admin UI (or authenticated if auth is configured, but this allows anon)
 CREATE POLICY "Public Insert Access All"
 ON storage.objects FOR INSERT
 WITH CHECK ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') );
