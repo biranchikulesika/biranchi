@@ -21,7 +21,7 @@ function toDbFormat(data: Partial<Post>) {
     reading_time: data.readingTime,
     featured: data.featured,
     hidden: data.hidden,
-    published_at: data.publishedAt,
+    published_at: data.publishedAt || null,
     tags: data.tags
   };
 }
