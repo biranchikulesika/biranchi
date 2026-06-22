@@ -44,7 +44,7 @@ export default function WandererPage() {
         setFragmentsData(frags);
         
         if (pData) {
-          let visiblePosts = pData.filter((p:any) => !p.hidden && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft') && p.persona?.toLowerCase() === 'wanderer');
+          let visiblePosts = pData.filter((p:any) => !p.hidden && p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.persona?.toLowerCase() === 'wanderer');
 
           const allPosts = visiblePosts.sort((a:any, b:any) => {
              if (a.featured && !b.featured) return -1;

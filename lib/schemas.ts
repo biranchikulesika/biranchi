@@ -8,7 +8,7 @@ export const postSchema = z.object({
   byline: z.string().optional(),
   slug: z.string(),
   oldSlugs: z.array(z.string()).optional(),
-  status: z.enum(['Draft', 'Published', 'Scheduled']).optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional(),
   excerpt: z.string().optional(),
   coverImageUrl: z.string().optional(),
   coverImageAlt: z.string().optional(),
@@ -22,10 +22,24 @@ export const postSchema = z.object({
   publishedAt: z.string().optional(),
   featured: z.boolean(),
   hidden: z.boolean(),
-  draft: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+}).passthrough().superRefine((data, ctx) => {
+  if (data.status === 'published') {
+    if (!data.title || data.title.trim() === '') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Title is required for published posts", path: ["title"] });
+    }
+    if (!data.slug || data.slug.trim() === '') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Slug is required for published posts", path: ["slug"] });
+    }
+    if (!data.content || data.content.trim() === '') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Content is required for published posts", path: ["content"] });
+    }
+    if (!data.persona || data.persona.trim() === '') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Persona is required for published posts", path: ["persona"] });
+    }
+  }
+});
 
 export const fieldNoteSchema = z.object({
   id: z.string().optional(),

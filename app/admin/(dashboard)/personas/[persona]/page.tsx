@@ -213,8 +213,8 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
     );
   }
 
-  const publications = personaPosts.filter(p => !p.draft && p.status !== 'Draft');
-  const drafts = personaPosts.filter(p => p.draft || p.status === 'Draft');
+  const publications = personaPosts.filter(p => p.status === 'published' && p.status !== 'draft');
+  const drafts = personaPosts.filter(p => p.status === 'draft' || p.status === 'draft');
 
   return (
     <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12 text-neutral-300">
@@ -458,7 +458,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                     </td>
                     <td className="px-6 py-4 align-top text-xs font-mono">
                       <div className="flex items-center gap-2">
-                        {post.draft || post.status === 'Draft' ? (
+                        {post.status === 'draft' || post.status === 'draft' ? (
                           <>
                             <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
                             <span className="text-neutral-400 font-light">Draft</span>

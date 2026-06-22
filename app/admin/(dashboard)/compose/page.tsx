@@ -280,7 +280,7 @@ function ComposePageContent() {
     publishedAt: '',
     featured: false,
     hidden: false,
-    draft: true
+    status: 'draft'
   });
 
   const [composerBlocks, setComposerBlocks] = useState<any[]>([]);
@@ -330,7 +330,7 @@ function ComposePageContent() {
           });
           setCurrentPostId(found.id);
           setInitialSlug(found.slug || '');
-          setWasPublished(!found.draft && !!found.publishedAt);
+          setWasPublished(found.status === 'published' && !!found.publishedAt);
           setComposerBlocks(parseToBlocks(found.content || ''));
           setPasteTagsText((found.tags || []).join(', '));
         } else {
@@ -357,7 +357,7 @@ function ComposePageContent() {
           publishedAt: '',
           featured: false,
           hidden: false,
-          draft: true
+          status: 'draft'
         });
         setCurrentPostId(null);
         setInitialSlug('');
@@ -458,7 +458,7 @@ function ComposePageContent() {
           slug: finalSlug,
           tags: splitTags,
           coverImageUrl: coverUrl,
-          draft: formData.draft ?? true
+          status: formData.status ?? 'draft'
         };
 
         if (currentPostId) {
@@ -837,7 +837,7 @@ function ComposePageContent() {
       slug: finalSlug,
       tags: splitTags,
       coverImageUrl: coverUrl,
-      draft: isNewDraftState,
+      status: isNewDraftState ? 'draft' : 'published',
       publishedAt: isNewDraftState ? null : (wasPublished ? formData.publishedAt : new Date().toISOString())
     };
 
@@ -1394,7 +1394,7 @@ function ComposePageContent() {
                     content: formData.content, 
                     featured: formData.featured,
                     hidden: formData.hidden,
-                    draft: true,
+                    status: 'draft',
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                   } as any}

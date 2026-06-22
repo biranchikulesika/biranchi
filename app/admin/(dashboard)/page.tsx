@@ -37,7 +37,7 @@ export default function AdminDashboardPage() {
     loadDashboardData();
   }, []);
 
-  const drafts = posts.filter(p => p.draft || p.status === 'Draft');
+  const drafts = posts.filter(p => p.status === 'draft' || p.status === 'draft');
   
   // Sort posts by date for Recent Activity feed
   const sortedActivities = [...posts].sort((a, b) => {
@@ -203,7 +203,7 @@ export default function AdminDashboardPage() {
           {sortedActivities.length > 0 ? (
             <div className="space-y-4 pt-1">
               {sortedActivities.map((activity, idx) => {
-                const isDraft = activity.draft || activity.status === 'Draft';
+                const isDraft = activity.status === 'draft';
                 const actionText = isDraft ? 'Updated:' : 'Published:';
                 
                 return (

@@ -784,8 +784,8 @@ export default function PostPage() {
                         {(item.hidden === true) && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-[#ff7700]/10 text-[#ff7700]">Hidden</span>}
                         {(item.hidden === false) && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-emerald-500/10 text-emerald-500">Visible</span>}
                         {item.featured && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-amber-400/10 text-amber-400">Featured</span>}
-                        {item.draft && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-neutral-500/10 text-neutral-400">Draft</span>}
-                        {item.draft === false && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-blue-500/10 text-blue-400">Published</span>}
+                        {item.status === 'draft' && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-neutral-500/10 text-neutral-400">Draft</span>}
+                        {item.status === 'published' && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-blue-500/10 text-blue-400">Published</span>}
                       </div>
                     </div>
 
@@ -1537,7 +1537,7 @@ export default function PostPage() {
               </div>
               <div>
                 <FormLabel label="Draft" />
-                <div className="flex items-center gap-2"><input type="checkbox" checked={formData.draft || false} onChange={(e) => setFormData({...formData, draft: e.target.checked})} className="bg-[#161616] border-[#222] rounded" /></div>
+                <div className="flex items-center gap-2"><input type="checkbox" checked={formData.status === 'draft' || false} onChange={(e) => setFormData({...formData, status: e.target.checked ? 'draft' : 'published'})} className="bg-[#161616] border-[#222] rounded" /></div>
               </div>
           </div>
         </div>

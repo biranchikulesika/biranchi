@@ -72,8 +72,8 @@ export default function ContentLibraryPage() {
         else if (post.persona === 'wanderer') mappedPersona = 'Scribble';
 
         let status: 'Draft' | 'Published' | 'Scheduled' = 'Published';
-        if (post.draft === true || post.status === 'Draft') status = 'Draft';
-        else if (post.status === 'Scheduled' || (post.publishedAt && new Date(post.publishedAt) > new Date())) status = 'Scheduled';
+        if (post.status === 'draft') status = 'Draft';
+        else if (post.publishedAt && new Date(post.publishedAt) > new Date()) status = 'Scheduled';
 
         unified.push({
           id: post.id || post.slug,

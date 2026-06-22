@@ -23,9 +23,7 @@ function toDbFormat(data: Partial<Post>) {
     tags: data.tags
   };
 
-  if (data.draft !== undefined) {
-    result.status = data.draft ? 'draft' : 'published';
-  } else if (data.status !== undefined) {
+  if (data.status !== undefined) {
     result.status = data.status;
   }
 
@@ -47,7 +45,6 @@ function fromDbFormat(dbData: any): Post {
     content: dbData.content,
     excerpt: dbData.excerpt,
     status: dbData.status,
-    draft: dbData.status === 'draft',
     persona: dbData.persona,
     coverImageUrl: dbData.cover_image_url,
     coverImageAlt: dbData.cover_image_alt,

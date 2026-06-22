@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
   const posts = await getPosts();
-  const publishedPosts = posts.filter((p: any) => p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
+  const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
   return publishedPosts.map((post) => ({
     slug: post.slug || post.id,
   }));
@@ -36,7 +36,7 @@ export default async function Page({
   }
 
   // Prevent public viewing of draft/hidden posts via the dynamic route
-  if (post && (post.draft === true || (post.status && post.status.toLowerCase() === 'draft') || post.hidden === true)) {
+  if (post && (post.status === 'draft' || (post.status && post.status.toLowerCase() === 'draft') || post.hidden === true)) {
     notFound();
   }
 

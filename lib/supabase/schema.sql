@@ -332,3 +332,35 @@ CREATE POLICY "Public can manage own subscription" ON "public"."subscriptions" F
 -- Validation Note:
 -- SELECT * FROM "public"."posts" LIMIT 1;
 -- Queries shouldn't fail and should respect RLS.
+
+-- Constraints and Formatting
+ALTER TABLE "public"."build_logs" DROP CONSTRAINT IF EXISTS build_logs_system_id_fkey;
+ALTER TABLE "public"."build_logs" ADD CONSTRAINT build_logs_system_id_fkey FOREIGN KEY ("system_id") REFERENCES "public"."active_systems"("id") ON DELETE CASCADE;
+
+CREATE OR REPLACE FUNCTION validate_published_post()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF NEW.status = 'published' THEN
+    IF NEW.title IS NULL OR trim(NEW.title) = '' THEN
+      RAISE EXCEPTION 'title cannot be null or empty for a published post';
+    END IF;
+    IF NEW.slug IS NULL OR trim(NEW.slug) = '' THEN
+      RAISE EXCEPTION 'slug cannot be null or empty for a published post';
+    END IF;
+    IF NEW.content IS NULL OR trim(NEW.content) = '' THEN
+      RAISE EXCEPTION 'content cannot be null or empty for a published post';
+    END IF;
+    IF NEW.persona IS NULL OR trim(NEW.persona) = '' THEN
+      RAISE EXCEPTION 'persona cannot be null or empty for a published post';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS enforce_published_post_constraints ON "public"."posts";
+CREATE TRIGGER enforce_published_post_constraints
+  BEFORE INSERT OR UPDATE ON "public"."posts"
+  FOR EACH ROW EXECUTE FUNCTION validate_published_post();

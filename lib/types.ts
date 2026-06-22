@@ -6,7 +6,7 @@ export interface Post {
   byline?: string;
   slug: string;
   oldSlugs?: string[];
-  status?: 'Draft' | 'Published' | 'Scheduled';
+  status?: 'draft' | 'published' | 'archived';
   excerpt?: string;
   coverImageUrl?: string;
   coverImageAlt?: string;
@@ -20,7 +20,6 @@ export interface Post {
   publishedAt?: string;
   featured: boolean;
   hidden: boolean;
-  draft: boolean;
   createdAt: string;
   updatedAt: string;
 }
