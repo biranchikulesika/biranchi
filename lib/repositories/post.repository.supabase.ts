@@ -99,6 +99,23 @@ export class PostSupabaseRepository implements IRepository<Post> {
     return fromDbFormat(data);
   }
 
+  async getBySlug(slug: string): Promise<Post | null> {
+    const { data, error } = await (supabaseServer as any).from('posts').select('*').eq('slug', slug).limit(1).maybeSingle();
+    if (error) throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
+    if (!data) return null;
+    return fromDbFormat(data);
+  }
+
+  async checkSlugExists(slug: string, currentId: string | null, persona: string): Promise<boolean> {
+    let query = (supabaseServer as any).from('posts').select('id', { count: 'exact', head: true }).eq('slug', slug).eq('persona', persona);
+    if (currentId) {
+      query = query.neq('id', currentId);
+    }
+    const { count, error } = await query;
+    if (error) throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
+    return (count || 0) > 0;
+  }
+
   async create(data: Omit<Post, 'id'>): Promise<Post | null> {
     const payload = toDbFormat(data);
     const { data: result, error } = await (supabaseServer as any).from('posts').insert(payload).select().single();

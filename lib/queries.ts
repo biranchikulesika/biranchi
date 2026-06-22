@@ -13,6 +13,7 @@ import { ThoughtFragmentService } from '@/lib/services/thoughtFragment.service';
 import { OperatorFocusService } from '@/lib/services/operatorFocus.service';
 
 export async function getPosts() { return await new PostService().getAll(); }
+export async function getPostBySlug(slug: string) { return await new PostService().getBySlug(slug); }
 export async function getFragments() { return await new FragmentService().getAll(); }
 export async function getJournalMoments() { return await new JournalMomentService().getAll(); }
 export async function getBooks() { return await new BookService().getAll(); }

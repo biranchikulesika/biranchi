@@ -15,6 +15,18 @@ export async function getPostById(id: string) {
   return await postService.getById(id);
 }
 
+export async function getPostBySlug(slug: string) {
+  // It's possible for this to be called from a public route without auth
+  if (slug) {
+    return await postService.getBySlug(slug);
+  }
+  return null;
+}
+
+export async function checkSlugExists(slug: string, currentId: string | null, persona: string): Promise<boolean> {
+  return await postService.checkSlugExists(slug, currentId, persona);
+}
+
 export async function createPost(data: any) {
   await verifyAuth();
   const validData = postSchema.parse(data);

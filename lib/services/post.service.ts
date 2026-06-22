@@ -26,6 +26,28 @@ export class PostService {
     }
   }
 
+  async getBySlug(slug: string): Promise<Post | null> {
+    try {
+      return await (this.repository as any).getBySlug(slug);
+    } catch (error) {
+      console.error("Failed to get post by slug:", error);
+      throw error;
+    }
+  }
+
+  async checkSlugExists(slug: string, currentId: string | null, persona: string): Promise<boolean> {
+    try {
+      if ((this.repository as any).checkSlugExists) {
+        return await (this.repository as any).checkSlugExists(slug, currentId, persona);
+      }
+      const all = await this.repository.getAll();
+      return all.some(p => p.slug === slug && p.id !== currentId && p.persona === persona);
+    } catch (error) {
+      console.error("Failed to check slug exists:", error);
+      throw error;
+    }
+  }
+
   async create(data: Omit<Post, "id">): Promise<Post | null> {
     try {
       // Add validation logic here

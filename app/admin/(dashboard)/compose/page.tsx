@@ -8,7 +8,7 @@ import {
   Trash2, UploadCloud, Send, Undo, Redo, MessageSquare, List, Settings
 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
-import { getPosts, createPost, updatePost } from '@/app/admin/actions/posts.actions';
+import { getPosts, createPost, updatePost, checkSlugExists } from '@/app/admin/actions/posts.actions';
 import PostRenderer from '@/components/post-renderer/PostRenderer';
 
 // Visual theme configurations based on active persona
@@ -203,9 +203,8 @@ async function validateCustomSlug(
     return { valid: false, error: `Slug '${clean}' is reserved for system routing.` };
   }
   
-  const posts = await getPosts();
-  const clashingPost = posts.find((p: any) => p.slug === clean && p.id !== currentId && p.persona === currentPersona);
-  if (clashingPost) {
+  const isConflict = await checkSlugExists(clean, currentId, currentPersona);
+  if (isConflict) {
     return { valid: false, error: `The custom URL slug '${clean}' is already in use by another article in the '${currentPersona}' persona.` };
   }
   
@@ -213,14 +212,9 @@ async function validateCustomSlug(
 }
 
 async function getUniqueSlug(baseSlug: string, currentId: string | null, currentPersona: string): Promise<string> {
-  const posts = await getPosts();
   let candidate = baseSlug || 'untitled';
   
-  const isConflict = (slugToTest: string) => {
-    return posts.some((p: any) => p.slug === slugToTest && p.id !== currentId && p.persona === currentPersona);
-  };
-
-  if (!isConflict(candidate)) {
+  if (!(await checkSlugExists(candidate, currentId, currentPersona))) {
     return candidate;
   }
 
@@ -228,7 +222,7 @@ async function getUniqueSlug(baseSlug: string, currentId: string | null, current
   while (true) {
     counter++;
     const nextCandidate = `${baseSlug}-${counter}`;
-    if (!isConflict(nextCandidate)) {
+    if (!(await checkSlugExists(nextCandidate, currentId, currentPersona))) {
       return nextCandidate;
     }
   }
@@ -409,19 +403,40 @@ function ComposePageContent() {
 
   // Continuous Autosave Implementation with dynamic content-driven extraction
   const isInitialMount = useRef(true);
+  const lastSavedPayloadRef = useRef<string | null>(null);
 
   // Show "Unsaved" immediately upon any state updates
   useEffect(() => {
     if (loading) return;
+    
+    const compiled = compileFromBlocks(composerBlocks);
+    const splitTags = pasteTagsText.split(',').map(t => t.trim()).filter(Boolean);
+    const currentPayloadStr = JSON.stringify({
+      title: formData.title || '',
+      subtitle: formData.subtitle || '',
+      persona: formData.persona || '',
+      coverImageUrl: formData.coverImageUrl || '',
+      autoCoverImage: formData.autoCoverImage,
+      excerpt: formData.excerpt || '',
+      content: compiled,
+      tags: splitTags,
+    });
+
     if (isInitialMount.current) {
       isInitialMount.current = false;
+      lastSavedPayloadRef.current = currentPayloadStr;
       return;
     }
+    
+    if (lastSavedPayloadRef.current === currentPayloadStr) {
+      return; // No actual content delta
+    }
+    
     setSaveStatus('Unsaved');
   }, [formData.title, formData.subtitle, formData.persona, formData.coverImageUrl, formData.autoCoverImage, formData.excerpt, composerBlocks, pasteTagsText, loading]);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || saveStatus !== 'Unsaved') return;
 
     setSaveStatus('Saving...');
     const timer = setTimeout(async () => {
@@ -451,6 +466,17 @@ function ComposePageContent() {
 
         const splitTags = pasteTagsText.split(',').map(t => t.trim()).filter(Boolean);
 
+        const currentPayloadStr = JSON.stringify({
+          title: titleToSave,
+          subtitle: formData.subtitle || '',
+          persona: formData.persona || '',
+          coverImageUrl: coverUrl,
+          autoCoverImage: formData.autoCoverImage,
+          excerpt: formData.excerpt || '',
+          content: compiled,
+          tags: splitTags,
+        });
+
         const payload = {
           ...formData,
           title: titleToSave,
@@ -463,6 +489,7 @@ function ComposePageContent() {
 
         if (currentPostId) {
           await updatePost(currentPostId, payload);
+          lastSavedPayloadRef.current = currentPayloadStr;
           if (payload.slug !== formData.slug) {
             setFormData((prev: any) => ({ ...prev, slug: payload.slug }));
           }
@@ -470,6 +497,7 @@ function ComposePageContent() {
           const created = await createPost(payload);
           if (created && created.id) {
             setCurrentPostId(created.id);
+            lastSavedPayloadRef.current = currentPayloadStr;
             setFormData((prev: any) => ({ ...prev, slug: created.slug || payload.slug }));
             router.replace(`/admin/compose?id=${created.id}`, { scroll: false });
           }
@@ -479,10 +507,11 @@ function ComposePageContent() {
         console.error('Autosave error:', err);
         setSaveStatus('Error saving');
       }
-    }, 1500);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [
+    saveStatus,
     formData.title, 
     formData.subtitle, 
     formData.persona, 
@@ -492,7 +521,10 @@ function ComposePageContent() {
     composerBlocks, 
     pasteTagsText, 
     loading, 
-    currentPostId
+    currentPostId,
+    wasPublished,
+    formData.slug,
+    formData.status
   ]);
 
   // Handle Slash command replacement 

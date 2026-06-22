@@ -35,7 +35,7 @@ export class RepositoryRegistry {
     return RepositoryRegistry.instance;
   }
 
-  getPostRepository(): IRepository<any> { return new PostSupabaseRepository(); }
+  getPostRepository(): IRepository<any> & { getBySlug: (slug: string) => Promise<any> } { return new PostSupabaseRepository() as any; }
   getFieldNoteRepository(): IRepository<any> { return new FieldNoteSupabaseRepository(); }
   getThoughtFragmentRepository(): IRepository<any> { return new ThoughtFragmentSupabaseRepository(); }
   getQuestionRepository(): IRepository<any> { return new QuestionSupabaseRepository(); }

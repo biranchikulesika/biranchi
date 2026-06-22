@@ -1,4 +1,4 @@
-import { getPosts } from '@/lib/queries';
+import { getPosts, getPostBySlug } from '@/lib/queries';
 import PostPageClient from './PostPageClient';
 import { notFound } from 'next/navigation';
 
@@ -18,31 +18,16 @@ export default async function Page({
   searchParams?: Promise<{ persona?: string }>
 }) {
   const resolvedParams = await params;
-  const resolvedSearchParams = searchParams ? await searchParams : {};
-  const queryPersona = resolvedSearchParams.persona;
   
-  const posts = await getPosts();
-  let post;
-  
-  if (queryPersona) {
-    post = posts.find((p: any) => 
-      (p.slug === resolvedParams.slug || p.id === resolvedParams.slug) && 
-      p.persona === queryPersona
-    );
-  }
-  
-  if (!post) {
-    post = posts.find((p: any) => p.slug === resolvedParams.slug || p.id === resolvedParams.slug);
-  }
+  const post = await getPostBySlug(resolvedParams.slug);
 
   // Prevent public viewing of draft/hidden posts via the dynamic route
-  if (post && (post.status === 'draft' || (post.status && post.status.toLowerCase() === 'draft') || post.hidden === true)) {
+  if (!post || post.status === 'draft' || (post.status && post.status.toLowerCase() === 'draft') || post.hidden === true) {
     notFound();
   }
 
-  if (!post) {
-    notFound();
-  }
-
+  // Fetch only necessary posts for related posts in the renderer
+  const posts = await getPosts();
+  
   return <PostPageClient post={post} slug={resolvedParams.slug} allPosts={posts} />;
 }
