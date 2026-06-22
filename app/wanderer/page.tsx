@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { getFragments } from '@/lib/queries';
 import { getJournalMoments } from '@/lib/queries';
-import { getPosts } from '@/lib/queries';
+import { getPostsMeta } from '@/lib/queries';
 
 // Poetry and Fragments for the interactive cyclical button
 
@@ -34,7 +34,7 @@ export default function WandererPage() {
         const [fData, jData, pData] = await Promise.all([
           getFragments(),
           getJournalMoments(),
-          getPosts()
+          getPostsMeta()
         ]);
         
         let frags = [];

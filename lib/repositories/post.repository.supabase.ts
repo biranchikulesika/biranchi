@@ -92,6 +92,12 @@ export class PostSupabaseRepository implements IRepository<Post> {
     return (data || []).map(fromDbFormat);
   }
 
+  async getAllMeta(): Promise<Post[]> {
+    const { data, error } = await (supabaseServer as any).from('posts').select('id, title, subtitle, byline, slug, excerpt, status, persona, cover_image_url, cover_image_alt, cover_image_caption, cover_image_location, cover_image_credit, auto_cover_image, reading_time, featured, hidden, published_at, tags, created_at, updated_at').order('created_at', { ascending: false });
+    if (error) throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
+    return (data || []).map(fromDbFormat);
+  }
+
   async getById(id: string): Promise<Post | null> {
     const { data, error } = await (supabaseServer as any).from('posts').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw new Error(`Supabase Error [${error.code}]: ${error.message}`);

@@ -1,8 +1,8 @@
 import React from 'react';
 import { BlogHomepage } from '@/components/blog/BlogHomepage';
-import { getPosts } from '@/lib/queries';
+import { getPostsMeta } from '@/lib/queries';
 
 export default async function MainBlogsPage() {
-  const posts = await getPosts();
+  const posts = await getPostsMeta();
   return <BlogHomepage persona="main" databasePosts={posts} />;
 }

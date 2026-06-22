@@ -6,7 +6,7 @@ import { useRef, useEffect, useState } from 'react';
 import { getQuestions } from '@/lib/queries';
 import { getThoughtFragments } from '@/lib/queries';
 import { getBooks } from '@/lib/queries';
-import { getPosts } from '@/lib/queries';
+import { getPostsMeta } from '@/lib/queries';
 
 // Authentically crafted, personal, student-first questions
 
@@ -33,7 +33,7 @@ export default function ThinkerPage() {
           getQuestions(),
           getThoughtFragments(),
           getBooks(),
-          getPosts()
+          getPostsMeta()
         ]);
         
         if (qData) {

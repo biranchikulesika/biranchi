@@ -9,8 +9,24 @@ export function generateUniqueId(prefix = 'id') {
 export const parseToBlocks = (text: string) => {
   if (!text) return [{ id: generateUniqueId('init'), type: 'text', content: '' }];
   
+  // Attempt to parse the exact blocks payload if it was saved
+  const payloadMatch = text.match(/<!-- BLOCKS_PAYLOAD:(.*?) -->/);
+  if (payloadMatch && payloadMatch[1]) {
+    try {
+      const decodedPayload = payloadMatch[1].replace(/\\u002D\\u002D/g, '--');
+      const blocks = JSON.parse(decodedPayload);
+      if (Array.isArray(blocks) && blocks.length > 0) {
+        return blocks;
+      }
+    } catch (e) {
+      console.error("Failed to parse BLOCKS_PAYLOAD", e);
+    }
+  }
+
+  // Fallback to primitive heuristic parsing
+  const cleanText = text.replace(/<!-- BLOCKS_PAYLOAD:.*? -->/, '').trim();
   const regex = /(<ImageBlock[\s\S]*?\/>)/g;
-  const parts = text.split(regex);
+  const parts = cleanText.split(regex);
   const result: any[] = [];
   
   parts.forEach((part, index) => {
@@ -83,7 +99,7 @@ export const parseToBlocks = (text: string) => {
 };
 
 export const compileFromBlocks = (blocks: any[]) => {
-  return blocks.map(b => {
+  const md = blocks.map(b => {
     if (b.type === 'image') {
       let tag = `<ImageBlock\n  src="${b.src}"\n  alt="${b.alt || 'Image'}"`;
       if (b.caption) tag += `\n  caption="${b.caption}"`;
@@ -116,4 +132,8 @@ export const compileFromBlocks = (blocks: any[]) => {
       return b.content;
     }
   }).join('\n\n');
+
+  // Safely encode JSON to prevent premature comment closure `-->`
+  const jsonEncoded = JSON.stringify(blocks).replace(/--/g, '\\u002D\\u002D');
+  return md + `\n\n<!-- BLOCKS_PAYLOAD:${jsonEncoded} -->`;
 };

@@ -305,6 +305,11 @@ export default function PublishDrawer({
             <button
               type="button"
               onClick={async () => {
+                if (!formData.title?.trim() || getWordCount() === 0) {
+                  alert("Cannot publish an empty post. Both title and content are required.");
+                  return;
+                }
+                
                 if (isCustomizingUrl) {
                   setUrlValidationError(null);
                   const result = await validateCustomSlug(customUrlVal, currentPostId, formData.persona);

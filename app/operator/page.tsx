@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { getOperatorFocuss } from '@/lib/queries';
-import { getPosts } from '@/lib/queries';
+import { getPostsMeta } from '@/lib/queries';
 import { useEffect, useState } from 'react';
 
 export default function OperatorPage() {
@@ -16,7 +16,7 @@ export default function OperatorPage() {
       try {
         const [fData, pData] = await Promise.all([
           getOperatorFocuss(),
-          getPosts()
+          getPostsMeta()
         ]);
         
         let visibleFocuses: any[] = [];

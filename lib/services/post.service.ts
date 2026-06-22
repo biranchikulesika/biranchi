@@ -17,6 +17,23 @@ export class PostService {
     }
   }
 
+  async getAllMeta(): Promise<Post[]> {
+    try {
+      if ((this.repository as any).getAllMeta) {
+        return await (this.repository as any).getAllMeta();
+      }
+      const all = await this.getAll();
+      // Remove content if repository fallback is used
+      return all.map((p) => {
+        const { content, ...meta } = p;
+        return meta as Post;
+      });
+    } catch (error) {
+      console.error("Failed to get posts meta:", error);
+      throw error;
+    }
+  }
+
   async getById(id: string): Promise<Post | null> {
     try {
       return await this.repository.getById(id);

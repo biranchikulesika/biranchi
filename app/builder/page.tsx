@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { getBuilderStatuss } from '@/lib/queries';
 import { getActiveSystems } from '@/lib/queries';
 import { getBuildLogs } from '@/lib/queries';
-import { getPosts } from '@/lib/queries';
+import { getPostsMeta } from '@/lib/queries';
 import { useEffect } from 'react';
 
 // SECTION PACING SEPARATOR SYSTEM — 3 Distinct Types (Max)
@@ -214,7 +214,7 @@ export default function BuilderPage() {
           getBuilderStatuss(),
           getActiveSystems(),
           getBuildLogs(),
-          getPosts()
+          getPostsMeta()
         ]);
 
         if (statusData && statusData.length > 0) {

@@ -1,9 +1,9 @@
-import { getPosts, getPostBySlug } from '@/lib/queries';
+import { getPostsMeta, getPostBySlug } from '@/lib/queries';
 import PostPageClient from './PostPageClient';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
-  const posts = await getPosts();
+  const posts = await getPostsMeta();
   const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
   return publishedPosts.map((post) => ({
     slug: post.slug || post.id,
@@ -26,8 +26,8 @@ export default async function Page({
     notFound();
   }
 
-  // Fetch only necessary posts for related posts in the renderer
-  const posts = await getPosts();
+  // Fetch only necessary posts metadata for related posts in the renderer
+  const posts = await getPostsMeta();
   
   return <PostPageClient post={post} slug={resolvedParams.slug} allPosts={posts} />;
 }
