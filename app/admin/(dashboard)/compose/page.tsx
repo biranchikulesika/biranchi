@@ -527,6 +527,30 @@ function ComposePageContent() {
     formData.status
   ]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (saveStatus === 'Unsaved' || saveStatus === 'Saving...' || saveStatus === 'Error saving') {
+        e.preventDefault();
+        const msg = "You have unsaved changes. Are you sure you want to leave?";
+        e.returnValue = msg;
+        return msg;
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [saveStatus]);
+
+  const [deletedBlockState, setDeletedBlockState] = useState<{ block: any, index: number, originalId: string, timerId?: NodeJS.Timeout } | null>(null);
+
+  const undoDeleteBlock = () => {
+    if (!deletedBlockState) return;
+    clearTimeout(deletedBlockState.timerId);
+    const newBlocks = [...composerBlocks];
+    newBlocks.splice(deletedBlockState.index, 0, deletedBlockState.block);
+    updateBlocksAndSync(newBlocks);
+    setDeletedBlockState(null);
+  };
+
   // Handle Slash command replacement 
   const handleSelectSlashCommand = (blockId: string, cmdType: string) => {
     const idx = composerBlocks.findIndex(b => b.id === blockId);
@@ -687,8 +711,22 @@ function ComposePageContent() {
       updateBlocksAndSync([{ id: 'fallback', type: 'text', content: '' }]);
       return;
     }
+    const idx = composerBlocks.findIndex(b => b.id === blockId);
+    if (idx === -1) return;
+    const blockToDel = composerBlocks[idx];
+
     const updated = composerBlocks.filter(b => b.id !== blockId);
     updateBlocksAndSync(updated);
+
+    if (deletedBlockState?.timerId) {
+      clearTimeout(deletedBlockState.timerId);
+    }
+    
+    const timerId = setTimeout(() => {
+      setDeletedBlockState(null);
+    }, 5000);
+    
+    setDeletedBlockState({ block: blockToDel, index: idx, originalId: blockId, timerId });
   };
 
   const handleUpdateBlockContent = (blockId: string, text: string) => {
@@ -1736,6 +1774,20 @@ function ComposePageContent() {
             </div>
 
           </div>
+        </div>
+      )}
+
+      {/* Undo Delete Toast */}
+      {deletedBlockState && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#1b1b1b] border border-[#333] text-white px-4 py-2.5 rounded-lg shadow-2xl flex items-center gap-4 z-50">
+          <span className="text-sm">Content block deleted.</span>
+          <button 
+            onClick={undoDeleteBlock}
+            className="flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 font-medium px-2 py-1 bg-[#2a2a2a] rounded hover:bg-[#333]"
+          >
+            <Undo className="w-3.5 h-3.5" />
+            Undo
+          </button>
         </div>
       )}
 
