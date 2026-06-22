@@ -24,7 +24,7 @@ export const postSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough().superRefine((data, ctx) => {
+}).superRefine((data, ctx) => {
   if (data.status === 'published') {
     if (!data.title || data.title.trim() === '') {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Title is required for published posts", path: ["title"] });
@@ -53,7 +53,7 @@ export const fieldNoteSchema = z.object({
   draft: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const questionSchema = z.object({
   id: z.string().optional(),
@@ -64,7 +64,7 @@ export const questionSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const thoughtFragmentSchema = z.object({
   id: z.string().optional(),
@@ -75,7 +75,7 @@ export const thoughtFragmentSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const journalMomentSchema = z.object({
   id: z.string().optional(),
@@ -85,7 +85,7 @@ export const journalMomentSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const fragmentSchema = z.object({
   id: z.string().optional(),
@@ -96,7 +96,7 @@ export const fragmentSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const bookSchema = z.object({
   id: z.string().optional(),
@@ -109,7 +109,7 @@ export const bookSchema = z.object({
   featured: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const builderStatusSchema = z.object({
   id: z.string().optional(),
@@ -119,7 +119,7 @@ export const builderStatusSchema = z.object({
   lastUpdated: z.string(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const activeSystemSchema = z.object({
   id: z.string().optional(),
@@ -131,7 +131,7 @@ export const activeSystemSchema = z.object({
   order: z.number(),
   hidden: z.boolean(),
   createdAt: z.string().optional(),
-}).passthrough();
+});
 
 export const buildLogSchema = z.object({
   id: z.string().optional(),
@@ -147,7 +147,7 @@ export const buildLogSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const operatorFocusSchema = z.object({
   id: z.string().optional(),
@@ -157,7 +157,7 @@ export const operatorFocusSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const redistributionRecordSchema = z.object({
   id: z.string().optional(),
@@ -170,7 +170,7 @@ export const redistributionRecordSchema = z.object({
   transactionReference: z.string().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const newsletterIssueSchema = z.object({
   id: z.string().optional(),
@@ -183,7 +183,7 @@ export const newsletterIssueSchema = z.object({
   hidden: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const newsletterProfileSchema = z.object({
   id: z.string().optional(),
@@ -194,7 +194,7 @@ export const newsletterProfileSchema = z.object({
   expectationItems: z.array(z.string()),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const subscriberSchema = z.object({
   id: z.string().optional(),
@@ -203,7 +203,7 @@ export const subscriberSchema = z.object({
   isVerified: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});
 
 export const subscriptionSchema = z.object({
   id: z.string().optional(),
@@ -212,4 +212,4 @@ export const subscriptionSchema = z.object({
   active: z.boolean(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
-}).passthrough();
+});

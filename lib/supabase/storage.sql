@@ -24,17 +24,17 @@ CREATE POLICY "Public Read Access All"
 ON storage.objects FOR SELECT
 USING ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') );
 
--- Allow public insert access for development/admin UI
+-- Allow public insert access for development/admin UI (restricted to authenticated)
 CREATE POLICY "Public Insert Access All"
 ON storage.objects FOR INSERT
-WITH CHECK ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') );
+WITH CHECK ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') AND auth.role() = 'authenticated' );
 
--- Allow public update access
+-- Allow public update access (restricted to authenticated)
 CREATE POLICY "Public Update Access All"
 ON storage.objects FOR UPDATE
-USING ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') );
+USING ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') AND auth.role() = 'authenticated' );
 
--- Allow public delete access
+-- Allow public delete access (restricted to authenticated)
 CREATE POLICY "Public Delete Access All"
 ON storage.objects FOR DELETE
-USING ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') );
+USING ( bucket_id IN ('media', 'post-images', 'cover-images', 'persona-assets', 'profile-assets', 'newsletter-assets') AND auth.role() = 'authenticated' );

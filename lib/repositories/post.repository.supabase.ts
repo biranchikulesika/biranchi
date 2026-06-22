@@ -1,6 +1,29 @@
 import { Post } from '../types';
 import { IRepository } from './registry';
 import { supabaseServer } from '../supabase/server';
+import { z } from 'zod';
+
+const UpdatePostDTO = z.object({
+  title: z.string().optional(),
+  subtitle: z.string().optional(),
+  byline: z.string().optional(),
+  slug: z.string().optional(),
+  content: z.string().optional(),
+  excerpt: z.string().optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional(),
+  persona: z.string().optional(),
+  coverImageUrl: z.string().nullable().optional(),
+  coverImageAlt: z.string().nullable().optional(),
+  coverImageCaption: z.string().nullable().optional(),
+  coverImageLocation: z.string().nullable().optional(),
+  coverImageCredit: z.string().nullable().optional(),
+  autoCoverImage: z.boolean().optional(),
+  readingTime: z.number().nullable().optional(),
+  featured: z.boolean().optional(),
+  hidden: z.boolean().optional(),
+  publishedAt: z.string().nullable().optional(),
+  tags: z.array(z.string()).optional(),
+}).strip();
 
 function toDbFormat(data: Partial<Post>) {
   const result: any = {
@@ -84,7 +107,8 @@ export class PostSupabaseRepository implements IRepository<Post> {
   }
 
   async update(id: string, data: Partial<Post>): Promise<Post | null> {
-    const payload = toDbFormat(data);
+    const sanitizedData = UpdatePostDTO.parse(data);
+    const payload = toDbFormat(sanitizedData as Partial<Post>);
     
     // Remove undefined values, leave nulls for deletion
     Object.keys(payload).forEach(key => {
