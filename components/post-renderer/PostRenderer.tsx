@@ -516,7 +516,19 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
   );
 
   const renderArticleBody = () => {
+    let parsedContent = post.content;
     if (typeof post.content === 'string') {
+      try {
+        const maybeJson = JSON.parse(post.content);
+        if (Array.isArray(maybeJson)) {
+          parsedContent = maybeJson;
+        }
+      } catch (e) {
+        // Not JSON, fallback to string
+      }
+    }
+
+    if (typeof parsedContent === 'string') {
       return (
         <div 
           className={`leading-[1.8] outline-none max-w-none ${
@@ -526,66 +538,70 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
             'prose-stone text-[#DDD2C5]/90 font-serif'
           }`}
         >
-          <MarkdownRenderer content={post.content} />
+          <MarkdownRenderer content={parsedContent} />
         </div>
       );
     }
 
     return (
       <article className="space-y-0">
-        {post.content.map((block, idx) => {
-          if (block.type === 'paragraph') {
+        {(parsedContent as any[]).map((block, idx) => {
+          // Normalize composerBlocks format to expected rendering format
+          const textContent = block.text || block.content || '';
+          
+          if (block.type === 'paragraph' || block.type === 'text') {
             return (
               <p 
                 key={idx} 
                 className={`mb-[1.5rem] last:mb-0 [&_a]:underline [&_a]:underline-offset-4 [&_a]:transition-colors ${theme.paragraph} ${theme.linkHover}`}
               >
-                {renderTextWithInlineFormatting(block.text)}
+                {renderTextWithInlineFormatting(textContent)}
               </p>
             );
           }
 
-          if (block.type === 'blockquote') {
+          if (block.type === 'blockquote' || block.type === 'quote') {
             return (
               <blockquote 
                 key={idx} 
                 className={`border-l-[2px] pl-8 mt-[2.5rem] mb-[2.5rem] py-1 leading-relaxed ${theme.quoteBorder} ${theme.quoteText}`}
               >
-                &quot;{renderTextWithInlineFormatting(block.text)}&quot;
+                &quot;{renderTextWithInlineFormatting(textContent)}&quot;
               </blockquote>
+            );
+          }
+
+          if (block.type === 'heading') {
+            if (block.level === 3) {
+              return (
+                <h3 key={idx} className={theme.h3}>{textContent}</h3>
+              );
+            }
+            return (
+              <h2 key={idx} className={theme.h2}>{textContent}</h2>
             );
           }
 
           if (block.type === 'h2') {
             return (
-              <h2 
-                key={idx} 
-                className={theme.h2}
-              >
-                {block.text}
-              </h2>
+              <h2 key={idx} className={theme.h2}>{textContent}</h2>
             );
           }
 
           if (block.type === 'h3') {
             return (
-              <h3 
-                key={idx} 
-                className={theme.h3}
-              >
-                {block.text}
-              </h3>
+              <h3 key={idx} className={theme.h3}>{textContent}</h3>
             );
           }
 
-          if (block.type === 'sidenote') {
+          if (block.type === 'sidenote' || block.type === 'callout') {
             return (
               <div key={idx} className="my-[2.0rem] space-y-3">
                 <p className={`[&_a]:underline [&_a]:underline-offset-4 [&_a]:transition-colors ${theme.paragraph} ${theme.linkHover}`}>
-                  {renderTextWithInlineFormatting(block.text)}
+                  {renderTextWithInlineFormatting(textContent)}
                 </p>
                 <div className={`pl-5 border-l leading-relaxed py-0.5 select-none ${theme.sidenoteLine} ${theme.sidenoteText}`}>
-                  {block.sidenoteText}
+                  {block.sidenoteText || 'Note'}
                 </div>
               </div>
             );
@@ -598,8 +614,34 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
                   <span>{block.codeLang || 'source'}</span>
                 </div>
                 <pre className="p-6 overflow-x-auto text-[12.5px] leading-relaxed max-md:text-[11.5px] select-text">
-                  <code>{block.text}</code>
+                  <code>{textContent}</code>
                 </pre>
+              </div>
+            );
+          }
+
+          if (block.type === 'image') {
+            return (
+              <div key={idx} className="my-[2.5rem] block w-full relative">
+                <div className={`relative overflow-hidden w-full border ${theme.heroBg} ${theme.heroBorder}`}>
+                  <img 
+                    src={block.url || block.src} 
+                    alt={block.alt || 'Image'} 
+                    className={`w-full h-auto object-cover ${theme.heroFilter}`}
+                    referrerPolicy="no-referrer"
+                  />
+                  {block.location && (
+                    <div className={`absolute top-4 right-4 z-10 flex items-center gap-1.5 px-3 py-1 text-[10.5px] backdrop-blur-[6px] rounded-full select-none ${theme.badgeClass}`}>
+                      <span>{getEmojiForLocation(block.location)}</span>
+                      <span>{block.location}</span>
+                    </div>
+                  )}
+                </div>
+                {block.caption && (
+                  <div className={"mt-2.5 text-center text-[11px] uppercase max-w-[80%] mx-auto opacity-55 leading-relaxed select-none " + theme.caption}>
+                    {block.caption}
+                  </div>
+                )}
               </div>
             );
           }

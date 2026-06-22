@@ -325,7 +325,18 @@ function ComposePageContent() {
           setCurrentPostId(found.id);
           setInitialSlug(found.slug || '');
           setWasPublished(found.status === 'published' && !!found.publishedAt);
-          setComposerBlocks(parseToBlocks(found.content || ''));
+          let parsedBlocks;
+          try {
+              const maybeJson = JSON.parse(found.content || '[]');
+              if (Array.isArray(maybeJson) && maybeJson.length > 0) {
+                  parsedBlocks = maybeJson;
+              } else {
+                  parsedBlocks = parseToBlocks(found.content || '');
+              }
+          } catch (e) {
+              parsedBlocks = parseToBlocks(found.content || '');
+          }
+          setComposerBlocks(parsedBlocks);
           setPasteTagsText((found.tags || []).join(', '));
         } else {
           router.push('/admin/compose');
@@ -409,7 +420,7 @@ function ComposePageContent() {
   useEffect(() => {
     if (loading) return;
     
-    const compiled = compileFromBlocks(composerBlocks);
+    const compiledContent = JSON.stringify(composerBlocks);
     const splitTags = pasteTagsText.split(',').map(t => t.trim()).filter(Boolean);
     const currentPayloadStr = JSON.stringify({
       title: formData.title || '',
@@ -418,7 +429,7 @@ function ComposePageContent() {
       coverImageUrl: formData.coverImageUrl || '',
       autoCoverImage: formData.autoCoverImage,
       excerpt: formData.excerpt || '',
-      content: compiled,
+      content: compiledContent,
       tags: splitTags,
     });
 
@@ -441,11 +452,12 @@ function ComposePageContent() {
     setSaveStatus('Saving...');
     const timer = setTimeout(async () => {
       try {
-        const compiled = compileFromBlocks(composerBlocks);
+        const compiledContent = JSON.stringify(composerBlocks);
+        const compiledLegacy = compileFromBlocks(composerBlocks);
         
         let coverUrl = formData.coverImageUrl;
         if (formData.autoCoverImage) {
-          const extMatch = compiled.match(/src="([^"]+)"/);
+          const extMatch = compiledLegacy.match(/src="([^"]+)"/);
           if (extMatch) {
             coverUrl = extMatch[1];
           } else {
@@ -473,14 +485,14 @@ function ComposePageContent() {
           coverImageUrl: coverUrl,
           autoCoverImage: formData.autoCoverImage,
           excerpt: formData.excerpt || '',
-          content: compiled,
+          content: compiledContent,
           tags: splitTags,
         });
 
         const payload = {
           ...formData,
           title: titleToSave,
-          content: compiled,
+          content: compiledContent,
           slug: finalSlug,
           tags: splitTags,
           coverImageUrl: coverUrl,
@@ -631,16 +643,47 @@ function ComposePageContent() {
       setSelectedBlockId(newId);
       setFocusedBlockId(newId);
       setSlashMenuBlockId(null);
-    } else if (e.key === 'Backspace' && !composerBlocks[idx].content && composerBlocks.length > 1) {
-      e.preventDefault();
-      const prevBlockIdx = idx > 0 ? idx - 1 : 0;
-      const prevBlockId = composerBlocks[prevBlockIdx].id;
-      
-      const updated = composerBlocks.filter(b => b.id !== blockId);
-      updateBlocksAndSync(updated);
-      setSelectedBlockId(prevBlockId);
-      setFocusedBlockId(prevBlockId);
-      setSlashMenuBlockId(null);
+    } else if (e.key === 'Backspace') {
+      const target = e.target as HTMLTextAreaElement;
+      if (target.selectionStart === 0 && target.selectionEnd === 0 && idx > 0) {
+        e.preventDefault();
+        
+        const currentBlock = composerBlocks[idx];
+        const prevBlockIdx = idx - 1;
+        const prevBlock = composerBlocks[prevBlockIdx];
+        
+        const updated = [...composerBlocks];
+        updated.splice(idx, 1);
+        
+        if (prevBlock.type === 'text' || prevBlock.type === 'heading' || prevBlock.type === 'quote') {
+            const cursorPosition = (prevBlock.content || '').length;
+            updated[prevBlockIdx] = {
+                ...prevBlock,
+                content: (prevBlock.content || '') + (currentBlock.content || '')
+            };
+            updateBlocksAndSync(updated);
+            setSelectedBlockId(prevBlock.id);
+            setFocusedBlockId(prevBlock.id);
+            setSlashMenuBlockId(null);
+            
+            // Note: In React, we delay setting the cursor to allow render
+            setTimeout(() => {
+                const el = document.querySelector(`textarea[data-block-id="${prevBlock.id}"]`) as HTMLTextAreaElement;
+                if (el) {
+                    el.focus();
+                    el.setSelectionRange(cursorPosition, cursorPosition);
+                }
+            }, 0);
+        } else {
+            // Just delete empty block if previous is not text mergeable
+            if (!currentBlock.content) {
+                updateBlocksAndSync(updated);
+                setSelectedBlockId(prevBlock.id);
+                setFocusedBlockId(prevBlock.id);
+                setSlashMenuBlockId(null);
+            }
+        }
+      }
     }
   };
 
@@ -1296,7 +1339,7 @@ function ComposePageContent() {
                         ) : block.type === 'heading' ? (
                           <div className="flex gap-2 items-center">
                             <span className="text-[10px] font-mono text-neutral-600 select-none bg-[#111] px-1.5 py-0.5 rounded border border-[#1c1c1c]">H2</span>
-                            <textarea 
+                            <textarea data-block-id={block.id} 
                               value={block.content} 
                               onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                               onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}
@@ -1313,7 +1356,7 @@ function ComposePageContent() {
                           </div>
                         ) : block.type === 'quote' ? (
                           <div className="border-l-2 border-[#ff7700] pl-4">
-                            <textarea 
+                            <textarea data-block-id={block.id} 
                               value={block.content} 
                               onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                               onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}
@@ -1334,7 +1377,7 @@ function ComposePageContent() {
                           </div>
                         ) : block.type === 'code' ? (
                           <div className="font-mono text-sm bg-neutral-950/80 border border-[#222] p-4 rounded-lg">
-                            <textarea 
+                            <textarea data-block-id={block.id} 
                               value={block.content} 
                               onChange={(e) => handleUpdateBlockContent(block.id, e.target.value)}
                               placeholder="// Swift, C++ or typescript code block..."
@@ -1344,7 +1387,7 @@ function ComposePageContent() {
                           </div>
                         ) : block.type === 'callout' ? (
                           <div className="p-4 bg-[#ff7700]/5 border border-[#ff7700]/10 rounded-lg text-sm text-neutral-300">
-                            <textarea 
+                            <textarea data-block-id={block.id} 
                               value={block.content} 
                               onChange={(e) => handleUpdateBlockContent(block.id, e.target.value)}
                               placeholder="Callout insights..."
@@ -1354,7 +1397,7 @@ function ComposePageContent() {
                           </div>
                         ) : block.type === 'table' ? (
                           <div className="p-3 bg-[#0d0d0d] border border-[#222]/80 rounded-lg">
-                            <textarea 
+                            <textarea data-block-id={block.id} 
                               value={block.content} 
                               onChange={(e) => handleUpdateBlockContent(block.id, e.target.value)}
                               placeholder="Markdown table: | Col 1 | Col 2 |"
@@ -1382,7 +1425,7 @@ function ComposePageContent() {
                         ) : block.type === 'list' ? (
                           <div className="flex gap-2.5 items-start">
                             <span className="text-neutral-600 font-semibold select-none mt-1">&#8226;</span>
-                            <textarea 
+                            <textarea data-block-id={block.id} 
                               value={block.content} 
                               onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                               onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}
@@ -1398,7 +1441,7 @@ function ComposePageContent() {
                             />
                           </div>
                         ) : (
-                          <textarea 
+                          <textarea data-block-id={block.id} 
                             value={block.content} 
                             onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                             onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}
