@@ -59,7 +59,8 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
     setLoading(true);
     try {
       // 1. Load active Posts and filter by targeted persona
-      const posts = await getPosts();
+      const postsRes = await getPosts();
+      const posts = postsRes.success ? postsRes.data : [];
       const filteredPosts = (posts || []).filter((p: any) => p.persona === dbPersonaName);
       setPersonaPosts(filteredPosts);
 

@@ -52,7 +52,7 @@ export default function ContentLibraryPage() {
     setLoading(true);
     try {
       const [
-        posts, fieldNotes, thoughtFragments, fragments, questions, journalMoments
+        postsRes, fieldNotes, thoughtFragments, fragments, questions, journalMoments
       ] = await Promise.all([
         getPosts(),
         getFieldNotes(),
@@ -63,6 +63,8 @@ export default function ContentLibraryPage() {
       ]);
 
       const unified: UnifiedItem[] = [];
+
+      const posts = postsRes.success ? postsRes.data : [];
 
       // 1. Articles (Posts)
       (posts || []).forEach(post => {
@@ -277,7 +279,8 @@ export default function ContentLibraryPage() {
     try {
       const type = item.contentType;
       if (type === 'Article') {
-        await deletePost(item.rawItem.id || item.rawItem.slug);
+        const res = await deletePost(item.rawItem.id || item.rawItem.slug);
+          if (!res.success) throw new Error("error" in res ? res.error : "Error");
       } else if (type === 'Field Note') {
         await deleteFieldNote(item.id);
       } else if (type === 'Fragment') {

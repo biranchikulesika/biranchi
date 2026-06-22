@@ -5,61 +5,132 @@ import { postSchema } from '@/lib/schemas';
 
 const postService = new PostService();
 
-export async function getPosts() {
-  await verifyAuth();
-  return await postService.getAll();
-}
+export type ActionResponse<T> = { success: true; data: T } | { success: false; error: string };
 
-export async function getPostById(id: string) {
-  await verifyAuth();
-  return await postService.getById(id);
-}
-
-export async function getPostBySlug(slug: string) {
-  // It's possible for this to be called from a public route without auth
-  if (slug) {
-    return await postService.getBySlug(slug);
+function handleError(error: any): { success: false; error: string } {
+  console.error("Action error:", error);
+  let message = 'An unexpected error occurred. Please try again.';
+  if (error?.message) {
+    if (error.message.includes('23505') || error.message.includes('duplicate key')) {
+      message = 'A record with this identifier already exists.';
+    } else if (error.message.includes('Failed to fetch') || error.message.includes('timeout')) {
+      message = 'Database connection error. Please try again.';
+    } else if (error.message.includes('PGRST') || error.message.includes('Supabase Error') || error.message.includes('Database Error')) {
+      message = 'Database operation failed.';
+    }
   }
-  return null;
+  return { success: false, error: message };
 }
 
-export async function checkSlugExists(slug: string, currentId: string | null, persona: string): Promise<boolean> {
-  return await postService.checkSlugExists(slug, currentId, persona);
+export async function getPosts(): Promise<ActionResponse<any[]>> {
+  try {
+    await verifyAuth();
+    const data = await postService.getAll();
+    return { success: true, data };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
-export async function createPost(data: any) {
-  await verifyAuth();
-  const validData = postSchema.parse(data);
-  return await postService.create(validData as any);
+export async function getPostById(id: string): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const data = await postService.getById(id);
+    return { success: true, data };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
-export async function updatePost(id: string, data: any) {
-  await verifyAuth();
-  const validData = postSchema.parse(data);
-  return await postService.update(id, validData as any);
+export async function getPostBySlug(slug: string): Promise<ActionResponse<any>> {
+  try {
+    if (slug) {
+      const data = await postService.getBySlug(slug);
+      return { success: true, data };
+    }
+    return { success: true, data: null };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
-export async function deletePost(id: string) {
-  await verifyAuth();
-  return await postService.delete(id);
+export async function checkSlugExists(slug: string, currentId: string | null, persona: string): Promise<ActionResponse<boolean>> {
+  try {
+    const data = await postService.checkSlugExists(slug, currentId, persona);
+    return { success: true, data };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
-export async function hidePost(id: string) {
-  await verifyAuth();
-  return await postService.hide(id);
+export async function createPost(data: any): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const validData = postSchema.parse(data);
+    const result = await postService.create(validData as any);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
-export async function unhidePost(id: string) {
-  await verifyAuth();
-  return await postService.unhide(id);
+export async function updatePost(id: string, data: any): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const validData = postSchema.parse(data);
+    const result = await postService.update(id, validData as any);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
-export async function featurePost(id: string) {
-  await verifyAuth();
-  return await postService.feature(id);
+export async function deletePost(id: string): Promise<ActionResponse<boolean>> {
+  try {
+    await verifyAuth();
+    const result = await postService.delete(id);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
 }
 
-export async function unfeaturePost(id: string) {
-  await verifyAuth();
-  return await postService.unfeature(id);
+export async function hidePost(id: string): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const result = await postService.hide(id);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function unhidePost(id: string): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const result = await postService.unhide(id);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function featurePost(id: string): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const result = await postService.feature(id);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function unfeaturePost(id: string): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const result = await postService.unfeature(id);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
 }

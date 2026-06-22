@@ -18,11 +18,12 @@ export default function AdminDashboardPage() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [data, qData, iData] = await Promise.all([
+      const [dataRes, qData, iData] = await Promise.all([
         getPosts(),
         getQuestions(),
         getNewsletterIssues()
       ]);
+      const data = dataRes.success ? dataRes.data : [];
       setPosts(data || []);
       setQuestionsCount((qData || []).length);
       setIssuesCount((iData || []).filter(i => !i.publishedAt).length); // draft issues

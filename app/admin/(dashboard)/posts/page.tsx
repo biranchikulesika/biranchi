@@ -517,8 +517,12 @@ export default function PostPage() {
   };
 
   const loadData = async () => {
-    const data = await getPosts();
-    setItems(data || []);
+    const response = await getPosts();
+    if (response.success) {
+      setItems(response.data || []);
+    } else {
+      setDbError("error" in response ? response.error : "Error");
+    }
   };
 
   useEffect(() => {
@@ -598,15 +602,17 @@ export default function PostPage() {
         }
 
         if (editingId && editingId !== 'none') {
-          await updatePost(editingId, payload);
+          const res = await updatePost(editingId, payload);
+          if (!res.success) throw new Error("error" in res ? res.error : "Error");
           lastSavedData.current = { ...formData, draft: true, slug: payload.slug };
           setFormData(prev => ({ ...prev, slug: payload.slug, draft: true }));
         } else {
           const res = await createPost(payload);
-          if (res && res.id) {
-            setEditingId(res.id);
-            lastSavedData.current = { ...formData, id: res.id, draft: true, slug: payload.slug };
-            setFormData(prev => ({ ...prev, id: res.id, draft: true, slug: payload.slug }));
+          if (res.success && res.data && res.data.id) {
+            const data = res.data;
+            setEditingId(data.id);
+            lastSavedData.current = { ...formData, id: data.id, draft: true, slug: payload.slug };
+            setFormData(prev => ({ ...prev, id: data.id, draft: true, slug: payload.slug }));
             // load data in background to update the table
             loadData();
           }
@@ -676,10 +682,12 @@ export default function PostPage() {
       setSaveState('saving');
       if (editingId && editingId !== 'none') {
         const res = await updatePost(editingId, payload);
-        lastSavedData.current = res;
+        if (!res.success) throw new Error("error" in res ? res.error : "Error");
+        lastSavedData.current = res.data;
       } else {
         const res = await createPost(payload);
-        lastSavedData.current = res;
+        if (!res.success) throw new Error("error" in res ? res.error : "Error");
+        lastSavedData.current = res.data;
       }
       setIsEditing(false);
       setSaveState('idle');
@@ -702,14 +710,16 @@ export default function PostPage() {
       setSaveState('saving');
       if (editingId && editingId !== 'none') {
         const res = await updatePost(editingId, payload);
-        lastSavedData.current = res;
-        setFormData(res);
+        if (!res.success) throw new Error("error" in res ? res.error : "Error");
+        lastSavedData.current = res.data;
+        setFormData(res.data);
       } else {
         const res = await createPost(payload);
-        if (res) {
-          setEditingId(res.id);
-          lastSavedData.current = res;
-          setFormData(res);
+        if (!res.success) throw new Error("error" in res ? res.error : "Error");
+        if (res.data) {
+          setEditingId(res.data.id);
+          lastSavedData.current = res.data;
+          setFormData(res.data);
         }
       }
       setSaveState('saved');

@@ -76,7 +76,8 @@ async function validateCustomSlug(
     return { valid: false, error: `Slug '${clean}' is reserved for system routing.` };
   }
   
-  const isConflict = await checkSlugExists(clean, currentId, currentPersona);
+  const conflictRes = await checkSlugExists(clean, currentId, currentPersona);
+  const isConflict = conflictRes.success ? conflictRes.data : false;
   if (isConflict) {
     return { valid: false, error: `The custom URL slug '${clean}' is already in use by another article in the '${currentPersona}' persona.` };
   }
@@ -87,7 +88,8 @@ async function validateCustomSlug(
 async function getUniqueSlug(baseSlug: string, currentId: string | null, currentPersona: string): Promise<string> {
   let candidate = baseSlug || 'untitled';
   
-  if (!(await checkSlugExists(candidate, currentId, currentPersona))) {
+  const res1 = await checkSlugExists(candidate, currentId, currentPersona);
+  if (!(res1.success ? res1.data : false)) {
     return candidate;
   }
 
@@ -95,7 +97,8 @@ async function getUniqueSlug(baseSlug: string, currentId: string | null, current
   while (true) {
     counter++;
     const nextCandidate = `${baseSlug}-${counter}`;
-    if (!(await checkSlugExists(nextCandidate, currentId, currentPersona))) {
+    const res2 = await checkSlugExists(nextCandidate, currentId, currentPersona);
+    if (!(res2.success ? res2.data : false)) {
       return nextCandidate;
     }
   }
@@ -167,7 +170,8 @@ function ComposePageContent() {
 
   const handleApplyCustomUrl = async () => {
     setUrlValidationError(null);
-    const result = await validateCustomSlug(customUrlVal, currentPostId, formData.persona);
+    const resultObj = await validateCustomSlug(customUrlVal, currentPostId, formData.persona);
+            const result = resultObj;
     if (!result.valid) {
       setUrlValidationError(result.error || "Invalid slug.");
       return;
@@ -185,7 +189,8 @@ function ComposePageContent() {
   const loadPostToComposer = async () => {
     setLoading(true);
     try {
-      const posts = await getPosts();
+      const postsResponse = await getPosts();
+      const posts = postsResponse.success ? postsResponse.data : [];
       
       if (editId) {
         const found = (posts || []).find((p: any) => p.id === editId || p.slug === editId);
@@ -373,13 +378,16 @@ function ComposePageContent() {
         };
 
         if (currentPostId) {
-          await updatePost(currentPostId, payload);
+          const updateRes = await updatePost(currentPostId, payload);
+          if (!updateRes.success) throw new Error("error" in updateRes ? updateRes.error : "Error");
           lastSavedPayloadRef.current = currentPayloadStr;
           if (payload.slug !== formData.slug) {
             setFormData((prev: any) => ({ ...prev, slug: payload.slug }));
           }
         } else {
-          const created = await createPost(payload);
+          const createdRes = await createPost(payload);
+          if (!createdRes.success) throw new Error("error" in createdRes ? createdRes.error : "Error");
+          const created = createdRes.data;
           if (created && created.id) {
             setCurrentPostId(created.id);
             lastSavedPayloadRef.current = currentPayloadStr;
@@ -829,9 +837,11 @@ function ComposePageContent() {
 
     try {
       if (currentPostId) {
-        await updatePost(currentPostId, payload);
+        const upRes = await updatePost(currentPostId, payload);
+        if (!upRes.success) throw new Error("error" in upRes ? upRes.error : "Error");
       } else {
-        await createPost(payload);
+        const createRes2 = await createPost(payload);
+        if (!createRes2.success) throw new Error("error" in createRes2 ? createRes2.error : "Error");
       }
       router.push('/admin/library');
     } catch (err: any) {
