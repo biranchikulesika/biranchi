@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { ActiveSystemService } from '@/lib/services/activeSystem.service';
+import { activeSystemSchema } from '@/lib/schemas';
 
 const activeSystemService = new ActiveSystemService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getActiveSystems() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getActiveSystemById(id: string) {
 
 export async function createActiveSystem(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await activeSystemService.create(validData);
+  const validData = activeSystemSchema.parse(data);
+  return await activeSystemService.create(validData as any);
 }
 
 export async function updateActiveSystem(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await activeSystemService.update(id, validData);
+  const validData = activeSystemSchema.parse(data);
+  return await activeSystemService.update(id, validData as any);
 }
 
 export async function deleteActiveSystem(id: string) {

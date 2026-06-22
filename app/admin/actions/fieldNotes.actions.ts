@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { FieldNoteService } from '@/lib/services/fieldNote.service';
+import { fieldNoteSchema } from '@/lib/schemas';
 
 const fieldNoteService = new FieldNoteService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getFieldNotes() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getFieldNoteById(id: string) {
 
 export async function createFieldNote(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await fieldNoteService.create(validData);
+  const validData = fieldNoteSchema.parse(data);
+  return await fieldNoteService.create(validData as any);
 }
 
 export async function updateFieldNote(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await fieldNoteService.update(id, validData);
+  const validData = fieldNoteSchema.parse(data);
+  return await fieldNoteService.update(id, validData as any);
 }
 
 export async function deleteFieldNote(id: string) {

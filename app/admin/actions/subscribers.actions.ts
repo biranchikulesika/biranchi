@@ -1,9 +1,7 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { subscriberService } from '@/lib/services/subscriber.service';
-
-const payloadSchema = z.record(z.any());
+import { subscriberSchema } from '@/lib/schemas';
 
 export async function getSubscribers() {
   await verifyAuth();
@@ -17,11 +15,11 @@ export async function getSubscriber(id: string) {
 
 export async function saveSubscriber(id: string | null, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
+  const validData = subscriberSchema.parse(data);
   if (id) {
-    return await subscriberService.update(id, validData);
+    return await subscriberService.update(id, validData as any);
   }
-  return await subscriberService.create(validData);
+  return await subscriberService.create(validData as any);
 }
 
 export async function deleteSubscriber(id: string) {

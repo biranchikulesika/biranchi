@@ -4,9 +4,9 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { getFragments } from '@/app/admin/actions/fragments.actions';
-import { getJournalMoments } from '@/app/admin/actions/journalMoments.actions';
-import { getPosts } from '@/app/admin/actions/posts.actions';
+import { getFragments } from '@/lib/queries';
+import { getJournalMoments } from '@/lib/queries';
+import { getPosts } from '@/lib/queries';
 
 // Poetry and Fragments for the interactive cyclical button
 

@@ -3,10 +3,10 @@
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useRef, useEffect, useState } from 'react';
-import { getQuestions } from '@/app/admin/actions/questions.actions';
-import { getThoughtFragments } from '@/app/admin/actions/thoughtFragments.actions';
-import { getBooks } from '@/app/admin/actions/books.actions';
-import { getPosts } from '@/app/admin/actions/posts.actions';
+import { getQuestions } from '@/lib/queries';
+import { getThoughtFragments } from '@/lib/queries';
+import { getBooks } from '@/lib/queries';
+import { getPosts } from '@/lib/queries';
 
 // Authentically crafted, personal, student-first questions
 

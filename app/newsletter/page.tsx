@@ -7,8 +7,8 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { PersonaSearch } from '@/components/persona-search';
 import { ArrowRight, Check } from 'lucide-react';
 import { useState, useEffect, useTransition } from 'react';
-import { getNewsletterProfiles } from '@/app/admin/actions/newsletterProfiles.actions';
-import { getNewsletterIssues } from '@/app/admin/actions/newsletterIssues.actions';
+import { getNewsletterProfiles } from '@/lib/queries';
+import { getNewsletterIssues } from '@/lib/queries';
 import { getPersonaUrl } from '@/lib/utils';
 
 interface NewsletterOption {

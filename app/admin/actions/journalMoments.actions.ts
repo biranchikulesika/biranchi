@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { JournalMomentService } from '@/lib/services/journalMoment.service';
+import { journalMomentSchema } from '@/lib/schemas';
 
 const journalMomentService = new JournalMomentService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getJournalMoments() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getJournalMomentById(id: string) {
 
 export async function createJournalMoment(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await journalMomentService.create(validData);
+  const validData = journalMomentSchema.parse(data);
+  return await journalMomentService.create(validData as any);
 }
 
 export async function updateJournalMoment(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await journalMomentService.update(id, validData);
+  const validData = journalMomentSchema.parse(data);
+  return await journalMomentService.update(id, validData as any);
 }
 
 export async function deleteJournalMoment(id: string) {

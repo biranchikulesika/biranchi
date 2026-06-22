@@ -20,15 +20,11 @@ const entities = [
 
 const template = (entity) => `
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { ${entity.capName}Service } from '@/lib/services/${entity.name}.service';
+import { ${entity.name}Schema } from '@/lib/schemas';
 
 const ${entity.name}Service = new ${entity.capName}Service();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function get${entity.capName}s() {
   await verifyAuth();
@@ -42,14 +38,14 @@ export async function get${entity.capName}ById(id: string) {
 
 export async function create${entity.capName}(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await ${entity.name}Service.create(validData);
+  const validData = ${entity.name}Schema.parse(data);
+  return await ${entity.name}Service.create(validData as any);
 }
 
 export async function update${entity.capName}(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await ${entity.name}Service.update(id, validData);
+  const validData = ${entity.name}Schema.parse(data);
+  return await ${entity.name}Service.update(id, validData as any);
 }
 
 export async function delete${entity.capName}(id: string) {
@@ -110,11 +106,9 @@ const specialEntities = [
 
 const specialTemplate = (entity) => `
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { ${entity.name}Service } from '@/lib/services/${entity.name}.service';
-
-const payloadSchema = z.record(z.any());
+import { ${entity.name}Schema } from '@/lib/schemas';
 
 export async function get${entity.name.replace(/^./, (c) => c.toUpperCase())}s() {
   await verifyAuth();
@@ -128,11 +122,11 @@ export async function get${entity.name.replace(/^./, (c) => c.toUpperCase())}(id
 
 export async function save${entity.name.replace(/^./, (c) => c.toUpperCase())}(id: string | null, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
+  const validData = ${entity.name}Schema.parse(data);
   if (id) {
-    return await ${entity.name}Service.update(id, validData);
+    return await ${entity.name}Service.update(id, validData as any);
   }
-  return await ${entity.name}Service.create(validData);
+  return await ${entity.name}Service.create(validData as any);
 }
 
 export async function delete${entity.name.replace(/^./, (c) => c.toUpperCase())}(id: string) {

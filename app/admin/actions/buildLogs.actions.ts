@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { BuildLogService } from '@/lib/services/buildLog.service';
+import { buildLogSchema } from '@/lib/schemas';
 
 const buildLogService = new BuildLogService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getBuildLogs() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getBuildLogById(id: string) {
 
 export async function createBuildLog(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await buildLogService.create(validData);
+  const validData = buildLogSchema.parse(data);
+  return await buildLogService.create(validData as any);
 }
 
 export async function updateBuildLog(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await buildLogService.update(id, validData);
+  const validData = buildLogSchema.parse(data);
+  return await buildLogService.update(id, validData as any);
 }
 
 export async function deleteBuildLog(id: string) {

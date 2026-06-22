@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { FragmentService } from '@/lib/services/fragment.service';
+import { fragmentSchema } from '@/lib/schemas';
 
 const fragmentService = new FragmentService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getFragments() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getFragmentById(id: string) {
 
 export async function createFragment(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await fragmentService.create(validData);
+  const validData = fragmentSchema.parse(data);
+  return await fragmentService.create(validData as any);
 }
 
 export async function updateFragment(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await fragmentService.update(id, validData);
+  const validData = fragmentSchema.parse(data);
+  return await fragmentService.update(id, validData as any);
 }
 
 export async function deleteFragment(id: string) {

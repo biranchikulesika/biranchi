@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
-import { getBuilderStatuss } from '@/app/admin/actions/builderStatuses.actions';
-import { getActiveSystems } from '@/app/admin/actions/activeSystems.actions';
-import { getBuildLogs } from '@/app/admin/actions/buildLogs.actions';
-import { getPosts } from '@/app/admin/actions/posts.actions';
+import { getBuilderStatuss } from '@/lib/queries';
+import { getActiveSystems } from '@/lib/queries';
+import { getBuildLogs } from '@/lib/queries';
+import { getPosts } from '@/lib/queries';
 import { useEffect } from 'react';
 
 // SECTION PACING SEPARATOR SYSTEM — 3 Distinct Types (Max)

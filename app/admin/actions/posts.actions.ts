@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { PostService } from '@/lib/services/post.service';
+import { postSchema } from '@/lib/schemas';
 
 const postService = new PostService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getPosts() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getPostById(id: string) {
 
 export async function createPost(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await postService.create(validData);
+  const validData = postSchema.parse(data);
+  return await postService.create(validData as any);
 }
 
 export async function updatePost(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await postService.update(id, validData);
+  const validData = postSchema.parse(data);
+  return await postService.update(id, validData as any);
 }
 
 export async function deletePost(id: string) {

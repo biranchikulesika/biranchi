@@ -6,7 +6,7 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { PersonaSearch } from '@/components/persona-search';
 import { getPersonaUrl } from '@/lib/utils';
 import { useState, useEffect } from 'react';
-import { getRedistributionRecords } from '@/app/admin/actions/redistributionRecords.actions';
+import { getRedistributionRecords } from '@/lib/queries';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 

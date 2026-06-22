@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { NewsletterProfileService } from '@/lib/services/newsletterProfile.service';
+import { newsletterProfileSchema } from '@/lib/schemas';
 
 const newsletterProfileService = new NewsletterProfileService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getNewsletterProfiles() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getNewsletterProfileById(id: string) {
 
 export async function createNewsletterProfile(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await newsletterProfileService.create(validData);
+  const validData = newsletterProfileSchema.parse(data);
+  return await newsletterProfileService.create(validData as any);
 }
 
 export async function updateNewsletterProfile(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await newsletterProfileService.update(id, validData);
+  const validData = newsletterProfileSchema.parse(data);
+  return await newsletterProfileService.update(id, validData as any);
 }
 
 export async function deleteNewsletterProfile(id: string) {

@@ -1,13 +1,9 @@
 'use server';
-import { z } from 'zod';
 import { verifyAuth } from '@/lib/auth/verify';
 import { ThoughtFragmentService } from '@/lib/services/thoughtFragment.service';
+import { thoughtFragmentSchema } from '@/lib/schemas';
 
 const thoughtFragmentService = new ThoughtFragmentService();
-
-// Define a basic Zod schema for payload validation
-const payloadSchema = z.record(z.any());
-// We keep it flexible to avoid breaking the UI workflow, but it blocks entirely invalid payloads or non-objects.
 
 export async function getThoughtFragments() {
   await verifyAuth();
@@ -21,14 +17,14 @@ export async function getThoughtFragmentById(id: string) {
 
 export async function createThoughtFragment(data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await thoughtFragmentService.create(validData);
+  const validData = thoughtFragmentSchema.parse(data);
+  return await thoughtFragmentService.create(validData as any);
 }
 
 export async function updateThoughtFragment(id: string, data: any) {
   await verifyAuth();
-  const validData = payloadSchema.parse(data);
-  return await thoughtFragmentService.update(id, validData);
+  const validData = thoughtFragmentSchema.parse(data);
+  return await thoughtFragmentService.update(id, validData as any);
 }
 
 export async function deleteThoughtFragment(id: string) {
