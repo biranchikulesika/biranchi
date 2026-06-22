@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Activity, ArrowRightLeft, DollarSign, Wallet } from 'lucide-react';
-import { getRedistributionRecords, createRedistributionRecord, updateRedistributionRecord, deleteRedistributionRecord } from '@/app/admin/actions';
+import { getRedistributionRecords, createRedistributionRecord, updateRedistributionRecord, deleteRedistributionRecord } from '@/app/admin/actions/redistributionRecords.actions';
 
 export default function RedistributionRecordPage() {
   const [items, setItems] = useState<any[]>([]);

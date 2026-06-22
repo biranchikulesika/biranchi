@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getActiveSystems, createActiveSystem, updateActiveSystem, deleteActiveSystem, hideActiveSystem, unhideActiveSystem, moveActiveSystemUp, moveActiveSystemDown } from '@/app/admin/actions';
+import { getActiveSystems, createActiveSystem, updateActiveSystem, deleteActiveSystem, hideActiveSystem, unhideActiveSystem, moveActiveSystemUp, moveActiveSystemDown } from '@/app/admin/actions/activeSystems.actions';
 
 export default function ActiveSystemPage() {
   const [items, setItems] = useState<any[]>([]);

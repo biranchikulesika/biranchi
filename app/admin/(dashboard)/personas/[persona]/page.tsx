@@ -8,17 +8,15 @@ import {
   Activity, ArrowUp, ArrowDown, Plus, Trash2, Edit, Save, X, RefreshCw, Layers, HelpCircle, 
   BookOpen as BookOpenIcon, ExternalLink, Play, ArrowLeft, Star, Eye, EyeOff
 } from 'lucide-react';
-import { 
-  getPosts, deletePost,
-  getBuildLogs, createBuildLog, updateBuildLog, deleteBuildLog,
-  getActiveSystems, createActiveSystem, updateActiveSystem, deleteActiveSystem, moveActiveSystemUp, moveActiveSystemDown,
-  getBuilderStatuss, createBuilderStatus, updateBuilderStatus, deleteBuilderStatus,
-  getOperatorFocuss, createOperatorFocus, updateOperatorFocus, deleteOperatorFocus, moveOperatorFocusUp, moveOperatorFocusDown,
-  getQuestions, createQuestion, updateQuestion, deleteQuestion, moveQuestionUp, moveQuestionDown,
-  getThoughtFragments, createThoughtFragment, updateThoughtFragment, deleteThoughtFragment, moveThoughtFragmentUp, moveThoughtFragmentDown,
-  getFragments, createFragment, updateFragment, deleteFragment, moveFragmentUp, moveFragmentDown,
-  getJournalMoments, createJournalMoment, updateJournalMoment, deleteJournalMoment
-} from '@/app/admin/actions';
+import { getPosts, deletePost } from '@/app/admin/actions/posts.actions';
+import { getBuildLogs, createBuildLog, updateBuildLog, deleteBuildLog } from '@/app/admin/actions/buildLogs.actions';
+import { getActiveSystems, createActiveSystem, updateActiveSystem, deleteActiveSystem, moveActiveSystemUp, moveActiveSystemDown } from '@/app/admin/actions/activeSystems.actions';
+import { getBuilderStatuss, createBuilderStatus, updateBuilderStatus, deleteBuilderStatus } from '@/app/admin/actions/builderStatuses.actions';
+import { getOperatorFocuss, createOperatorFocus, updateOperatorFocus, deleteOperatorFocus, moveOperatorFocusUp, moveOperatorFocusDown } from '@/app/admin/actions/operatorFocuses.actions';
+import { getQuestions, createQuestion, updateQuestion, deleteQuestion, moveQuestionUp, moveQuestionDown } from '@/app/admin/actions/questions.actions';
+import { getThoughtFragments, createThoughtFragment, updateThoughtFragment, deleteThoughtFragment, moveThoughtFragmentUp, moveThoughtFragmentDown } from '@/app/admin/actions/thoughtFragments.actions';
+import { getFragments, createFragment, updateFragment, deleteFragment, moveFragmentUp, moveFragmentDown } from '@/app/admin/actions/fragments.actions';
+import { getJournalMoments, createJournalMoment, updateJournalMoment, deleteJournalMoment } from '@/app/admin/actions/journalMoments.actions';
 
 export default function PersonaDashboardPage({ params }: { params: any }) {
   const router = useRouter();

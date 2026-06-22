@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getBooks, createBook, updateBook, deleteBook, hideBook, unhideBook, featureBook, unfeatureBook } from '@/app/admin/actions';
+import { getBooks, createBook, updateBook, deleteBook, hideBook, unhideBook, featureBook, unfeatureBook } from '@/app/admin/actions/books.actions';
 import { FormLabel, InlineError, ValidationSummary, parseDbError } from '@/components/admin/validation';
 
 export default function BookPage() {

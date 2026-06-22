@@ -7,14 +7,12 @@ import {
   Search, Filter, SlidersHorizontal, ArrowUpDown, Edit2, Trash2, Plus, ExternalLink, 
   HelpCircle, Check, Play, BookOpen, AlertCircle, RefreshCw, Layers, Sparkles, Brain, CheckCircle
 } from 'lucide-react';
-import { 
-  getPosts, deletePost, 
-  getFieldNotes, deleteFieldNote, updateFieldNote,
-  getThoughtFragments, deleteThoughtFragment, updateThoughtFragment,
-  getFragments, deleteFragment, updateFragment,
-  getQuestions, deleteQuestion, updateQuestion,
-  getJournalMoments, deleteJournalMoment, updateJournalMoment
-} from '@/app/admin/actions';
+import { getPosts, deletePost } from '@/app/admin/actions/posts.actions';
+import { getFieldNotes, deleteFieldNote, updateFieldNote } from '@/app/admin/actions/fieldNotes.actions';
+import { getThoughtFragments, deleteThoughtFragment, updateThoughtFragment } from '@/app/admin/actions/thoughtFragments.actions';
+import { getFragments, deleteFragment, updateFragment } from '@/app/admin/actions/fragments.actions';
+import { getQuestions, deleteQuestion, updateQuestion } from '@/app/admin/actions/questions.actions';
+import { getJournalMoments, deleteJournalMoment, updateJournalMoment } from '@/app/admin/actions/journalMoments.actions';
 
 interface UnifiedItem {
   id: string;

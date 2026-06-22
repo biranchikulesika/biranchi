@@ -2,7 +2,8 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { getOperatorFocuss, getPosts } from '@/app/admin/actions';
+import { getOperatorFocuss } from '@/app/admin/actions/operatorFocuses.actions';
+import { getPosts } from '@/app/admin/actions/posts.actions';
 import { useEffect, useState } from 'react';
 
 export default function OperatorPage() {

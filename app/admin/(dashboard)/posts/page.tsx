@@ -10,7 +10,7 @@ import {
 import { MarkdownRenderer } from '@/components/mdx/MarkdownRenderer';
 import { uploadImage, getRecentUploads } from '@/lib/supabase/storage';
 import { UploadCloud, Clock } from 'lucide-react';
-import { getPosts, createPost, updatePost, deletePost, hidePost, unhidePost, featurePost, unfeaturePost } from '@/app/admin/actions';
+import { getPosts, createPost, updatePost, deletePost, hidePost, unhidePost, featurePost, unfeaturePost } from '@/app/admin/actions/posts.actions';
 import { FormLabel, InlineError, ValidationSummary, parseDbError, InlineWarning } from '@/components/admin/validation';
 
 function formatToDatetimeLocal(isoString?: string): string {
@@ -117,16 +117,24 @@ export default function PostPage() {
   const compileFromBlocks = (blocks: any[]) => {
     return blocks.map(b => {
       if (b.type === 'image') {
-        let tag = `<ImageBlock\n  src="${b.src}"\n  alt="${b.alt || 'Image'}"`;
-        if (b.caption) tag += `\n  caption="${b.caption}"`;
-        if (b.location) tag += `\n  location="${b.location}"`;
-        if (b.credit) tag += `\n  credit="${b.credit}"`;
-        if (b.align && b.align !== 'center') tag += `\n  align="${b.align}"`;
+        let tag = `<ImageBlock
+  src="${b.src}"
+  alt="${b.alt || 'Image'}"`;
+        if (b.caption) tag += `
+  caption="${b.caption}"`;
+        if (b.location) tag += `
+  location="${b.location}"`;
+        if (b.credit) tag += `
+  credit="${b.credit}"`;
+        if (b.align && b.align !== 'center') tag += `
+  align="${b.align}"`;
         if (b.isUploading) {
-          if (b.uploadId) tag += `\n  uploadId="${b.uploadId}"`;
-          if (b.progress) tag += `\n  progress="${b.progress}"`;
+          if (b.uploadId) tag += `
+  uploadId="${b.uploadId}"`;
+          if (b.progress) tag += `
+  progress="${b.progress}"`;
         }
-        tag += '\n/>';
+        tag += '\\n/>';
         return tag;
       } else if (b.type === 'heading') {
         return `${'#'.repeat(b.level || 2)} ${b.content}`;
@@ -137,7 +145,7 @@ export default function PostPage() {
       } else {
         return b.content;
       }
-    }).join('\n\n');
+    }).join('\\n\\n');
   };
 
   const updateBlocksAndSync = (newBlocks: any[]) => {
@@ -179,7 +187,7 @@ export default function PostPage() {
       newBlock = {
         id,
         type: 'list',
-        content: initialContent || '- List Item 1\n- List Item 2',
+        content: initialContent || '- List Item 1\\n- List Item 2',
       };
     } else {
       newBlock = {
@@ -428,13 +436,13 @@ export default function PostPage() {
   };
 
   const insertImageBlock = () => {
-    let text = '\n<ImageBlock\n  src="' + imageModalData.src + '"\n  alt="' + imageModalData.alt + '"';
-    if (imageModalData.caption) text += '\n  caption="' + imageModalData.caption + '"';
-    if (imageModalData.location) text += '\n  location="' + imageModalData.location + '"';
-    if (imageModalData.credit) text += '\n  credit="' + imageModalData.credit + '"';
-    if (imageModalData.latitude) text += '\n  latitude="' + imageModalData.latitude + '"';
-    if (imageModalData.longitude) text += '\n  longitude="' + imageModalData.longitude + '"';
-    text += '\n/>\n';
+    let text = '\\n<ImageBlock\\n  src="' + imageModalData.src + '"\\n  alt="' + imageModalData.alt + '"';
+    if (imageModalData.caption) text += '\\n  caption="' + imageModalData.caption + '"';
+    if (imageModalData.location) text += '\\n  location="' + imageModalData.location + '"';
+    if (imageModalData.credit) text += '\\n  credit="' + imageModalData.credit + '"';
+    if (imageModalData.latitude) text += '\\n  latitude="' + imageModalData.latitude + '"';
+    if (imageModalData.longitude) text += '\\n  longitude="' + imageModalData.longitude + '"';
+    text += '\\n/>\\n';
     
     if (contentTextareaRef.current) {
       const startPos = contentTextareaRef.current.selectionStart || 0;
@@ -1228,7 +1236,7 @@ export default function PostPage() {
                       updateBlocksAndSync(newBlocks);
                     }}
                     placeholder="- List Item 1&#10;- List Item 2"
-                    rows={Math.max(2, block.content.split('\n').length)}
+                    rows={Math.max(2, block.content.split('\\n').length)}
                     className="w-full bg-[#161616] border border-[#222] rounded px-3 py-2 text-neutral-300 text-xs leading-relaxed resize-y focus:outline-none focus:border-neutral-500 font-mono"
                   />
                 </div>
@@ -1454,7 +1462,7 @@ export default function PostPage() {
                     updateBlocksAndSync(newBlocks);
                   }}
                   placeholder="Tell your story. Start writing seamlessly here..."
-                  rows={Math.max(2, block.content.split('\n').length)}
+                  rows={Math.max(2, block.content.split('\\n').length)}
                   className="w-full bg-transparent border-none text-neutral-200 text-sm leading-relaxed resize-none focus:outline-none focus:ring-0 p-0 font-sans"
                 />
               </div>

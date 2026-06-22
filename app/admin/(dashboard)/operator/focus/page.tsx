@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getOperatorFocuss, createOperatorFocus, updateOperatorFocus, deleteOperatorFocus, moveOperatorFocusUp, moveOperatorFocusDown } from '@/app/admin/actions';
+import { getOperatorFocuss, createOperatorFocus, updateOperatorFocus, deleteOperatorFocus, moveOperatorFocusUp, moveOperatorFocusDown } from '@/app/admin/actions/operatorFocuses.actions';
 
 export default function OperatorFocusPage() {
   const [items, setItems] = useState<any[]>([]);

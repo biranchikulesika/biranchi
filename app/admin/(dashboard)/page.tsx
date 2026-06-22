@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { 
   Plus, Library, ImageIcon, Mail, RefreshCw
 } from 'lucide-react';
-import { getPosts, getQuestions, getNewsletterIssues } from '@/app/admin/actions';
+import { getPosts } from '@/app/admin/actions/posts.actions';
+import { getQuestions } from '@/app/admin/actions/questions.actions';
+import { getNewsletterIssues } from '@/app/admin/actions/newsletterIssues.actions';
 
 export default function AdminDashboardPage() {
   const [posts, setPosts] = useState<any[]>([]);

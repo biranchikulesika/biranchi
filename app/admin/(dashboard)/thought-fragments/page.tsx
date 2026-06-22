@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getThoughtFragments, createThoughtFragment, updateThoughtFragment, deleteThoughtFragment, hideThoughtFragment, unhideThoughtFragment } from '@/app/admin/actions';
+import { getThoughtFragments, createThoughtFragment, updateThoughtFragment, deleteThoughtFragment, hideThoughtFragment, unhideThoughtFragment } from '@/app/admin/actions/thoughtFragments.actions';
 
 function formatToDatetimeLocal(isoString?: string): string {
   if (!isoString) return '';

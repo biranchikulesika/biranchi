@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getFieldNotes, createFieldNote, updateFieldNote, deleteFieldNote, hideFieldNote, unhideFieldNote, featureFieldNote, unfeatureFieldNote } from '@/app/admin/actions';
+import { getFieldNotes, createFieldNote, updateFieldNote, deleteFieldNote, hideFieldNote, unhideFieldNote, featureFieldNote, unfeatureFieldNote } from '@/app/admin/actions/fieldNotes.actions';
 
 function formatToDatetimeLocal(isoString?: string): string {
   if (!isoString) return '';

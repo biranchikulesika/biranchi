@@ -8,7 +8,7 @@ import {
   Trash2, UploadCloud, Send, Undo, Redo, MessageSquare, List, Settings
 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
-import { getPosts, createPost, updatePost } from '@/app/admin/actions';
+import { getPosts, createPost, updatePost } from '@/app/admin/actions/posts.actions';
 import PostRenderer from '@/components/post-renderer/PostRenderer';
 
 // Visual theme configurations based on active persona
@@ -92,9 +92,9 @@ const parseToBlocks = (text: string) => {
         if (subTrim === '---' || subTrim === '***') {
           result.push({ id, type: 'divider' });
         } else if (subTrim.startsWith('```')) {
-          const lines = sub.split('\n');
+          const lines = sub.split('\\n');
           const codeLines = lines[0].startsWith('```') ? lines.slice(1, -1) : lines;
-          result.push({ id, type: 'code', content: codeLines.join('\n') });
+          result.push({ id, type: 'code', content: codeLines.join('\\n') });
         } else if (subTrim.startsWith('[Choice]') || subTrim.startsWith('--callout')) {
           result.push({ id, type: 'callout', content: subTrim.replace(/^--callout\s*/, '') });
         } else if (subTrim.startsWith('|') && subTrim.includes('|---')) {
@@ -125,16 +125,24 @@ const parseToBlocks = (text: string) => {
 const compileFromBlocks = (blocks: any[]) => {
   return blocks.map(b => {
     if (b.type === 'image') {
-      let tag = `<ImageBlock\n  src="${b.src}"\n  alt="${b.alt || 'Image'}"`;
-      if (b.caption) tag += `\n  caption="${b.caption}"`;
-      if (b.location) tag += `\n  location="${b.location}"`;
-      if (b.credit) tag += `\n  credit="${b.credit}"`;
-      if (b.align && b.align !== 'center') tag += `\n  align="${b.align}"`;
+      let tag = `<ImageBlock
+  src="${b.src}"
+  alt="${b.alt || 'Image'}"`;
+      if (b.caption) tag += `
+  caption="${b.caption}"`;
+      if (b.location) tag += `
+  location="${b.location}"`;
+      if (b.credit) tag += `
+  credit="${b.credit}"`;
+      if (b.align && b.align !== 'center') tag += `
+  align="${b.align}"`;
       if (b.isUploading) {
-        if (b.uploadId) tag += `\n  uploadId="${b.uploadId}"`;
-        if (b.progress) tag += `\n  progress="${b.progress}"`;
+        if (b.uploadId) tag += `
+  uploadId="${b.uploadId}"`;
+        if (b.progress) tag += `
+  progress="${b.progress}"`;
       }
-      tag += '\n/>';
+      tag += '\\n/>';
       return tag;
     } else if (b.type === 'heading') {
       return `${'#'.repeat(b.level || 2)} ${b.content}`;
@@ -145,7 +153,9 @@ const compileFromBlocks = (blocks: any[]) => {
     } else if (b.type === 'divider') {
       return '---';
     } else if (b.type === 'code') {
-      return `\`\`\`\n${b.content}\n\`\`\``;
+      return `\`\`\`
+${b.content}
+\`\`\``;
     } else if (b.type === 'callout') {
       return `> ${b.content}`;
     } else if (b.type === 'table') {
@@ -155,7 +165,7 @@ const compileFromBlocks = (blocks: any[]) => {
     } else {
       return b.content;
     }
-  }).join('\n\n');
+  }).join('\\n\\n');
 };
 
 function slugify(text: string): string {
@@ -516,7 +526,7 @@ function ComposePageContent() {
     } else if (cmdType === 'callout') {
       newBlock = { id: newId, type: 'callout', content: '' };
     } else if (cmdType === 'table') {
-      newBlock = { id: newId, type: 'table', content: '| Header 1 | Header 2 |\n|---|---|\n| Cell 1 | Cell 2 |' };
+      newBlock = { id: newId, type: 'table', content: '| Header 1 | Header 2 |\\n|---|---|\\n| Cell 1 | Cell 2 |' };
     } else if (cmdType === 'list') {
       newBlock = { id: newId, type: 'list', content: '- ' };
     } else if (cmdType === 'embed') {

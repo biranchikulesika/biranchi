@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff } from 'lucide-react';
-import { getNewsletterProfiles, createNewsletterProfile, updateNewsletterProfile, deleteNewsletterProfile } from '@/app/admin/actions';
+import { getNewsletterProfiles, createNewsletterProfile, updateNewsletterProfile, deleteNewsletterProfile } from '@/app/admin/actions/newsletterProfiles.actions';
 import { FormLabel, InlineError, ValidationSummary, parseDbError, InlineWarning } from '@/components/admin/validation';
 
 export default function NewsletterProfilePage() {

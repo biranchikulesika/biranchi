@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getJournalMoments, createJournalMoment, updateJournalMoment, deleteJournalMoment, hideJournalMoment, unhideJournalMoment } from '@/app/admin/actions';
+import { getJournalMoments, createJournalMoment, updateJournalMoment, deleteJournalMoment, hideJournalMoment, unhideJournalMoment } from '@/app/admin/actions/journalMoments.actions';
 
 export default function JournalMomentPage() {
   const [items, setItems] = useState<any[]>([]);

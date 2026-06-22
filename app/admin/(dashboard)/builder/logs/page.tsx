@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff } from 'lucide-react';
-import { getBuildLogs, createBuildLog, updateBuildLog, deleteBuildLog } from '@/app/admin/actions';
+import { getBuildLogs, createBuildLog, updateBuildLog, deleteBuildLog } from '@/app/admin/actions/buildLogs.actions';
 
 export default function BuildLogPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -141,7 +141,8 @@ export default function BuildLogPage() {
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-widest text-neutral-500 font-mono mb-2">Source</label>
-                <select value={formData.source} onChange={(e) => setFormData({...formData, source: e.target.value})} className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500"><option value="manual">manual</option>\n<option value="automated">automated</option></select>
+                <select value={formData.source} onChange={(e) => setFormData({...formData, source: e.target.value})} className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500"><option value="manual">manual</option>
+<option value="automated">automated</option></select>
               </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { getSubscriptions, saveSubscription } from '@/app/admin/actions';
+import { getSubscriptions, saveSubscription } from '@/app/admin/actions/subscriptions.actions';
 import { Subscription } from '@/lib/types';
 import { Search, Download, Ban } from 'lucide-react';
 
@@ -51,7 +51,7 @@ export default function SubscriptionsPage() {
       ...filtered.map(s => [
         s.id, s.subscriberId, s.persona, s.active, s.createdAt, s.updatedAt
       ].join(','))
-    ].join('\n');
+    ].join('\\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);

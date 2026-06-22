@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, EyeOff, Eye, Save, X, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getQuestions, createQuestion, updateQuestion, deleteQuestion, hideQuestion, unhideQuestion, moveQuestionUp, moveQuestionDown } from '@/app/admin/actions';
+import { getQuestions, createQuestion, updateQuestion, deleteQuestion, hideQuestion, unhideQuestion, moveQuestionUp, moveQuestionDown } from '@/app/admin/actions/questions.actions';
 import { FormLabel, InlineError, ValidationSummary, parseDbError } from '@/components/admin/validation';
 
 export default function QuestionPage() {

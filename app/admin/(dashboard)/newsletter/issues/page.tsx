@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown } from 'lucide-react';
-import { getNewsletterIssues, createNewsletterIssue, updateNewsletterIssue, deleteNewsletterIssue, hideNewsletterIssue, unhideNewsletterIssue } from '@/app/admin/actions';
+import { getNewsletterIssues, createNewsletterIssue, updateNewsletterIssue, deleteNewsletterIssue, hideNewsletterIssue, unhideNewsletterIssue } from '@/app/admin/actions/newsletterIssues.actions';
 import { FormLabel, InlineError, ValidationSummary, parseDbError, InlineWarning } from '@/components/admin/validation';
 
 function formatToDatetimeLocal(isoString?: string): string {

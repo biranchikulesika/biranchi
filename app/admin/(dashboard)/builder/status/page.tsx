@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff } from 'lucide-react';
-import { getBuilderStatuss, createBuilderStatus, updateBuilderStatus, deleteBuilderStatus } from '@/app/admin/actions';
+import { getBuilderStatuss, createBuilderStatus, updateBuilderStatus, deleteBuilderStatus } from '@/app/admin/actions/builderStatuses.actions';
 
 export default function BuilderStatusPage() {
   const [items, setItems] = useState<any[]>([]);

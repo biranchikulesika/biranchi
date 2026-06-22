@@ -1,4 +1,4 @@
-import { getPosts } from '@/app/admin/actions';
+import { getPosts } from '@/app/admin/actions/posts.actions';
 import PostPageClient from './PostPageClient';
 import { notFound } from 'next/navigation';
 

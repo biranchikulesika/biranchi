@@ -6,7 +6,7 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { PersonaSearch } from '@/components/persona-search';
 import { getPersonaUrl } from '@/lib/utils';
 import { useState, useEffect } from 'react';
-import { getRedistributionRecords } from '@/app/admin/actions';
+import { getRedistributionRecords } from '@/app/admin/actions/redistributionRecords.actions';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 
@@ -163,7 +163,17 @@ export default function FundPage() {
   };
 
   const handleDownloadReceipt = () => {
-    const receiptText = `RECEIPT OF CONTRIBUTION\n-----------------------\nContribution ID: ${mockReceiptId}\nDate: ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}\nAmount: ₹${amount}\nTransaction ID: ${mockTxId}\nContributor: ${identityOption === 'anonymous' ? 'Anonymous' : donorName}\nStatus: Collected (Pending Redistribution)\n-----------------------\nThank you for your generosity.\nThis contribution will become part of a future redistribution cycle.`;
+    const receiptText = `RECEIPT OF CONTRIBUTION
+-----------------------
+Contribution ID: ${mockReceiptId}
+Date: ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+Amount: ₹${amount}
+Transaction ID: ${mockTxId}
+Contributor: ${identityOption === 'anonymous' ? 'Anonymous' : donorName}
+Status: Collected (Pending Redistribution)
+-----------------------
+Thank you for your generosity.
+This contribution will become part of a future redistribution cycle.`;
     const blob = new Blob([receiptText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
