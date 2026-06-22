@@ -13,6 +13,7 @@ import PostRenderer from '@/components/post-renderer/PostRenderer';
 import PublishDrawer from './PublishDrawer';
 import BlockList from './BlockList';
 import { generateUniqueId, parseToBlocks, compileFromBlocks } from '@/lib/parsers';
+import { parseDbError } from '@/components/admin/validation';
 
 // Visual theme configurations based on active persona
 const personaInfoMap: Record<string, { label: string; system: string; color: string; bg: string }> = {
@@ -832,7 +833,7 @@ function ComposePageContent() {
       tags: splitTags,
       coverImageUrl: coverUrl,
       status: isNewDraftState ? 'draft' : 'published',
-      publishedAt: isNewDraftState ? null : (wasPublished ? formData.publishedAt : new Date().toISOString())
+      publishedAt: formData.publishedAt ? formData.publishedAt : (isNewDraftState ? null : new Date().toISOString())
     };
 
     try {
@@ -846,7 +847,7 @@ function ComposePageContent() {
       router.push('/admin/library');
     } catch (err: any) {
       console.error(err);
-      setDbError(err?.message || "Write constraints failed on database level.");
+      setDbError(parseDbError(err) || "Write constraints failed on database level.");
     } finally {
       setSaving(false);
     }
