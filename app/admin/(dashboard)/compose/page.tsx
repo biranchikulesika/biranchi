@@ -396,12 +396,12 @@ function ComposePageContent() {
             router.replace(`/admin/compose?id=${created.id}`, { scroll: false });
           }
         }
-        setSaveStatus('Saved');
+        setSaveStatus(formData.status === 'published' ? 'Saved' : 'Saved as draft');
       } catch (err) {
         console.error('Autosave error:', err);
         setSaveStatus('Error saving');
       }
-    }, 4000);
+    }, 15000);
 
     return () => clearTimeout(timer);
   }, [

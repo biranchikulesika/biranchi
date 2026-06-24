@@ -19,7 +19,7 @@ export const postSchema = z.object({
   content: z.string(),
   tags: z.array(z.string()),
   readingTime: z.number().optional(),
-  publishedAt: z.string().optional(),
+  publishedAt: z.string().nullable().optional(),
   featured: z.boolean(),
   hidden: z.boolean(),
   createdAt: z.string().optional(),

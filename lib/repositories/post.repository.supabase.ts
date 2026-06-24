@@ -23,6 +23,7 @@ const UpdatePostDTO = z.object({
   hidden: z.boolean().optional(),
   publishedAt: z.string().nullable().optional(),
   tags: z.array(z.string()).optional(),
+  oldSlugs: z.array(z.string()).optional(),
 }).strip();
 
 function toDbFormat(data: Partial<Post>) {
@@ -43,7 +44,8 @@ function toDbFormat(data: Partial<Post>) {
     reading_time: data.readingTime,
     featured: data.featured,
     hidden: data.hidden,
-    tags: data.tags
+    tags: data.tags,
+    old_slugs: data.oldSlugs
   };
 
   if (data.status !== undefined) {
@@ -80,6 +82,7 @@ function fromDbFormat(dbData: any): Post {
     hidden: dbData.hidden,
     publishedAt: dbData.published_at,
     tags: dbData.tags || [],
+    oldSlugs: dbData.old_slugs || [],
     createdAt: dbData.created_at,
     updatedAt: dbData.updated_at
   };
@@ -95,7 +98,7 @@ export class PostSupabaseRepository implements IRepository<Post> {
   async getAllMeta(): Promise<Post[]> {
     const now = new Date().toISOString();
     const { data, error } = await (supabaseServer as any).from('posts')
-      .select('id, title, subtitle, byline, slug, excerpt, status, persona, cover_image_url, cover_image_alt, cover_image_caption, cover_image_location, cover_image_credit, auto_cover_image, reading_time, featured, hidden, published_at, tags, created_at, updated_at')
+      .select('id, title, subtitle, byline, slug, old_slugs, excerpt, status, persona, cover_image_url, cover_image_alt, cover_image_caption, cover_image_location, cover_image_credit, auto_cover_image, reading_time, featured, hidden, published_at, tags, created_at, updated_at')
       .eq('status', 'published')
       .lte('published_at', now)
       .order('created_at', { ascending: false });

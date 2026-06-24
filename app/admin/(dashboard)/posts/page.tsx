@@ -10,7 +10,7 @@ import {
 import { MarkdownRenderer } from '@/components/mdx/MarkdownRenderer';
 import { uploadImage, getRecentUploads } from '@/lib/supabase/storage';
 import { UploadCloud, Clock } from 'lucide-react';
-import { getPosts, createPost, updatePost, deletePost, hidePost, unhidePost, featurePost, unfeaturePost } from '@/app/admin/actions/posts.actions';
+import { getPosts, createPost, updatePost, deletePost, hidePost, unhidePost, featurePost, unfeaturePost, revertPostToDraft } from '@/app/admin/actions/posts.actions';
 import { FormLabel, InlineError, ValidationSummary, parseDbError, InlineWarning } from '@/components/admin/validation';
 
 function formatToDatetimeLocal(isoString?: string): string {
@@ -758,6 +758,13 @@ export default function PostPage() {
     loadData();
   };
 
+  const handleRevertToDraft = async (item: any) => {
+    if (confirm('Are you sure you want to revert this post to draft? It will no longer be visible to the public.')) {
+      await revertPostToDraft(item.id || item.persona);
+      loadData();
+    }
+  };
+
   return (
     <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -802,6 +809,11 @@ export default function PostPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {item.status === 'published' && (
+                        <button onClick={() => handleRevertToDraft(item)} className="p-1.5 text-neutral-500 hover:text-amber-500 hover:bg-[#222] rounded transition-colors" title="Revert to Draft">
+                          <RefreshCw className="w-4 h-4" />
+                        </button>
+                      )}
                       <button onClick={() => toggleFeature(item)} className={`p-1.5 rounded transition-colors ${item.featured ? 'text-amber-400 hover:bg-amber-400/10' : 'text-neutral-500 hover:text-white hover:bg-[#222]'}`} title="Toggle Feature"><Star className="w-4 h-4" /></button>
                       <button onClick={() => toggleVisibility(item)} className="p-1.5 text-neutral-500 hover:text-white hover:bg-[#222] rounded transition-colors" title="Toggle Visibility">{item.hidden === true ? <EyeOff className="w-4 h-4 text-neutral-600" /> : <Eye className="w-4 h-4" />}</button>
                       <button onClick={() => handleEdit(item)} className="p-1.5 text-neutral-500 hover:text-white hover:bg-[#222] rounded transition-colors" title="Edit"><Edit2 className="w-4 h-4" /></button>

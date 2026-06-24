@@ -134,3 +134,13 @@ export async function unfeaturePost(id: string): Promise<ActionResponse<any>> {
     return handleError(error);
   }
 }
+
+export async function revertPostToDraft(id: string): Promise<ActionResponse<any>> {
+  try {
+    await verifyAuth();
+    const result = await postService.update(id, { status: 'draft', publishedAt: null } as any);
+    return { success: true, data: result };
+  } catch (error) {
+    return handleError(error);
+  }
+}

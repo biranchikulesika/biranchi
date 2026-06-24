@@ -218,6 +218,7 @@ CREATE TABLE IF NOT EXISTS "public"."posts" (
     "subtitle" TEXT,
     "byline" TEXT,
     "slug" TEXT,
+    "old_slugs" TEXT[] DEFAULT '{}',
     "content" TEXT,
     "excerpt" TEXT,
     "cover_image_url" TEXT,
