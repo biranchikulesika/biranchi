@@ -122,6 +122,7 @@ export default function BlockList({
               <div className="flex gap-2 items-center">
                 <span className="text-[10px] font-mono text-neutral-600 select-none bg-[#111] px-1.5 py-0.5 rounded border border-[#1c1c1c]">H2</span>
                 <textarea 
+                  data-block-id={block.id}
                   value={block.content} 
                   onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                   onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}
@@ -139,6 +140,7 @@ export default function BlockList({
             ) : block.type === 'quote' ? (
               <div className="border-l-2 border-[#ff7700] pl-4">
                 <textarea 
+                  data-block-id={block.id}
                   value={block.content} 
                   onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                   onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}
@@ -160,6 +162,7 @@ export default function BlockList({
             ) : block.type === 'code' ? (
               <div className="font-mono text-sm bg-neutral-950/80 border border-[#222] p-4 rounded-lg">
                 <textarea 
+                  data-block-id={block.id}
                   value={block.content} 
                   onChange={(e) => handleUpdateBlockContent(block.id, e.target.value)}
                   placeholder="// Swift, C++ or typescript code block..."
@@ -170,6 +173,7 @@ export default function BlockList({
             ) : block.type === 'callout' ? (
               <div className="p-4 bg-[#ff7700]/5 border border-[#ff7700]/10 rounded-lg text-sm text-neutral-300">
                 <textarea 
+                  data-block-id={block.id}
                   value={block.content} 
                   onChange={(e) => handleUpdateBlockContent(block.id, e.target.value)}
                   placeholder="Callout insights..."
@@ -180,6 +184,7 @@ export default function BlockList({
             ) : block.type === 'table' ? (
               <div className="p-3 bg-[#0d0d0d] border border-[#222]/80 rounded-lg">
                 <textarea 
+                  data-block-id={block.id}
                   value={block.content} 
                   onChange={(e) => handleUpdateBlockContent(block.id, e.target.value)}
                   placeholder="Markdown table: | Col 1 | Col 2 |"
@@ -208,6 +213,7 @@ export default function BlockList({
               <div className="flex gap-2.5 items-start">
                 <span className="text-neutral-600 font-semibold select-none mt-1">&#8226;</span>
                 <textarea 
+                  data-block-id={block.id}
                   value={block.content} 
                   onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                   onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}
@@ -224,6 +230,7 @@ export default function BlockList({
               </div>
             ) : (
               <textarea 
+                data-block-id={block.id}
                 value={block.content} 
                 onChange={(e) => handleTextareaChange(block.id, e.target.value)}
                 onKeyDown={(e) => handleTextareaKeyDown(e, block.id, idx)}

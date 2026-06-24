@@ -206,14 +206,15 @@ function ComposePageContent() {
           setWasPublished(found.status === 'published' && !!found.publishedAt);
           let parsedBlocks;
           try {
-              const maybeJson = JSON.parse(found.content || '[]');
+              const contentToParse = found.draftContent || found.content || '[]';
+              const maybeJson = JSON.parse(contentToParse);
               if (Array.isArray(maybeJson) && maybeJson.length > 0) {
                   parsedBlocks = maybeJson;
               } else {
-                  parsedBlocks = parseToBlocks(found.content || '');
+                  parsedBlocks = parseToBlocks(contentToParse);
               }
           } catch (e) {
-              parsedBlocks = parseToBlocks(found.content || '');
+              parsedBlocks = parseToBlocks(found.draftContent || found.content || '');
           }
           setComposerBlocks(parsedBlocks);
           setPasteTagsText((found.tags || []).join(', '));
@@ -364,14 +365,14 @@ function ComposePageContent() {
           coverImageUrl: coverUrl,
           autoCoverImage: formData.autoCoverImage,
           excerpt: formData.excerpt || '',
-          content: compiledContent,
+          draftContent: compiledContent,
           tags: splitTags,
         });
 
         const payload = {
           ...formData,
           title: titleToSave,
-          content: compiledContent,
+          draftContent: compiledContent,
           slug: finalSlug,
           tags: splitTags,
           coverImageUrl: coverUrl,
@@ -805,9 +806,11 @@ function ComposePageContent() {
     setSaving(true);
     
     let coverUrl = formData.coverImageUrl;
-    const compiled = compileFromBlocks(composerBlocks);
+    const compiledHtml = compileFromBlocks(composerBlocks);
+    const compiledJson = JSON.stringify(composerBlocks);
+
     if (formData.autoCoverImage) {
-      const extMatch = compiled.match(/src="([^"]+)"/);
+      const extMatch = compiledHtml.match(/src="([^"]+)"/);
       if (extMatch) coverUrl = extMatch[1];
       else coverUrl = '';
     }
@@ -825,16 +828,24 @@ function ComposePageContent() {
 
     const splitTags = pasteTagsText.split(',').map(t => t.trim()).filter(Boolean);
 
-    const payload = {
+    const isPublishing = !isNewDraftState;
+
+    const payload: any = {
       ...formData,
       title: titleToSave,
-      content: compiled,
       slug: finalSlug,
       tags: splitTags,
       coverImageUrl: coverUrl,
       status: isNewDraftState ? 'draft' : 'published',
       publishedAt: formData.publishedAt ? formData.publishedAt : (isNewDraftState ? null : new Date().toISOString())
     };
+
+    if (isPublishing) {
+      payload.content = compiledHtml;
+      payload.draftContent = compiledJson;
+    } else {
+      payload.draftContent = compiledJson;
+    }
 
     try {
       if (currentPostId) {

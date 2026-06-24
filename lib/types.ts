@@ -15,6 +15,7 @@ export interface Post {
   coverImageCredit?: string;
   autoCoverImage: boolean;
   content: string;
+  draftContent?: string;
   tags: string[];
   readingTime?: number;
   publishedAt?: string;

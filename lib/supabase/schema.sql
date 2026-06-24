@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS "public"."posts" (
     "slug" TEXT,
     "old_slugs" TEXT[] DEFAULT '{}',
     "content" TEXT,
+    "draft_content" TEXT,
     "excerpt" TEXT,
     "cover_image_url" TEXT,
     "cover_image_alt" TEXT,
