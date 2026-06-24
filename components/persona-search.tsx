@@ -5,6 +5,7 @@ import { Search, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { searchPublishedPosts } from '@/app/public.actions';
 import { useRouter } from 'next/navigation';
+import { useDebounce } from '@/hooks/use-debounce';
 
 type PersonaSearchProps = {
   persona?: string;
@@ -14,6 +15,7 @@ type PersonaSearchProps = {
 export function PersonaSearch({ persona, mobileBgColor }: PersonaSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 400);
   const [results, setResults] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,19 +33,15 @@ export function PersonaSearch({ persona, mobileBgColor }: PersonaSearchProps) {
 
   // Debounced search
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (query.trim().length > 0) {
-        startTransition(async () => {
-          const res = await searchPublishedPosts(query);
-          setResults(res);
-        });
-      } else {
-        setResults([]);
-      }
-    }, 400);
-
-    return () => clearTimeout(handler);
-  }, [query]);
+    if (debouncedQuery.trim().length > 0) {
+      startTransition(async () => {
+        const res = await searchPublishedPosts(debouncedQuery);
+        setResults(res);
+      });
+    } else {
+      setResults([]);
+    }
+  }, [debouncedQuery]);
 
   let placeholderText = persona ? `Search in ${persona}...` : 'Search posts...';
   if (persona?.toLowerCase() === 'operator') {

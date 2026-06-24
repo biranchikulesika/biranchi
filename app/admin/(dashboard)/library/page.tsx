@@ -13,6 +13,7 @@ import { getThoughtFragments, deleteThoughtFragment, updateThoughtFragment } fro
 import { getFragments, deleteFragment, updateFragment } from '@/app/admin/actions/fragments.actions';
 import { getQuestions, deleteQuestion, updateQuestion } from '@/app/admin/actions/questions.actions';
 import { getJournalMoments, deleteJournalMoment, updateJournalMoment } from '@/app/admin/actions/journalMoments.actions';
+import { useDebounce } from '@/hooks/use-debounce';
 
 interface UnifiedItem {
   id: string;
@@ -39,6 +40,7 @@ export default function ContentLibraryPage() {
   const [isPending, startTransition] = useTransition();
 
   const [searchQuery, setSearchQuery] = useState(searchParams?.get('q') || '');
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
   
   // Filters
   const [selectedPersona, setSelectedPersona] = useState<string>('all');
@@ -198,20 +200,17 @@ export default function ContentLibraryPage() {
   }, [searchParams]);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      const currentQ = searchParams?.get('q') || '';
-      if (searchQuery !== currentQ) {
-        const params = new URLSearchParams(searchParams?.toString() || '');
-        if (searchQuery) params.set('q', searchQuery);
-        else params.delete('q');
-        
-        startTransition(() => {
-          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-        });
-      }
-    }, 400);
-    return () => clearTimeout(handler);
-  }, [searchQuery, pathname, router, searchParams]);
+    const currentQ = searchParams?.get('q') || '';
+    if (debouncedSearchQuery !== currentQ) {
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      if (debouncedSearchQuery) params.set('q', debouncedSearchQuery);
+      else params.delete('q');
+      
+      startTransition(() => {
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      });
+    }
+  }, [debouncedSearchQuery, pathname, router, searchParams]);
 
   // Filter & Search Logic
   const filteredItems = items.filter(item => {

@@ -9,6 +9,7 @@ import { Post } from '@/lib/types';
 import { PERSONA_BLOG_THEMES } from './themes';
 import { Search } from './Search';
 import { ArchiveTimeline } from './ArchiveTimeline';
+import { useDebounce } from '@/hooks/use-debounce';
 
 export interface ArchivePageProps {
   persona: 'main' | 'wanderer' | 'thinker' | 'builder' | 'operator';
@@ -24,6 +25,7 @@ export function ArchivePage({ persona, databasePosts, initialSearchQuery = '' }:
   const [isPending, startTransition] = useTransition();
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [posts, setPosts] = useState<any[]>([]);
 
   useEffect(() => {
@@ -37,23 +39,19 @@ export function ArchivePage({ persona, databasePosts, initialSearchQuery = '' }:
 
   // Debounce search query to URL
   useEffect(() => {
-    const handler = setTimeout(() => {
-      const currentQ = searchParams.get('q') || '';
-      if (searchQuery !== currentQ) {
-        const params = new URLSearchParams(searchParams.toString());
-        if (searchQuery) {
-          params.set('q', searchQuery);
-        } else {
-          params.delete('q');
-        }
-        startTransition(() => {
-          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-        });
+    const currentQ = searchParams.get('q') || '';
+    if (debouncedSearchQuery !== currentQ) {
+      const params = new URLSearchParams(searchParams.toString());
+      if (debouncedSearchQuery) {
+        params.set('q', debouncedSearchQuery);
+      } else {
+        params.delete('q');
       }
-    }, 400);
-
-    return () => clearTimeout(handler);
-  }, [searchQuery, pathname, router, searchParams]);
+      startTransition(() => {
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      });
+    }
+  }, [debouncedSearchQuery, pathname, router, searchParams]);
 
   return (
     <div className={`w-full min-h-screen ${theme.containerClass}`}>

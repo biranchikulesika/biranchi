@@ -91,14 +91,24 @@ function fromDbFormat(dbData: any): Post {
   };
 }
 
+function formatSearchQuery(query: string) {
+  return query
+    .trim()
+    .split(/\s+/)
+    .filter(word => word.length > 0)
+    .map(word => `${word}:*`)
+    .join(' & ');
+}
+
 export class PostSupabaseRepository implements IRepository<Post> {
   async getAll(searchQuery?: string): Promise<Post[]> {
     let query = (supabaseServer as any).from('posts').select('*').order('created_at', { ascending: false });
     
     if (searchQuery && searchQuery.trim() !== '') {
-      const q = searchQuery.trim().replace(/"/g, ''); // strip quotes to safely embed
-      // Using PostgREST wfts (websearch_to_tsquery) for optimized full-text search
-      query = query.or(`title.wfts."${q}",excerpt.wfts."${q}",content.wfts."${q}"`);
+      const q = formatSearchQuery(searchQuery);
+      if (q) {
+        query = query.textSearch('fts', q);
+      }
     }
 
     const { data, error } = await query;
@@ -115,8 +125,10 @@ export class PostSupabaseRepository implements IRepository<Post> {
       .order('created_at', { ascending: false });
 
     if (searchQuery && searchQuery.trim() !== '') {
-      const q = searchQuery.trim().replace(/"/g, ''); // strip quotes
-      query = query.or(`title.wfts."${q}",excerpt.wfts."${q}",content.wfts."${q}"`);
+      const q = formatSearchQuery(searchQuery);
+      if (q) {
+        query = query.textSearch('fts', q);
+      }
     }
 
     const { data, error } = await query;
