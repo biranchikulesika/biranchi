@@ -77,7 +77,7 @@ export async function createPost(data: any): Promise<ActionResponse<any>> {
 export async function updatePost(id: string, data: any): Promise<ActionResponse<any>> {
   try {
     await verifyAuth();
-    const validData = postSchema.parse(data);
+    const validData = postSchema.partial().parse(data);
     const result = await postService.update(id, validData as any);
     return { success: true, data: result };
   } catch (error) {

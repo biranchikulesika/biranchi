@@ -43,9 +43,9 @@ export class PostService {
     }
   }
 
-  async getBySlug(slug: string): Promise<Post | null> {
+  async getBySlug(slug: string, persona?: string): Promise<Post | null> {
     try {
-      return await (this.repository as any).getBySlug(slug);
+      return await (this.repository as any).getBySlug(slug, persona);
     } catch (error) {
       console.error("Failed to get post by slug:", error);
       throw error;

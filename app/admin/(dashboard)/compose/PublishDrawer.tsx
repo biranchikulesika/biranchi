@@ -1,5 +1,5 @@
-import React from 'react';
-import { Send, X, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Send, X, RefreshCw, Loader2 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 
 interface PublishDrawerProps {
@@ -55,6 +55,8 @@ export default function PublishDrawer({
   isEditingExcerpt,
   setIsEditingExcerpt
 }: PublishDrawerProps) {
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+
   if (!isOpen) return null;
 
   return (
@@ -146,24 +148,36 @@ export default function PublishDrawer({
                   </div>
                 ) : (
                   <div className="border border-dashed border-[#333] hover:border-[#ff7700] rounded-lg p-6 bg-[#0a0a0a] transition-all relative flex flex-col items-center justify-center h-32">
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        try {
-                          const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
-                          if (publicUrl) {
-                            setFormData((prev: any) => ({ ...prev, coverImageUrl: publicUrl }));
-                          }
-                        } catch (err) {
-                          console.error("Cover upload fail:", err);
-                        }
-                      }}
-                    />
-                    <span className="text-xs text-neutral-500 font-mono">Drag or click to attach cover</span>
+                    {isUploadingCover ? (
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <Loader2 className="w-5 h-5 text-[#ff7700] animate-spin" />
+                        <span className="text-xs text-neutral-500 font-mono">Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            setIsUploadingCover(true);
+                            try {
+                              const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
+                              if (publicUrl) {
+                                setFormData((prev: any) => ({ ...prev, coverImageUrl: publicUrl }));
+                              }
+                            } catch (err) {
+                              console.error("Cover upload fail:", err);
+                            } finally {
+                              setIsUploadingCover(false);
+                            }
+                          }}
+                        />
+                        <span className="text-xs text-neutral-500 font-mono">Drag or click to attach cover</span>
+                      </>
+                    )}
                   </div>
                 )
               )}
@@ -215,6 +229,7 @@ export default function PublishDrawer({
                 placeholder="tech, journals, philosophy"
                 className="w-full bg-[#141414] border border-[#222] focus:border-[#ff7700] rounded px-3 py-2 text-xs font-mono text-neutral-300 outline-none"
               />
+              <p className="text-xs text-neutral-500 mt-1">Separate tags with commas.</p>
             </div>
 
             {/* URL Customizable slugs */}

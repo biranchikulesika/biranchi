@@ -1107,12 +1107,15 @@ function ComposePageContent() {
                     value={formData.title} 
                     onChange={(e) => {
                       const newTitle = e.target.value;
+                      setFormData((prev: any) => ({ ...prev, title: newTitle }));
+                    }}
+                    onBlur={(e) => {
+                      const newTitle = e.target.value;
                       setFormData((prev: any) => {
-                        const updated = { ...prev, title: newTitle };
-                        if (!wasPublished) {
-                          updated.slug = slugify(newTitle);
+                        if (!prev.slug || prev.slug.trim() === '') {
+                          return { ...prev, slug: slugify(newTitle) };
                         }
-                        return updated;
+                        return prev;
                       });
                     }}
                     placeholder="Title"

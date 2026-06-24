@@ -93,7 +93,12 @@ export class PostSupabaseRepository implements IRepository<Post> {
   }
 
   async getAllMeta(): Promise<Post[]> {
-    const { data, error } = await (supabaseServer as any).from('posts').select('id, title, subtitle, byline, slug, excerpt, status, persona, cover_image_url, cover_image_alt, cover_image_caption, cover_image_location, cover_image_credit, auto_cover_image, reading_time, featured, hidden, published_at, tags, created_at, updated_at').order('created_at', { ascending: false });
+    const now = new Date().toISOString();
+    const { data, error } = await (supabaseServer as any).from('posts')
+      .select('id, title, subtitle, byline, slug, excerpt, status, persona, cover_image_url, cover_image_alt, cover_image_caption, cover_image_location, cover_image_credit, auto_cover_image, reading_time, featured, hidden, published_at, tags, created_at, updated_at')
+      .eq('status', 'published')
+      .lte('published_at', now)
+      .order('created_at', { ascending: false });
     if (error) throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
     return (data || []).map(fromDbFormat);
   }
@@ -105,8 +110,12 @@ export class PostSupabaseRepository implements IRepository<Post> {
     return fromDbFormat(data);
   }
 
-  async getBySlug(slug: string): Promise<Post | null> {
-    const { data, error } = await (supabaseServer as any).from('posts').select('*').eq('slug', slug).limit(1).maybeSingle();
+  async getBySlug(slug: string, persona?: string): Promise<Post | null> {
+    let query = (supabaseServer as any).from('posts').select('*').eq('slug', slug);
+    if (persona) {
+      query = query.eq('persona', persona);
+    }
+    const { data, error } = await query.limit(1).maybeSingle();
     if (error) throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
     if (!data) return null;
     return fromDbFormat(data);
