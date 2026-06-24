@@ -91,7 +91,7 @@ export default function WandererPage() {
     if(fragmentsData.length > 0) setFragmentIndex((prev) => (prev + 1) % fragmentsData.length);
   };
 
-  if (loading) return <div className="p-12 text-center text-[#8A7C70] font-mono text-xs max-w-6xl mx-auto dark:bg-[#1B1613] bg-[#F5F1EB] min-h-screen">Loading...</div>;
+  if (loading) return <div className="p-12 text-center text-primary/70 font-mono text-xs max-w-6xl mx-auto min-h-screen">Loading...</div>;
 
   const currentFrags = fragmentsData.length > 0 ? fragmentsData : [];
   const displayLatest = latestPosts;
@@ -100,7 +100,7 @@ export default function WandererPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.4, ease: 'easeOut' }}
-      className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 py-12 lg:py-24 relative font-spectral dark:bg-[#1B1613] bg-[#F5F1EB] dark:text-[#E1D5C8] text-[#43382F]"
+      className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 py-12 lg:py-24 relative font-spectral"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
         
