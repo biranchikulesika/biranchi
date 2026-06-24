@@ -480,7 +480,7 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
       </h1>
 
       <div className={theme.subtitle}>
-        {p !== 'operator' && '"'}{post.subtitle}{p !== 'operator' && '"'}
+        {post.subtitle}
       </div>
 
       {post.byline && (
