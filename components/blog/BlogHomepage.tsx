@@ -123,7 +123,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
           <section id="substack-popular-section" className="hidden md:block space-y-6 pt-4">
             <div className={`flex items-center justify-between border-b pb-2 ${theme.borderColor}`}>
               <h2 className={`text-xs uppercase tracking-[0.2em] font-bold ${
-                persona === 'operator' ? 'font-mono text-[#7f9e8a]' : 'font-sans opacity-70'
+                persona === 'operator' ? 'font-mono text-primary' : 'font-sans opacity-70'
               }`}>
                 {theme.stripTitle}
               </h2>
@@ -197,19 +197,19 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                       </button>
                       <button
                         onClick={() => setActiveTab('operator')}
-                        className={`pb-2 transition-colors relative ${activeTab === 'operator' ? 'text-[#7f9e8a] dark:text-[#a0bfab] border-b-2 border-emerald-600' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                        className={`pb-2 transition-colors relative ${activeTab === 'operator' ? 'text-primary border-b-2 border-primary' : 'hover:text-primary/80'}`}
                       >
                         Signal
                       </button>
                       <button
                         onClick={() => setActiveTab('wanderer')}
-                        className={`pb-2 transition-colors relative ${activeTab === 'wanderer' ? 'text-[#A66039] dark:text-[#C58059] border-b-2 border-[#A66039]' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                        className={`pb-2 transition-colors relative ${activeTab === 'wanderer' ? 'text-primary border-b-2 border-primary' : 'hover:text-primary/80'}`}
                       >
                         Scribble
                       </button>
                       <button
                         onClick={() => setActiveTab('thinker')}
-                        className={`pb-2 transition-colors relative ${activeTab === 'thinker' ? 'text-[#7F786F] dark:text-[#9A9388] border-b-2 border-[#7F786F]' : 'hover:text-zinc-750 dark:hover:text-zinc-350'}`}
+                        className={`pb-2 transition-colors relative ${activeTab === 'thinker' ? 'text-primary border-b-2 border-primary' : 'hover:text-primary/80'}`}
                       >
                         Inside The Head
                       </button>
@@ -221,7 +221,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                         className={`pb-2 transition-colors relative ${
                           activeTab === 'latest' 
                             ? `text-zinc-900 dark:text-white border-b-2 ${
-                                persona === 'builder' ? 'border-orange-500' : persona === 'operator' ? 'border-emerald-600' : persona === 'thinker' ? 'border-[#928a7e]' : 'border-[#C58059]'
+                                persona === 'builder' ? 'border-primary' : persona === 'operator' ? 'border-primary' : persona === 'thinker' ? 'border-primary' : 'border-primary'
                               }` 
                             : 'hover:text-zinc-700 dark:hover:text-zinc-300'
                         }`}
@@ -233,7 +233,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                         className={`pb-2 transition-colors relative ${
                           activeTab === 'top' 
                             ? `text-zinc-900 dark:text-white border-b-2 ${
-                                persona === 'builder' ? 'border-orange-500' : persona === 'operator' ? 'border-[#7f9e8a]' : persona === 'thinker' ? 'border-[#928a7e]' : 'border-[#C58059]'
+                                persona === 'builder' ? 'border-primary' : persona === 'operator' ? 'border-primary' : persona === 'thinker' ? 'border-primary' : 'border-primary'
                               }`
                             : 'hover:text-zinc-700 dark:hover:text-zinc-300'
                         }`}
@@ -394,15 +394,15 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className={`w-full bg-[#131418] border border-[#212328] rounded-md px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#C58059] font-sans ${
+                      className={`w-full border rounded-md px-3 py-2.5 text-xs text-foreground font-sans ${
                         persona === 'operator' 
-                          ? 'font-mono text-[#7f9e8a] border-dashed border-[#1e2722]/80 bg-black/40 focus:border-solid rounded-none' 
+                          ? 'font-mono border-dashed bg-muted placeholder:text-primary/50 focus:border-primary border-border focus:border-solid rounded-none' 
                           : persona === 'builder'
-                          ? 'font-mono border-neutral-350 dark:border-neutral-900 bg-[#E7E4DD]/50 dark:bg-neutral-900/40 text-neutral-950 dark:text-neutral-100 placeholder-stone-400 dark:placeholder-neutral-600 focus:border-orange-500/80 focus:ring-1 focus:ring-orange-500/10 rounded-md'
+                          ? 'font-mono bg-muted/50 placeholder:text-primary/50 focus:border-primary border-border focus:ring-1 focus:ring-primary/10'
                           : persona === 'thinker'
-                          ? 'border-0 border-b border-[#E2DFDA] dark:border-stone-850 bg-transparent text-neutral-800 dark:text-[#D7D4CE] rounded-none px-1 placeholder-stone-500/50 focus:border-stone-500'
-                          : 'bg-[#131418] border border-[#212328] focus:border-[#C58059]'
-                      }`}
+                          ? 'border-0 border-b bg-transparent rounded-none px-1 placeholder:text-primary/50 focus:border-primary border-border'
+                          : 'bg-muted border-border placeholder:text-primary/50 focus:border-primary'
+                      } outline-none transition-colors`}
                     />
                       <button
                         type="submit"
@@ -412,8 +412,8 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                             : persona === 'operator'
                             ? 'bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800 text-emerald-400 rounded-none'
                             : persona === 'thinker'
-                            ? 'bg-stone-850 hover:bg-stone-800 rounded-full border border-stone-750'
-                            : 'bg-[#A66039] hover:bg-[#B67A55] rounded-md hover:shadow-[#A66039]/10'
+                            ? 'bg-muted-foreground hover:opacity-80 rounded-full border border-border'
+                            : 'bg-primary text-primary-foreground hover:bg-primary/90 rounded-md'
                         }`}
                       >
                         Subscribe

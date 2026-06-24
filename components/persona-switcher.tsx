@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { getPersonaUrl } from '@/lib/utils';
 
 const PERSONAS = [
-  { name: 'Builder', path: getPersonaUrl('builder'), color: 'dark:text-neutral-300 text-[#222222]', font: 'font-mono', highlight: 'bg-neutral-400 shadow-[0_0_10px_rgba(163,163,163,0.5)]' },
+  { name: 'Builder', path: getPersonaUrl('builder'), color: 'text-foreground', font: 'font-mono', highlight: 'bg-neutral-400 shadow-[0_0_10px_rgba(163,163,163,0.5)]' },
   { name: 'Operator', path: getPersonaUrl('operator'), color: 'text-emerald-500', font: 'font-mono', highlight: 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
   { name: 'Wanderer', path: getPersonaUrl('wanderer'), color: 'text-orange-500', font: 'font-serif', highlight: 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' },
   { name: 'Thinker', path: getPersonaUrl('thinker'), color: 'text-gray-400', font: 'font-sans', highlight: 'bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]' },
@@ -55,14 +55,14 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="absolute top-full left-0 mt-4 dark:bg-[#0a0a0a] bg-[#F3F2EE] backdrop-blur-xl border border-white/10 rounded-lg p-2 shadow-2xl min-w-[180px] flex flex-col gap-1 overflow-hidden"
+              className="absolute top-full left-0 mt-4 bg-background backdrop-blur-xl border border-border rounded-lg p-2 shadow-2xl min-w-[180px] flex flex-col gap-1 overflow-hidden"
             >
               {PERSONAS.map(p => (
                 <Link
                   key={p.name}
                   href={p.path}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-3 text-sm transition-all rounded-md flex items-center gap-2 ${p.font} ${p.color} hover:bg-white/10 ${p.name === currentPersona ? 'bg-white/5 opacity-50 cursor-default pointer-events-none' : ''}`}
+                  className={`px-4 py-3 text-sm transition-all rounded-md flex items-center gap-2 ${p.font} ${p.color} hover:bg-muted ${p.name === currentPersona ? 'bg-muted/50 opacity-50 cursor-default pointer-events-none' : ''}`}
                 >
                   <span className="uppercase tracking-wider">{p.name}</span>
                 </Link>

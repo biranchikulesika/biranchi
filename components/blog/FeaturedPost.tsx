@@ -17,19 +17,16 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
 
   const isOperator = persona === 'operator';
 
-  // Adaptive dark background colors
+  // Adaptive background colors
   const getBannerBgBorder = () => {
     switch (persona) {
       case 'operator':
-        return 'bg-[#050706] border-[#1e2722]';
       case 'builder':
-        return 'bg-neutral-950 border-neutral-950 dark:border-neutral-900/60';
       case 'thinker':
-        return 'bg-[#0C0E11] border-stone-850';
       case 'wanderer':
       case 'main':
       default:
-        return 'bg-[#070809] border-[#212328]';
+        return 'bg-background border-border';
     }
   };
 
@@ -54,7 +51,7 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
             style={{ filter: 'blur(80px)' }}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-tr from-[#1a1c22] to-[#0A0C0E] opacity-55 scale-125 saturate-[130%] brightness-50" />
+          <div className="w-full h-full bg-muted opacity-55 scale-125 saturate-[130%] brightness-50" />
         )}
         {/* Gradients ensuring perfect contrast on text and balancing the photo light */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-transparent lg:block hidden z-10" />
@@ -88,7 +85,7 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
           <Link href={`/p/${post.slug}`}>
             <h2
               id="hero-banner-title"
-              className={`text-2xl sm:text-4xl lg:text-4.5xl text-white tracking-tight leading-[1.15] hover:opacity-95 transition-opacity ${theme.titleFont}`}
+              className={`text-2xl sm:text-4xl lg:text-4.5xl text-foreground tracking-tight leading-[1.15] hover:opacity-95 transition-opacity ${theme.titleFont}`}
             >
               {post.title}
             </h2>
@@ -96,7 +93,7 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
 
           <p
             id="hero-banner-excerpt"
-            className="text-[13.5px] sm:text-[15px] font-sans leading-relaxed text-[#D2D4D8] font-light"
+            className="text-[13.5px] sm:text-[15px] font-sans leading-relaxed text-primary/80 font-light"
             style={{ fontFamily: isOperator ? 'var(--font-mono)' : 'inherit' }}
           >
             {post.excerpt || post.subtitle}
@@ -116,8 +113,8 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
                 : persona === 'operator'
                 ? 'bg-emerald-950/20 border-emerald-800 text-emerald-400'
                 : persona === 'thinker'
-                ? 'bg-stone-850 border-stone-750 text-stone-300'
-                : 'bg-white/10 border-white/10 text-white'
+                ? 'bg-muted border-border text-foreground'
+                : 'bg-muted border-border text-foreground'
             }`}>
               <span className="text-sm sm:text-base">→</span>
             </div>
@@ -126,15 +123,13 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
                 ? 'text-orange-500'
                 : persona === 'operator'
                 ? 'text-emerald-450 font-mono'
-                : persona === 'thinker'
-                ? 'text-stone-300'
-                : 'text-[#EAEAEA]'
+                : 'text-foreground'
             }`}>
               {theme.readBtnText || 'READ DISPATCH'}
             </span>
           </Link>
 
-          <span className="font-mono text-[9px] sm:text-[9.5px] uppercase tracking-wider text-[#9A9EA5]">
+          <span className="font-mono text-[9px] sm:text-[9.5px] uppercase tracking-wider text-primary/60">
             {post.publishedAt?.split('T')[0] || post.createdAt?.split('T')[0] || ''}
           </span>
         </div>
@@ -153,7 +148,7 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
             sizes="(max-w-1024px) 100vw, 750px"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-tr from-[#15171e] to-[#0A0C0E]" />
+          <div className="w-full h-full bg-muted" />
         )}
       </div>
     </motion.div>

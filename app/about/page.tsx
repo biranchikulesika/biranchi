@@ -17,14 +17,14 @@ function CornerCard({ title, subtitle, desc, href, type }: { title: string, subt
   }[type];
 
   return (
-    <Link href={href} className={`flex flex-col justify-between group p-5 md:p-7 rounded-2xl border dark:border-stone-800/40 border-[#ECEBE6] dark:bg-stone-900/10 bg-[#E8E6DF] ${hoverStyles}`}>
+    <Link href={href} className={`flex flex-col justify-between group p-5 md:p-7 rounded-2xl border border-border bg-muted/50 hover:bg-muted ${hoverStyles}`}>
       <div className="flex justify-between items-start mb-5 md:mb-8">
-        <span className="font-mono text-[10px] tracking-[0.2em] dark:text-stone-500 text-[#6E6A64] uppercase">{title}</span>
-        <ArrowUpRight className="w-4 h-4 dark:text-stone-650 text-[#6E6A64] group-hover:dark:text-stone-400 group-hover:text-stone-900 transition-colors duration-500" />
+        <span className="font-mono text-[10px] tracking-[0.2em] text-primary/80 uppercase">{title}</span>
+        <ArrowUpRight className="w-4 h-4 text-primary/80 group-hover:text-foreground transition-colors duration-500" />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="font-serif text-xl md:text-2xl dark:text-stone-200 text-[#2B2B28] group-hover:dark:text-stone-100 group-hover:text-stone-950 transition-colors duration-500 tracking-tight">{subtitle}</span>
-        <span className="font-sans font-light text-[15px] md:text-[16px] dark:text-stone-500/90 text-[#6E6A64]/90 group-hover:dark:text-stone-400 group-hover:text-stone-800 transition-colors duration-500 leading-relaxed">{desc}</span>
+        <span className="font-serif text-xl md:text-2xl text-foreground group-hover:text-foreground transition-colors duration-500 tracking-tight">{subtitle}</span>
+        <span className="font-sans font-light text-[15px] md:text-[16px] text-primary/90 group-hover:text-foreground transition-colors duration-500 leading-relaxed">{desc}</span>
       </div>
     </Link>
   );
@@ -68,23 +68,23 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.1 }}
           >
-            <span className="font-mono text-[10px] tracking-[0.2em] dark:text-[#8c8273] text-[#7A746B] uppercase mb-6 md:mb-8 block opacity-80">
+            <span className="font-mono text-[10px] tracking-[0.2em] text-primary/80 uppercase mb-6 md:mb-8 block">
               ABOUT
             </span>
-            <h1 className="font-serif text-[1.75rem] sm:text-4xl md:text-5xl lg:text-[4rem] leading-[1.1] dark:text-stone-100 text-[#2B2B28] tracking-tight mb-6 md:mb-10">
+            <h1 className="font-serif text-[1.75rem] sm:text-4xl md:text-5xl lg:text-[4rem] leading-[1.1] text-foreground tracking-tight mb-6 md:mb-10">
               A personal ecosystem shaped by curiosity, systems, stories, and reflection.
             </h1>
-            <p className="font-sans font-light dark:text-stone-400/90 text-[#6E6A64]/90 text-lg md:text-xl leading-[1.8] max-w-[650px] mb-6">
+            <p className="font-sans font-light text-primary/90 text-lg md:text-xl leading-[1.8] max-w-[650px] mb-6">
               I built this space to separate the different things that continue to occupy my attention. Some corners are focused on systems and technology. Others hold stories, observations, unfinished thoughts, and quieter reflections.
             </p>
-            <p className="font-sans font-light dark:text-stone-500/70 text-[#6E6A64]/70 text-[15px] md:text-[16px] max-w-[650px]">
+            <p className="font-sans font-light text-primary/70 text-[15px] md:text-[16px] max-w-[650px]">
               The internet rewards compressed identities. This space exists to resist that.
             </p>
           </motion.div>
         </section>
 
         {/* SECTION 2 — WHO I AM */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -92,8 +92,8 @@ export default function AboutPage() {
             transition={{ duration: 1 }}
             className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 md:gap-10"
           >
-            <h2 className="font-serif text-2xl md:text-3xl dark:text-stone-200 text-[#2B2B28]">Who I am</h2>
-            <div className="flex flex-col gap-6 font-sans font-light dark:text-stone-400/90 text-[#6E6A64]/90 text-lg leading-[1.8]">
+            <h2 className="font-serif text-2xl md:text-3xl text-foreground">Who I am</h2>
+            <div className="flex flex-col gap-6 font-sans font-light text-primary/90 text-lg leading-[1.8]">
               <p>
                 I spend most of my time thinking about systems, writing things down, exploring technology, and trying to understand how people behave around the tools they create.
               </p>
@@ -108,7 +108,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 3 — WHY THIS EXISTS */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -116,8 +116,8 @@ export default function AboutPage() {
             transition={{ duration: 1 }}
             className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 md:gap-10"
           >
-            <h2 className="font-serif text-2xl md:text-3xl dark:text-stone-200 text-[#2B2B28]">Why this exists</h2>
-            <div className="flex flex-col gap-6 font-sans font-light dark:text-stone-300/90 text-[#2B2B28]/90 text-lg leading-[1.8]">
+            <h2 className="font-serif text-2xl md:text-3xl text-foreground">Why this exists</h2>
+            <div className="flex flex-col gap-6 font-sans font-light text-foreground/90 text-lg leading-[1.8]">
               <p>
                 The modern internet often rewards speed, noise, and constant performance. I wanted to create something quieter. A space where different parts of my interests could exist without collapsing into one flattened online identity.
               </p>
@@ -132,7 +132,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 4 — THE FOUR CORNERS */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[1100px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[1100px] mx-auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -140,7 +140,7 @@ export default function AboutPage() {
             transition={{ duration: 1 }}
             className="flex flex-col"
           >
-            <h2 className="font-serif text-2xl md:text-3xl dark:text-stone-200 text-[#2B2B28] mb-8 md:mb-10 text-center md:text-left">The four corners</h2>
+            <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-8 md:mb-10 text-center md:text-left">The four corners</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
               <CornerCard 
@@ -176,7 +176,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 5 — HOW I USE THE INTERNET */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -184,8 +184,8 @@ export default function AboutPage() {
             transition={{ duration: 1 }}
             className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 md:gap-10"
           >
-            <h2 className="font-serif text-2xl md:text-3xl dark:text-stone-200 text-[#2B2B28]">How I use the<br className="hidden md:block"/> internet</h2>
-            <div className="flex flex-col gap-6 font-sans font-light dark:text-stone-400/90 text-[#6E6A64]/90 text-lg leading-[1.8]">
+            <h2 className="font-serif text-2xl md:text-3xl text-foreground">How I use the<br className="hidden md:block"/> internet</h2>
+            <div className="flex flex-col gap-6 font-sans font-light text-primary/90 text-lg leading-[1.8]">
               <p>
                 I think a lot about digital identity, attention, and how people present themselves online. This ecosystem is my attempt at creating a slower and more intentional presence on the internet.
               </p>
@@ -197,7 +197,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 6 — SMALL HUMAN DETAILS */}
-        <section className="px-6 md:px-16 lg:px-24 py-8 sm:py-10 md:py-14 relative z-10 w-full max-w-[900px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+        <section className="px-6 md:px-16 lg:px-24 py-8 sm:py-10 md:py-14 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -205,10 +205,10 @@ export default function AboutPage() {
             transition={{ duration: 1 }}
             className="flex flex-col items-center text-center"
           >
-            <h2 className="font-mono text-[10px] tracking-[0.2em] dark:text-stone-500 text-[#6E6A64] uppercase mb-6 md:mb-8">Small details</h2>
+            <h2 className="font-mono text-[10px] tracking-[0.2em] text-primary/80 uppercase mb-6 md:mb-8">Small details</h2>
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-3 md:gap-x-6 md:gap-y-4 max-w-[650px]">
               {details.map((detail, i) => (
-                <span key={i} className="font-serif italic text-[17px] md:text-[18px] dark:text-stone-400/80 text-[#6E6A64]/80 transform md:-rotate-1 hover:-translate-y-[1px] opacity-80 hover:opacity-100 transition-all duration-300">
+                <span key={i} className="font-serif italic text-[17px] md:text-[18px] text-primary/80 transform md:-rotate-1 hover:-translate-y-[1px] opacity-80 hover:opacity-100 transition-all duration-300">
                   {detail}
                 </span>
               ))}
@@ -219,7 +219,7 @@ export default function AboutPage() {
       </main>
 
       {/* Global Footer */}
-      <footer className="w-full px-6 md:px-16 lg:px-24 py-6 md:py-14 flex flex-col md:flex-row justify-between items-center gap-5 md:gap-4 z-50 bg-transparent border-t dark:border-stone-800/20 border-[#ECEBE6]">
+      <footer className="w-full px-6 md:px-16 lg:px-24 py-6 md:py-14 flex flex-col md:flex-row justify-between items-center gap-5 md:gap-4 z-50 bg-transparent border-t border-border">
         
         {/* Left */}
         <motion.div 
@@ -229,7 +229,7 @@ export default function AboutPage() {
           transition={{ duration: 1 }}
           className="md:flex-1 flex justify-center md:justify-start order-1 text-center md:text-left"
         >
-          <span className="font-sans font-light text-[14px] dark:text-stone-500/60 text-[#6E6A64]/60">
+          <span className="font-sans font-light text-[14px] text-primary/60">
             Most things take longer than expected.
           </span>
         </motion.div>
@@ -242,10 +242,10 @@ export default function AboutPage() {
           transition={{ duration: 1, delay: 0.1 }}
           className="md:flex-1 flex flex-col items-center gap-1 order-2 text-center"
         >
-          <span className="font-serif text-[15px] md:text-[16px] dark:text-stone-500/70 text-[#6E6A64]/70 tracking-wide">
+          <span className="font-serif text-[15px] md:text-[16px] text-primary/70 tracking-wide">
             Biranchi Kulesika
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-[0.25em] dark:text-stone-600/50 text-[#6E6A64]/50">
+          <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-primary/50">
             India · 2026
           </span>
         </motion.div>
@@ -256,13 +256,13 @@ export default function AboutPage() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="md:flex-1 flex justify-center md:justify-end items-center gap-5 md:gap-6 order-3 font-sans font-light text-[14px] dark:text-stone-500/60 text-[#6E6A64]/60"
+          className="md:flex-1 flex justify-center md:justify-end items-center gap-5 md:gap-6 order-3 font-sans font-light text-[14px] text-primary/60"
         >
-          <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
+          <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors duration-500">
             GitHub
           </a>
-          <span className="dark:text-stone-800/50 text-[#6E6A64]/40 md:hidden">·</span>
-          <a href="mailto:#" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
+          <span className="text-primary/40 md:hidden">·</span>
+          <a href="mailto:#" className="hover:text-foreground transition-colors duration-500">
             Email
           </a>
         </motion.div>

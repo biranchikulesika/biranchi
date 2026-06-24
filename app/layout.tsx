@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${spectral.variable}`}>
-      <body className="font-sans antialiased dark:bg-black dark:text-white dark:selection:bg-white/20 bg-white text-black selection:bg-black/20">
+      <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/20">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
           <Analytics />

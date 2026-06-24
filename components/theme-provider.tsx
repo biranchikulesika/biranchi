@@ -47,8 +47,7 @@ export function ThemeProvider({
 
     let finalTheme = theme;
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      finalTheme = systemTheme;
+      finalTheme = 'dark';
     }
 
     setResolvedTheme(finalTheme);
@@ -61,7 +60,7 @@ export function ThemeProvider({
     const localTheme = localStorage.getItem('theme') || defaultTheme;
     let finalTheme = localTheme;
     if (localTheme === 'system') {
-      finalTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      finalTheme = 'dark';
     }
     root.classList.remove('light', 'dark');
     root.classList.add(finalTheme);

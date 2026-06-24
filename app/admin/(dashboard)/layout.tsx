@@ -105,7 +105,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   ];
 
   return (
-    <div className="flex h-[100dvh] bg-[#0A0A0A] text-neutral-200 font-sans font-light selection:bg-[#222]">
+    <div className="flex h-[100dvh] theme-admin bg-background text-foreground font-sans font-light selection:bg-primary/20">
       
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
@@ -117,24 +117,24 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
       {/* Sidebar */}
       <aside 
-        className={`fixed md:relative z-50 h-full flex flex-col bg-[#0A0A0A] border-r border-[#1a1a1a] transition-all duration-300 ease-in-out
+        className={`fixed md:relative z-50 h-full flex flex-col bg-background border-r border-border transition-all duration-300 ease-in-out
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} 
           ${isCollapsed ? 'md:w-[72px]' : 'md:w-[260px] lg:w-[280px]'} w-[280px]
         `}
       >
         {/* Header */}
-        <div className={`h-16 flex items-center border-b border-[#1a1a1a] flex-shrink-0 ${isCollapsed ? 'justify-center px-2' : 'justify-end px-5'}`}>
+        <div className={`h-16 flex items-center border-b border-border flex-shrink-0 ${isCollapsed ? 'justify-center px-2' : 'justify-end px-5'}`}>
           {/* Collapse Panel Button on the Right */}
           <button 
             onClick={toggleCollapse}
-            className="hidden md:flex text-neutral-500 hover:text-white transition-colors p-1.5 hover:bg-[#161616] rounded-md"
+            className="hidden md:flex text-primary hover:text-foreground transition-colors p-1.5 hover:bg-muted rounded-md"
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? <PanelLeft className="w-4.5 h-4.5 text-[#ff7700]" /> : <PanelLeftClose className="w-4.5 h-4.5" />}
           </button>
           
           <button 
-            className="md:hidden text-neutral-500 hover:text-white transition-colors p-2"
+            className="md:hidden text-primary hover:text-foreground transition-colors p-2"
             onClick={() => setMobileOpen(false)}
           >
             <X className="w-5 h-5" />
@@ -145,7 +145,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         <div className="flex-1 overflow-y-auto py-3 px-2 space-y-4 scrollbar-hide">
           {navGroups.map((group, idx) => (
             <div key={idx} className="space-y-1">
-              <div className={`px-2.5 text-[9px] uppercase font-mono tracking-widest text-neutral-600 font-semibold mb-1 ${isCollapsed ? 'md:hidden' : ''}`}>
+              <div className={`px-2.5 text-[9px] uppercase font-mono tracking-widest text-primary font-semibold mb-1 ${isCollapsed ? 'md:hidden' : ''}`}>
                 {group.title}
               </div>
               <div className="space-y-0.5">
@@ -158,12 +158,12 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                       href={item.href}
                       target={(item as any).target}
                       className={`flex items-center gap-2 px-2.5 py-1.5 rounded transition-all group relative
-                        ${isActivePath ? 'bg-[#141414] text-white border border-[#222]' : 'text-neutral-400 hover:bg-[#0c0c0c] hover:text-neutral-200 border border-transparent'}
+                        ${isActivePath ? 'bg-muted text-foreground border border-border' : 'text-primary hover:bg-muted/50 hover:text-foreground border border-transparent'}
                         ${isCollapsed ? 'md:justify-center' : ''}
                       `}
                       title={isCollapsed ? item.label : undefined}
                     >
-                      <div className={`flex-shrink-0 ${isActivePath ? 'text-white' : 'text-neutral-500 group-hover:text-neutral-300'}`}>
+                      <div className={`flex-shrink-0 ${isActivePath ? 'text-foreground' : 'text-primary group-hover:text-foreground'}`}>
                         {item.icon}
                       </div>
                       <span className={`whitespace-nowrap text-xs font-normal ${isCollapsed ? 'md:hidden' : 'block'}`}>
@@ -173,7 +173,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                   ) : (
                     <div 
                       key={i} 
-                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded transition-all text-neutral-600 cursor-not-allowed group relative
+                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded transition-all text-primary cursor-not-allowed group relative
                         ${isCollapsed ? 'md:justify-center' : ''}
                       `}
                       title={isCollapsed ? `${item.label} (Coming Soon)` : undefined}
@@ -194,10 +194,10 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         </div>
         
         {/* Footer actions */}
-        <div className={`p-3 border-t border-[#1a1a1a] ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <div className={`p-3 border-t border-border ${isCollapsed ? 'flex justify-center' : ''}`}>
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-2 px-2.5 py-1.5 w-full rounded transition-all text-neutral-400 hover:bg-[#161616] hover:text-white border border-transparent ${isCollapsed ? 'justify-center' : ''}`}
+            className={`flex items-center gap-2 px-2.5 py-1.5 w-full rounded transition-all text-primary hover:bg-muted hover:text-foreground border border-transparent ${isCollapsed ? 'justify-center' : ''}`}
             title={isCollapsed ? "Sign Out" : undefined}
           >
             <div className="flex-shrink-0">
@@ -211,10 +211,10 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Mobile Header */}
-        <header className="h-14 md:hidden flex items-center px-4 border-b border-[#1a1a1a] bg-[#0A0A0A] flex-shrink-0 gap-4">
+        <header className="h-14 md:hidden flex items-center px-4 border-b border-border bg-background flex-shrink-0 gap-4">
           <button 
             onClick={() => setMobileOpen(true)}
-            className="text-neutral-400 hover:text-white transition-colors"
+            className="text-primary hover:text-foreground transition-colors"
           >
             <Menu className="w-[18px] h-[18px]" />
           </button>
@@ -222,7 +222,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-[#0A0A0A]">
+        <main className="flex-1 overflow-y-auto bg-background">
           {children}
         </main>
       </div>
@@ -234,62 +234,62 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
             className="fixed inset-0" 
             onClick={() => setCommandPaletteOpen(false)}
           />
-          <div className="relative w-full max-w-xl bg-[#111] border border-[#222] rounded-lg shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex items-center px-4 border-b border-[#222]">
-              <Search className="w-4 h-4 text-neutral-500 mr-2 shrink-0" />
+          <div className="relative w-full max-w-xl bg-background border border-border rounded-lg shadow-2xl overflow-hidden flex flex-col">
+            <div className="flex items-center px-4 border-b border-border">
+              <Search className="w-4 h-4 text-primary mr-2 shrink-0" />
               <input 
                 autoFocus
                 type="text"
                 value={commandQuery}
                 onChange={(e) => setCommandQuery(e.target.value)}
                 placeholder="Type a command or search..."
-                className="w-full bg-transparent border-none py-4 outline-none text-neutral-200 placeholder:text-neutral-600 focus:ring-0 text-sm"
+                className="w-full bg-transparent border-none py-4 outline-none text-foreground placeholder:text-primary focus:ring-0 text-sm"
               />
-              <div className="text-[10px] font-mono text-neutral-500 border border-[#333] px-1.5 py-0.5 rounded ml-2 shrink-0 bg-[#161616]">
+              <div className="text-[10px] font-mono text-primary border border-border px-1.5 py-0.5 rounded ml-2 shrink-0 bg-muted">
                 ESC
               </div>
             </div>
             <div className="max-h-[300px] overflow-y-auto p-2 scrollbar-hide space-y-1">
-              <div className="px-3 py-1.5 text-[10px] uppercase tracking-widest text-neutral-600 font-mono font-semibold">Create</div>
+              <div className="px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary font-mono font-semibold">Create</div>
               
-              <Link href="/admin/compose?new=true&persona=forge" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
+              <Link href="/admin/compose?new=true&persona=forge" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
                 <Plus className="w-4 h-4 text-[#ff7700]" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">New Forge Article</span>
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">New Forge Article</span>
               </Link>
-              <Link href="/admin/compose?new=true&persona=signal" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
+              <Link href="/admin/compose?new=true&persona=signal" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
                 <Plus className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">New Signal Article</span>
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">New Signal Article</span>
               </Link>
-              <Link href="/admin/compose?new=true&persona=inside-the-head" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
+              <Link href="/admin/compose?new=true&persona=inside-the-head" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
                 <Plus className="w-4 h-4 text-purple-500" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">New Inside the Head Article</span>
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">New Inside the Head Article</span>
               </Link>
-              <Link href="/admin/compose?new=true&persona=scribble" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
+              <Link href="/admin/compose?new=true&persona=scribble" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
                 <Plus className="w-4 h-4 text-sky-500" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">New Scribble Article</span>
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">New Scribble Article</span>
               </Link>
 
-              <div className="px-3 py-1.5 text-[10px] uppercase tracking-widest text-neutral-600 font-mono font-semibold mt-2">Navigation</div>
+              <div className="px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary font-mono font-semibold mt-2">Navigation</div>
               
-              <Link href="/admin/library" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
-                <Library className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">Search Articles</span>
+              <Link href="/admin/library" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
+                <Library className="w-4 h-4 text-primary group-hover:text-foreground" />
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">Search Articles</span>
               </Link>
-              <Link href="/admin/assets/media" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
-                <ImageIcon className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">Open Media</span>
+              <Link href="/admin/assets/media" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
+                <ImageIcon className="w-4 h-4 text-primary group-hover:text-foreground" />
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">Open Media</span>
               </Link>
-              <Link href="/admin/newsletter" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
-                <Mail className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">Open Newsletter</span>
+              <Link href="/admin/newsletter" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
+                <Mail className="w-4 h-4 text-primary group-hover:text-foreground" />
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">Open Newsletter</span>
               </Link>
-              <Link href="/admin/settings" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
-                <Settings className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">Open Settings</span>
+              <Link href="/admin/settings" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
+                <Settings className="w-4 h-4 text-primary group-hover:text-foreground" />
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">Open Settings</span>
               </Link>
-              <Link href="/" target="_blank" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-[#1a1a1a] group cursor-pointer">
-                <Sparkles className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300" />
-                <span className="text-sm font-medium text-neutral-300 group-hover:text-white">View Website</span>
+              <Link href="/" target="_blank" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">
+                <Sparkles className="w-4 h-4 text-primary group-hover:text-foreground" />
+                <span className="text-sm font-medium text-primary group-hover:text-foreground">View Website</span>
               </Link>
             </div>
           </div>

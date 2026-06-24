@@ -320,20 +320,20 @@ export default function BuilderPage() {
 
             {/* DESCRIPTION & LINKS */}
             <div className="lg:col-span-7 flex flex-col items-start space-y-6 lg:space-y-5 order-3 lg:row-start-2 lg:mt-5 pt-2 lg:pt-0">
-              <p className="hidden md:block text-[13px] md:text-sm dark:text-neutral-500 text-[#8B867C] lg:dark:text-neutral-450 lg:text-[#5E5A53] leading-relaxed max-w-[280px] sm:max-w-md lg:max-w-lg">
+              <p className="hidden md:block text-[13px] md:text-sm text-primary/80 leading-relaxed max-w-[280px] sm:max-w-md lg:max-w-lg">
                 I build tools, systems, experiments, workflows, and digital environments focused on clarity, structure, and long-term usefulness.
               </p>
 
               <div className="flex flex-wrap gap-6 pt-1 lg:pt-2">
                 <button 
                   onClick={() => scrollToSection('active-systems')}
-                  className="text-xs font-mono tracking-wide dark:text-neutral-500 text-[#8B867C] hover:dark:text-neutral-200 hover:text-[#111111] transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
+                  className="text-xs font-mono tracking-wide text-primary/70 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                 >
                   Explore Systems <span className="opacity-50">↓</span>
                 </button>
                 <button 
                   onClick={() => scrollToSection('build-logs')}
-                  className="text-xs font-mono tracking-wide dark:text-neutral-500 text-[#8B867C] hover:dark:text-neutral-200 hover:text-[#111111] transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
+                  className="text-xs font-mono tracking-wide text-primary/70 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                 >
                   View Build Logs <span className="opacity-50">↓</span>
                 </button>
@@ -355,9 +355,9 @@ export default function BuilderPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="mb-4 pb-2 border-b border-[#E7E4DD]/70 dark:border-neutral-900/30"
+            className="mb-4 pb-2 border-b border-border"
           >
-            <h2 className="text-[11px] dark:text-neutral-400 text-[#8B867C] uppercase tracking-[0.25em] font-bold">
+            <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ ACTIVE SYSTEMS ]
             </h2>
           </motion.div>
@@ -379,7 +379,7 @@ export default function BuilderPage() {
           >
             
             {systemsData.length === 0 ? (
-              <div className="lg:col-span-12 py-12 text-center text-[#8B867C] dark:text-neutral-500 font-sans font-light italic border border-dashed border-neutral-200/70 dark:border-neutral-900/40 rounded-sm">
+              <div className="lg:col-span-12 py-12 text-center text-primary/70 font-sans font-light italic border border-dashed border-border rounded-sm">
                 Systems are being assembled.
               </div>
             ) : systemsData.map((sys) => sys.featured ? (
@@ -396,8 +396,8 @@ export default function BuilderPage() {
       <section id="build-logs" className="w-full min-h-[100svh] flex flex-col justify-center py-16">
         <div className="max-w-5xl mx-auto px-6 md:px-12 w-full">
           
-          <div className="mb-4 pb-1.5 border-b border-[#E7E4DD]/70 dark:border-neutral-900/30">
-            <h2 className="text-[11px] dark:text-neutral-400 text-[#8B867C] uppercase tracking-[0.25em] font-bold">
+          <div className="mb-4 pb-1.5 border-b border-border">
+            <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ BUILD LOGS ]
             </h2>
           </div>
@@ -410,16 +410,16 @@ export default function BuilderPage() {
               {/* MOBILE HORIZONTAL SELECTOR */}
               <div className="flex md:hidden items-center gap-1 w-full bg-neutral-100/70 dark:bg-neutral-900/40 p-1 rounded-md border border-neutral-200/50 dark:border-neutral-800/50 overflow-hidden">
                 {buildLogsData.length === 0 ? (
-                  <div className="text-center w-full py-2 text-[10px] text-[#8B867C] dark:text-neutral-500 font-mono">No logs</div>
+                  <div className="text-center w-full py-2 text-[10px] text-primary/70 font-mono">No logs</div>
                 ) : buildLogsData.slice(0, 3).map((log) => {
                   const isActive = activeLogId === log.id;
                   return (
                     <button
                       key={log.id}
                       onClick={() => setActiveLogId(log.id)}
-                      className={`flex-1 flex items-center justify-center gap-1.5 min-w-0 px-1 py-1.5 transition-all rounded-[4px] truncate ${isActive ? 'bg-white dark:bg-neutral-800 shadow-sm dark:text-neutral-100 text-[#111111]' : 'dark:text-neutral-500 text-[#8B867C] hover:bg-white/50 dark:hover:bg-neutral-800/50'}`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 min-w-0 px-1 py-1.5 transition-all rounded-[4px] truncate ${isActive ? 'bg-muted shadow-sm text-foreground' : 'text-primary/70 hover:bg-muted/50'}`}
                     >
-                      <span className={`text-[8px] shrink-0 ${isActive ? 'dark:text-[#7f9e8a] text-[#5F7A69]' : 'opacity-50'}`}>
+                      <span className={`text-[8px] shrink-0 ${isActive ? 'text-primary' : 'opacity-50'}`}>
                         {isActive ? '●' : '○'}
                       </span>
                       <span className={`text-[10px] sm:text-[11px] font-mono tracking-tight truncate ${isActive ? 'font-bold' : 'font-medium'}`}>
@@ -433,7 +433,7 @@ export default function BuilderPage() {
               {/* DESKTOP VERTICAL RAIL */}
               <div className="hidden md:flex flex-col w-full relative">
                 {buildLogsData.length === 0 ? (
-                  <div className="text-[12px] text-[#8B867C] dark:text-neutral-500 font-mono">No logs</div>
+                  <div className="text-[12px] text-primary/70 font-mono">No logs</div>
                 ) : buildLogsData.slice(0, 6).map((log, index) => {
                   const isActive = activeLogId === log.id;
                   
@@ -441,19 +441,19 @@ export default function BuilderPage() {
                     <div key={log.id} className="flex flex-col">
                       <button
                         onClick={() => setActiveLogId(log.id)}
-                        className={`text-left group flex items-start gap-4 py-1 transition-all duration-300 ${isActive ? 'opacity-100 dark:text-white text-black' : 'opacity-60 hover:opacity-100 dark:text-neutral-400 text-neutral-600'}`}
+                        className={`text-left group flex items-start gap-4 py-1 transition-all duration-300 ${isActive ? 'opacity-100 text-foreground' : 'opacity-60 hover:opacity-100 text-primary/80'}`}
                       >
-                        <span className={`text-[12px] mt-[1px] leading-none transition-colors ${isActive ? 'dark:text-[#7f9e8a] text-[#5F7A69] scale-110' : 'dark:text-neutral-500 text-[#8B867C]'}`}>
+                        <span className={`text-[12px] mt-[1px] leading-none transition-colors ${isActive ? 'text-primary scale-110' : 'text-primary/70'}`}>
                           {isActive ? '●' : '○'}
                         </span>
-                        <span className={`text-[13px] truncate transition-colors ${isActive ? 'dark:text-neutral-100 text-[#111111] font-semibold tracking-wide' : 'dark:text-neutral-500 text-[#8B867C] font-medium tracking-wide group-hover:dark:text-neutral-300 group-hover:text-neutral-700'}`}>
+                        <span className={`text-[13px] truncate transition-colors ${isActive ? 'text-foreground font-semibold tracking-wide' : 'text-primary/70 font-medium tracking-wide group-hover:text-foreground'}`}>
                           {log.category}
                         </span>
                       </button>
                       
                       {/* Vertical line connecting entries */}
                       {index < Math.min(buildLogsData.length, 6) - 1 && (
-                        <div className="w-[1px] h-6 ml-[5px] my-1 dark:bg-neutral-800 bg-neutral-200" />
+                        <div className="w-[1px] h-6 ml-[5px] my-1 border-l border-border" />
                       )}
                     </div>
                   );
@@ -466,7 +466,7 @@ export default function BuilderPage() {
             <div className="col-span-12 md:col-span-8 lg:col-span-8 md:pl-4 relative min-h-[360px]">
               {buildLogsData.length === 0 ? (
                 <div className="flex items-center justify-center h-full pt-10">
-                  <span className="text-[#8B867C] dark:text-neutral-500 font-sans font-light italic">No build logs yet.</span>
+                  <span className="text-primary/70 font-sans font-light italic">No build logs yet.</span>
                 </div>
               ) : (() => {
                 const activeLog = buildLogsData.find(l => l.id === activeLogId) || buildLogsData[0];
@@ -481,33 +481,33 @@ export default function BuilderPage() {
                       className="space-y-6"
                     >
                       <div className="flex items-center gap-3 mb-2 font-mono">
-                        <div className="flex items-center gap-1.5 dark:text-[#7f9e8a] text-[#5F7A69]">
+                        <div className="flex items-center gap-1.5 text-primary">
                           <span className="text-[8px] opacity-80">■</span>
                           <span className="text-[10px] uppercase font-bold tracking-widest">
                             {activeLog.category}
                           </span>
                         </div>
-                        <span className="text-[10px] dark:text-neutral-600 text-[#A29D93]">
+                        <span className="text-[10px] text-primary/70">
                           {activeLog.date}
                         </span>
                       </div>
 
-                      <h4 className="text-lg md:text-xl dark:text-neutral-100 text-[#111111] font-semibold leading-snug">
+                      <h4 className="text-lg md:text-xl text-foreground font-semibold leading-snug">
                         {activeLog.title}
                       </h4>
 
-                      <div className="space-y-6 pt-6 border-t border-neutral-200/50 dark:border-neutral-900/40">
+                      <div className="space-y-6 pt-6 border-t border-border">
                         <div>
-                          <h5 className="text-[10px] font-mono uppercase tracking-widest dark:text-neutral-600 text-[#A29D93] mb-2">Summary</h5>
-                          <p className="text-sm md:text-[15px] dark:text-neutral-300 text-[#3C3A35] leading-relaxed max-w-2xl">
+                          <h5 className="text-[10px] font-mono uppercase tracking-widest text-primary/70 mb-2">Summary</h5>
+                          <p className="text-sm md:text-[15px] text-foreground leading-relaxed max-w-2xl">
                             {activeLog.summary}
                           </p>
                         </div>
 
                         {activeLog.why && (
                           <div>
-                            <h5 className="text-[10px] font-mono uppercase tracking-widest dark:text-neutral-600 text-[#A29D93] mb-2">Why</h5>
-                            <p className="text-sm md:text-[15px] dark:text-neutral-400 text-[#5E5A53] leading-relaxed max-w-2xl">
+                            <h5 className="text-[10px] font-mono uppercase tracking-widest text-primary/70 mb-2">Why</h5>
+                            <p className="text-sm md:text-[15px] text-primary/90 leading-relaxed max-w-2xl">
                               {activeLog.why}
                             </p>
                           </div>
@@ -515,10 +515,10 @@ export default function BuilderPage() {
 
                         {activeLog.affectedAreas && activeLog.affectedAreas.length > 0 && (
                           <div>
-                            <h5 className="text-[10px] font-mono uppercase tracking-widest dark:text-neutral-600 text-[#A29D93] mb-3">Affected Areas</h5>
+                            <h5 className="text-[10px] font-mono uppercase tracking-widest text-primary/70 mb-3">Affected Areas</h5>
                             <div className="flex flex-wrap gap-3 mt-2">
                               {activeLog.affectedAreas.map((area, i) => (
-                                <span key={i} className="text-[11px] font-mono border border-neutral-200/70 dark:border-neutral-800 bg-[#E7E4DD]/20 dark:bg-neutral-900/30 px-2.5 py-1 rounded-[3px] dark:text-neutral-400 text-[#5E5A53]">
+                                <span key={i} className="text-[11px] font-mono border border-border bg-muted/20 px-2.5 py-1 rounded-[3px] text-primary/90">
                                   [ {area} ]
                                 </span>
                               ))}
@@ -541,8 +541,8 @@ export default function BuilderPage() {
       <section id="from-forge" className="w-full justify-center py-16 flex flex-col min-h-[100svh]">
         <div className="max-w-4xl mx-auto px-6 md:px-10 w-full">
           
-          <div className="mb-4 pb-1.5 border-b border-[#E7E4DD]/70 dark:border-neutral-900/30">
-            <h2 className="text-[11px] dark:text-neutral-400 text-[#8B867C] uppercase tracking-[0.25em] font-bold">
+          <div className="mb-4 pb-1.5 border-b border-border">
+            <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ FROM FORGE ]
             </h2>
           </div>
@@ -554,36 +554,36 @@ export default function BuilderPage() {
               {/* PRIMARY FEATURE */}
               {featuredPost && (
               <Link href={`/p/${featuredPost.slug || featuredPost.id}`} className="space-y-3 block group">
-                <h3 className="text-xl md:text-2xl font-semibold dark:text-neutral-100 text-[#111111] group-hover:underline leading-tight mb-2">
+                <h3 className="text-xl md:text-2xl font-semibold text-foreground group-hover:underline leading-tight mb-2">
                   {featuredPost.title}
                 </h3>
                 
-                <span className="text-[11px] font-mono dark:text-neutral-500 text-[#8B867C] block group-hover:dark:text-neutral-400 transition-colors">
+                <span className="text-[11px] font-mono text-primary/70 block group-hover:text-primary transition-colors">
                   {featuredPost.publishedAt || 'Unknown'}
                 </span>
                 
-                <p className="text-sm dark:text-neutral-400 text-[#5E5A53] leading-relaxed max-w-xl group-hover:dark:text-neutral-300 transition-colors">
+                <p className="text-sm text-primary/90 leading-relaxed max-w-xl group-hover:text-primary transition-colors">
                   {featuredPost.excerpt || 'Read reflection.'}
                 </p>
               </Link>
               )}
 
               {featuredPost && secondaryPost && (
-                <div className="w-full h-[1px] bg-neutral-200/20 dark:bg-neutral-900/40" />
+                <div className="w-full h-[1px] bg-border" />
               )}
 
               {/* SECONDARY FEATURE */}
               {secondaryPost && (
               <Link href={`/p/${secondaryPost.slug || secondaryPost.id}`} className="space-y-2 opacity-95 block group">
-                <h4 className="text-base md:text-lg font-semibold dark:text-neutral-200 text-[#111111] group-hover:underline leading-snug">
+                <h4 className="text-base md:text-lg font-semibold text-foreground group-hover:underline leading-snug">
                   {secondaryPost.title}
 </h4>
                 
-                <span className="text-[10px] font-mono dark:text-neutral-500 text-[#8B867C] block group-hover:dark:text-neutral-400 transition-colors">
+                <span className="text-[10px] font-mono text-primary/70 block group-hover:text-primary transition-colors">
                   {secondaryPost.publishedAt || 'Unknown'}
                 </span>
                 
-                <p className="text-xs dark:text-neutral-400 text-[#5E5A53] leading-relaxed max-w-lg group-hover:dark:text-neutral-300 transition-colors">
+                <p className="text-xs text-primary/90 leading-relaxed max-w-lg group-hover:text-primary transition-colors">
                   {secondaryPost.excerpt || 'Read reflection.'}
                 </p>
               </Link>
@@ -593,28 +593,28 @@ export default function BuilderPage() {
             {/* RECENT REFLECTIONS */}
             <div className="lg:col-span-5 flex flex-col justify-between space-y-6 h-full">
               <div className="space-y-4">
-                <span className="text-[10px] font-bold dark:text-neutral-500 text-[#8B867C] uppercase tracking-[0.2em] block">
+                <span className="text-[10px] font-bold text-primary/70 uppercase tracking-[0.2em] block">
                   recent reflections
                 </span>
                 
-                <div className="divide-y border-t border-[#E7E4DD]/50 dark:divide-neutral-900/20 divide-neutral-200/50 border-b border-[#E7E4DD]/50">
+                <div className="divide-y border-t border-border divide-border border-b">
                   {remainingPosts.map((p:any) => (
                   <Link 
                     key={p.id}
                     href={`/p/${p.slug || p.id}`} 
-                    className="group block py-2.5 dark:hover:bg-neutral-900/5 hover:bg-[#E7E4DD]/5 transition-colors duration-150 px-2 -mx-2"
+                    className="group block py-2.5 hover:bg-muted/10 transition-colors duration-150 px-2 -mx-2"
                   >
-                    <h4 className="text-xs font-semibold dark:text-neutral-200 text-[#222222] group-hover:dark:text-neutral-100 group-hover:text-black transition-colors">
+                    <h4 className="text-xs font-semibold text-foreground group-hover:text-foreground transition-colors">
                       {p.title}
                     </h4>
-                    <div className="flex justify-between items-center mt-1.5 text-[9px] font-mono dark:text-neutral-500 text-[#8B867C]">
+                    <div className="flex justify-between items-center mt-1.5 text-[9px] font-mono text-primary/70">
                       <span>{(p.tags && p.tags[0]) || 'Reflection'}</span>
                       <span>{p.publishedAt || 'Unknown'}</span>
                     </div>
                   </Link>
                   ))}
                   {remainingPosts.length === 0 && (
-                    <div className="py-2.5 px-2 -mx-2 text-xs text-neutral-500 font-mono">No more posts.</div>
+                    <div className="py-2.5 px-2 -mx-2 text-xs text-primary/70 font-mono">No more posts.</div>
                   )}
                 </div>
               </div>
@@ -622,7 +622,7 @@ export default function BuilderPage() {
               <div className="pt-1">
                 <button 
                   onClick={() => scrollToSection('build-logs')}
-                  className="text-xs dark:text-neutral-400 text-[#8B867C] hover:dark:text-neutral-200 hover:text-black transition-all duration-200 hover:underline flex items-center gap-1 cursor-pointer font-bold font-mono"
+                  className="text-xs text-primary/80 hover:text-foreground transition-all duration-200 hover:underline flex items-center gap-1 cursor-pointer font-bold font-mono"
                 >
                   View Writing Timeline <span className="opacity-70">&rarr;</span>
                 </button>
@@ -637,11 +637,11 @@ export default function BuilderPage() {
       <section className="w-full flex flex-col justify-start pt-12 pb-16 md:pt-16 md:pb-24">
         <div className="max-w-4xl mx-auto px-6 md:px-10 w-full overflow-hidden md:overflow-visible">
           
-          <div className="mb-8 pb-1.5 border-b border-[#E7E4DD]/70 dark:border-neutral-900/30 flex justify-between items-end">
-            <h2 className="text-[11px] dark:text-neutral-400 text-[#8B867C] uppercase tracking-[0.25em] font-bold">
+          <div className="mb-8 pb-1.5 border-b border-border flex justify-between items-end">
+            <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ SYSTEM ARCHITECTURE ]
             </h2>
-            <span className="md:hidden text-[9px] dark:text-neutral-500 text-[#8B867C] font-mono tracking-widest uppercase mb-0.5">
+            <span className="md:hidden text-[9px] text-primary/70 font-mono tracking-widest uppercase mb-0.5">
               Swipe <span className="opacity-70">&rarr;</span>
             </span>
           </div>
@@ -651,31 +651,31 @@ export default function BuilderPage() {
             {/* PAGE 1 */}
             <div className="w-full shrink-0 snap-start grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
               {/* Card 1 */}
-              <div className="border-l-2 dark:border-neutral-800 border-[#8B867C]/40 pl-4 py-0.5">
-                <p className="text-sm dark:text-neutral-300 text-[#222222] font-semibold tracking-wide">
+              <div className="border-l-2 border-border pl-4 py-0.5">
+                <p className="text-sm text-foreground font-semibold tracking-wide">
                   KNOWLEDGE LAYER
                 </p>
-                <span className="text-[11px] dark:text-neutral-500 text-[#5E5A53] block mt-1.5 font-normal">
+                <span className="text-[11px] text-primary/70 block mt-1.5 font-normal">
                   Notes • References • Archives
                 </span>
               </div>
               
               {/* Card 2 */}
-              <div className="border-l-2 dark:border-neutral-800 border-[#8B867C]/40 pl-4 py-0.5">
-                <p className="text-sm dark:text-neutral-300 text-[#222222] font-semibold tracking-wide">
+              <div className="border-l-2 border-border pl-4 py-0.5">
+                <p className="text-sm text-foreground font-semibold tracking-wide">
                   PROJECT LAYER
                 </p>
-                <span className="text-[11px] dark:text-neutral-500 text-[#5E5A53] block mt-1.5 font-normal">
+                <span className="text-[11px] text-primary/70 block mt-1.5 font-normal">
                   Experiments • Systems • Workspaces
                 </span>
               </div>
 
               {/* Card 3 */}
-              <div className="border-l-2 dark:border-neutral-800 border-[#8B867C]/40 pl-4 py-0.5">
-                <p className="text-sm dark:text-neutral-300 text-[#222222] font-semibold tracking-wide">
+              <div className="border-l-2 border-border pl-4 py-0.5">
+                <p className="text-sm text-foreground font-semibold tracking-wide">
                   PUBLISHING LAYER
                 </p>
-                <span className="text-[11px] dark:text-neutral-500 text-[#5E5A53] block mt-1.5 font-normal">
+                <span className="text-[11px] text-primary/70 block mt-1.5 font-normal">
                   Essays • Logs • Newsletters
                 </span>
               </div>
@@ -684,31 +684,31 @@ export default function BuilderPage() {
             {/* PAGE 2 */}
             <div className="w-full shrink-0 snap-start grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
               {/* Card 4 */}
-              <div className="border-l-2 dark:border-neutral-800 border-[#8B867C]/40 pl-4 py-0.5">
-                <p className="text-sm dark:text-neutral-300 text-[#222222] font-semibold tracking-wide">
+              <div className="border-l-2 border-border pl-4 py-0.5">
+                <p className="text-sm text-foreground font-semibold tracking-wide">
                   DEPLOYMENT LAYER
                 </p>
-                <span className="text-[11px] dark:text-neutral-500 text-[#5E5A53] block mt-1.5 font-normal">
+                <span className="text-[11px] text-primary/70 block mt-1.5 font-normal">
                   Preview • Production • Delivery
                 </span>
               </div>
               
               {/* Card 5 */}
-              <div className="border-l-2 dark:border-neutral-800 border-[#8B867C]/40 pl-4 py-0.5">
-                <p className="text-sm dark:text-neutral-300 text-[#222222] font-semibold tracking-wide">
+              <div className="border-l-2 border-border pl-4 py-0.5">
+                <p className="text-sm text-foreground font-semibold tracking-wide">
                   REVISION LAYER
                 </p>
-                <span className="text-[11px] dark:text-neutral-500 text-[#5E5A53] block mt-1.5 font-normal">
+                <span className="text-[11px] text-primary/70 block mt-1.5 font-normal">
                   History • Versions • Records
                 </span>
               </div>
 
               {/* Card 6 */}
-              <div className="border-l-2 dark:border-neutral-800 border-[#8B867C]/40 pl-4 py-0.5">
-                <p className="text-sm dark:text-neutral-300 text-[#222222] font-semibold tracking-wide">
+              <div className="border-l-2 border-border pl-4 py-0.5">
+                <p className="text-sm text-foreground font-semibold tracking-wide">
                   ARCHIVE LAYER
                 </p>
-                <span className="text-[11px] dark:text-neutral-500 text-[#5E5A53] block mt-1.5 font-normal">
+                <span className="text-[11px] text-primary/70 block mt-1.5 font-normal">
                   Snapshots • Memory • Preservation
                 </span>
               </div>
@@ -717,8 +717,8 @@ export default function BuilderPage() {
           </div>
 
           {/* BOTTOM SACRED MOTTO - Closely associated visually, tight structural relationship */}
-          <div className="mt-10 pt-4 border-t border-neutral-200/20 dark:border-neutral-900/15 text-center max-w-sm mx-auto">
-            <p className="text-xs dark:text-neutral-500 text-[#8B867C] italic tracking-wide leading-relaxed">
+          <div className="mt-10 pt-4 border-t border-border text-center max-w-sm mx-auto">
+            <p className="text-xs text-primary/70 italic tracking-wide leading-relaxed">
               &quot;Most systems fail because they grow faster than they are understood.&quot;
             </p>
           </div>

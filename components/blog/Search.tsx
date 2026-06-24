@@ -17,29 +17,19 @@ export function Search({ value, onChange, persona }: SearchProps) {
   const getInputStyles = () => {
     switch (persona) {
       case 'operator':
-        return 'font-mono text-xs border border-dashed focus:border-solid bg-black/40 px-3 py-2 text-[#7f9e8a] placeholder-[#5C6A61]/50 border-[#1e2722] focus:ring-1 focus:ring-[#7f9e8a]/30';
+        return 'font-mono text-xs border border-dashed focus:border-solid bg-muted px-3 py-2 text-foreground placeholder:text-primary/50 focus:ring-1 focus:ring-primary/30';
       case 'builder':
-        return 'font-mono text-[#222222] dark:text-neutral-300 text-xs border border-neutral-350 dark:border-neutral-900 bg-[#E7E4DD]/50 dark:bg-neutral-900/40 px-3.5 py-2 placeholder-stone-400 dark:placeholder-neutral-600 focus:border-orange-500/80 focus:ring-1 focus:ring-orange-500/10 rounded-md';
+        return 'font-mono text-foreground text-xs border border-border bg-muted/50 px-3.5 py-2 placeholder:text-primary/50 focus:border-primary/80 focus:ring-1 focus:ring-primary/10 rounded-md';
       case 'thinker':
-        return 'font-sans text-stone-700 dark:text-[#D1CDC5] text-sm border-b bg-transparent py-2 px-1 focus:border-stone-500 placeholder-[#7F786F]/50 border-[#E2DFDA] dark:border-stone-850';
+        return 'font-sans text-foreground text-sm border-b bg-transparent py-2 px-1 focus:border-primary placeholder:text-primary/50 border-border';
       case 'wanderer':
       default:
-        return 'font-sans text-white text-xs sm:text-sm bg-[#131418] border border-[#212328] px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md placeholder-zinc-500 focus:outline-none focus:border-[#C58059]';
+        return 'font-sans text-foreground text-xs sm:text-sm bg-muted border border-border px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md placeholder:text-primary/50 focus:outline-none focus:border-primary';
     }
   };
 
   const getIconStyles = () => {
-    switch (persona) {
-      case 'operator':
-        return 'text-[#5C6A61]';
-      case 'builder':
-        return 'text-stone-450 dark:text-neutral-500';
-      case 'thinker':
-        return 'text-[#7F786F]/60';
-      case 'wanderer':
-      default:
-        return 'text-[#8A7C70]/60';
-    }
+    return 'text-primary/60';
   };
 
   return (

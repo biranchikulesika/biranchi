@@ -87,7 +87,7 @@ export function ArticleGrid({ posts, persona }: ArticleGridProps) {
 
               {/* Excerpt */}
               <p className={`text-[13.5px] sm:text-[14px] leading-relaxed opacity-80 group-hover:opacity-95 line-clamp-3 transition-opacity ${
-                isOperator ? 'font-mono text-xs text-[#7f9e8a]/90' : 'font-spectral italic text-stone-550 dark:text-stone-400'
+                isOperator ? 'font-mono text-xs text-primary/90' : 'font-spectral italic text-primary/80'
               }`}>
                 {post.excerpt || post.subtitle}
               </p>
@@ -104,7 +104,7 @@ export function ArticleGrid({ posts, persona }: ArticleGridProps) {
                   : persona === 'builder' 
                   ? 'text-orange-500 hover:text-orange-400'
                   : isWanderer
-                  ? 'text-[#B67A55] dark:text-[#B97A56]'
+                  ? 'text-primary'
                   : 'text-stone-600 dark:text-stone-300'
               }`}
             >

@@ -69,15 +69,15 @@ export default function OperatorPage() {
             
             {/* HEADLINE */}
             <div className="lg:col-span-7 order-1 lg:row-start-1">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium dark:text-neutral-100 text-[#111111] leading-tight tracking-tight max-w-xl">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium text-foreground leading-tight tracking-tight max-w-xl">
                 Understanding systems through observation and failure.
               </h1>
             </div>
 
             {/* RIGHT SIDE ACTIVE SYSTEMS PANEL - Tightened layout, visually snug */}
             <div className="lg:col-span-4 lg:col-start-9 w-full order-2 lg:row-start-1 lg:row-span-2 lg:mt-2">
-              <div className="border border-neutral-200/70 dark:border-neutral-900 p-5 md:p-6 dark:bg-neutral-900/5 bg-[#E7E4DD]/10 rounded-[3px] space-y-4 relative overflow-hidden">
-                <div className="flex justify-between items-center text-[10px] dark:text-neutral-500 text-[#8B867C] tracking-wide font-medium">
+              <div className="border border-border p-5 md:p-6 bg-muted/20 rounded-[3px] space-y-4 relative overflow-hidden">
+                <div className="flex justify-between items-center text-[10px] text-primary/70 tracking-wide font-medium">
                   <span>Current focus</span>
                   <span className="flex h-1.5 w-1.5 relative">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5F7A69] opacity-40"></span>
@@ -87,9 +87,9 @@ export default function OperatorPage() {
                 
                 
                 {focuses.length > 0 ? focuses.map((f:any) => (
-                    <div key={f.id} className="border-t border-[#E7E4DD]/70 dark:border-neutral-900/30 pt-3">
-                      <span className="text-[10px] dark:text-neutral-500 text-[#8B867C] block mb-0.5 font-bold uppercase">[ {f.category || 'FOCUS'} ]</span>
-                      <p className="text-xs dark:text-neutral-300 text-[#222222] font-semibold leading-relaxed">{f.text}</p>
+                    <div key={f.id} className="border-t border-border pt-3">
+                      <span className="text-[10px] text-primary/70 block mb-0.5 font-bold uppercase">[ {f.category || 'FOCUS'} ]</span>
+                      <p className="text-xs text-foreground font-semibold leading-relaxed">{f.text}</p>
                     </div>
                 )) : (
                     <div className="text-xs dark:text-neutral-500 text-[#8B867C] p-2 italic pt-3 border-t border-[#E7E4DD]/70 dark:border-neutral-900/30">Current focus will appear here.</div>
@@ -100,20 +100,20 @@ export default function OperatorPage() {
 
             {/* DESCRIPTION & LINKS */}
             <div className="lg:col-span-7 flex flex-col items-start space-y-6 lg:space-y-5 order-3 lg:row-start-2 lg:mt-5 pt-2 lg:pt-0">
-              <p className="hidden md:block text-[13px] md:text-sm dark:text-neutral-500 text-[#8B867C] lg:dark:text-neutral-450 lg:text-[#5E5A53] leading-relaxed max-w-[280px] sm:max-w-md lg:max-w-lg">
+              <p className="hidden md:block text-[13px] md:text-sm text-primary/80 leading-relaxed max-w-[280px] sm:max-w-md lg:max-w-lg">
                 Studying how systems behave under pressure, how failures emerge, and how people adapt around them.
               </p>
 
               <div className="flex flex-wrap gap-6 pt-1 lg:pt-2">
                 <a 
                   href="#recent-observations"
-                  className="text-xs font-mono tracking-wide dark:text-neutral-500 text-[#8B867C] hover:dark:text-neutral-200 hover:text-[#111111] transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
+                  className="text-xs font-mono tracking-wide text-primary/80 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                 >
                   View Field Notes <span className="opacity-50">↓</span>
                 </a>
                 <Link 
                   href="/operator/blogs"
-                  className="text-xs font-mono tracking-wide dark:text-neutral-500 text-[#8B867C] hover:dark:text-neutral-200 hover:text-[#111111] transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
+                  className="text-xs font-mono tracking-wide text-primary/80 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                 >
                   View Archive <span className="opacity-50">→</span>
                 </Link>
@@ -131,13 +131,13 @@ export default function OperatorPage() {
             {/* FIELD NOTES */}
             <section id="recent-observations" className="scroll-mt-24 w-full">
               <div className="mb-12 max-w-xl">
-                <h2 className="text-xl md:text-2xl font-bold dark:text-neutral-200 text-[#111111] tracking-tight mb-3">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight mb-3">
                   FIELD NOTES
                 </h2>
-                <p className="text-sm dark:text-neutral-400 text-[#5E5A53] leading-relaxed mb-4">
+                <p className="text-sm text-primary/80 leading-relaxed mb-4">
                   Recent observations collected from ongoing study, experiments, failures, and system analysis.
                 </p>
-                <div className="text-[11px] font-mono dark:text-neutral-500 text-[#8B867C] tracking-wide uppercase">
+                <div className="text-[11px] font-mono text-primary/70 tracking-wide uppercase">
                   Showing latest 3 observations
                 </div>
               </div>
@@ -151,28 +151,28 @@ export default function OperatorPage() {
                     <Link 
                       key={n.id}
                       href={`/p/${n.id}`}
-                      className={`group flex flex-col ${isFirst ? 'pb-8 border-b' : 'py-6 border-b last:border-b-0'} border-[#D6DED5]/40 dark:border-neutral-800 transition-opacity hover:opacity-100 opacity-90`}
+                      className={`group flex flex-col ${isFirst ? 'pb-8 border-b' : 'py-6 border-b last:border-b-0'} border-border transition-opacity hover:opacity-100 opacity-90`}
                     >
-                      {isFirst && <span className="text-[10px] font-mono dark:text-[#7f9e8a] text-[#5F7A69] uppercase tracking-widest mb-4 block font-bold">Latest Observation</span>}
+                      {isFirst && <span className="text-[10px] font-mono text-primary uppercase tracking-widest mb-4 block font-bold">Latest Observation</span>}
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-[11px] dark:text-neutral-400 text-[#5E5A53] font-bold tracking-widest uppercase">{n.category || 'Systems'}</span>
-                        <span className="text-[10px] dark:text-neutral-600 text-neutral-300">&middot;</span>
-                        <span className="text-[11px] dark:text-neutral-500 text-[#8B867C] font-mono tracking-widest uppercase">{n.date || 'Unknown'}</span>
+                        <span className="text-[11px] text-primary/90 font-bold tracking-widest uppercase">{n.category || 'Systems'}</span>
+                        <span className="text-[10px] text-primary/40">&middot;</span>
+                        <span className="text-[11px] text-primary/70 font-mono tracking-widest uppercase">{n.date || 'Unknown'}</span>
                       </div>
-                      <h3 className={`${isFirst ? 'text-xl sm:text-[22px]' : 'text-[15px] sm:text-base'} font-bold dark:text-neutral-100 text-[#111111] leading-snug group-hover:dark:text-[#b4d3c0] group-hover:text-[#3E5245] transition-colors mb-3 md:max-w-[540px]`}>
+                      <h3 className={`${isFirst ? 'text-xl sm:text-[22px]' : 'text-[15px] sm:text-base'} font-bold text-foreground leading-snug group-hover:text-primary transition-colors mb-3 md:max-w-[540px]`}>
                         {n.title}
                       </h3>
-                      <p className={`${isFirst ? 'text-[15px] sm:text-base' : 'text-sm'} dark:text-neutral-400 text-[#3E5245] leading-relaxed font-sans md:max-w-[540px]`}>
+                      <p className={`${isFirst ? 'text-[15px] sm:text-base' : 'text-sm'} text-primary/80 leading-relaxed font-sans md:max-w-[540px]`}>
                         {n.content}
                       </p>
                     </Link>
                   );
                 })}
-                {notes.length === 0 && <div className="text-[15px] dark:text-neutral-500 text-[#8B867C] py-8 italic font-sans font-light">No observations published yet.</div>}
+                {notes.length === 0 && <div className="text-[15px] text-primary/70 py-8 italic font-sans font-light">No observations published yet.</div>}
 </div>
 
               <div className="pt-8 max-w-[600px]">
-                 <Link href="/operator/blogs/archive" className="text-xs font-mono tracking-wide dark:text-neutral-500 text-[#8B867C] hover:dark:text-neutral-200 hover:text-[#111111] transition-colors duration-200 cursor-pointer flex items-center gap-1.5 focus:outline-none">
+                 <Link href="/operator/blogs/archive" className="text-xs font-mono tracking-wide text-primary/80 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5 focus:outline-none">
                     View Observation Archive <span className="opacity-50">&rarr;</span>
                  </Link>
               </div>

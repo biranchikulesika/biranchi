@@ -17,6 +17,105 @@
       transform: translateX(-50%);
     }
   }
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+}
+
+@layer base {
+  :root {
+    --background: #F5F5F2;
+    --foreground: #2B2B28;
+    --primary: #7A746B;
+    --muted: #E8E6DF;
+    --border: #ECEBE6;
+  }
+  
+  .dark {
+    --background: #050505;
+    --foreground: #e5e5e5;
+    --primary: #8c8273;
+    --muted: #1a1a1a;
+    --border: #262626;
+  }
+
+  .theme-thinker {
+    --background: #F4F3F1;
+    --foreground: #2F3134;
+    --primary: #6F7175;
+    --muted: #E2DFDA;
+    --border: #DCD9D4;
+  }
+  .dark .theme-thinker, .theme-thinker.dark {
+    --background: #111417;
+    --foreground: #D7D4CE;
+    --primary: #A7A39B;
+    --muted: #1A1E24;
+    --border: #23282D;
+  }
+
+  .theme-wanderer {
+    --background: #F5F1EB;
+    --foreground: #43382F;
+    --primary: #B67A55;
+    --muted: #E5DCCF;
+    --border: #D8CEBE;
+  }
+  .dark .theme-wanderer, .theme-wanderer.dark {
+    --background: #1B1613;
+    --foreground: #E1D5C8;
+    --primary: #B97A56;
+    --muted: #26201B;
+    --border: #352B24;
+  }
+
+  .theme-operator {
+    --background: #EDF1EC;
+    --foreground: #1F2822;
+    --primary: #5F7A69;
+    --muted: #D6DED5;
+    --border: #C8D3C7;
+  }
+  .dark .theme-operator, .theme-operator.dark {
+    --background: #080b09;
+    --foreground: #7f9e8a;
+    --primary: #6d8775;
+    --muted: #121A15;
+    --border: #1E2722;
+  }
+
+  .theme-builder {
+    --background: #F3F2EE;
+    --foreground: #222222;
+    --primary: #5E5A53;
+    --muted: #E7E4DD;
+    --border: #D8D4CC;
+  }
+  .dark .theme-builder, .theme-builder.dark {
+    --background: #0a0a0a;
+    --foreground: #d4d4d4;
+    --primary: #a3a3a3;
+    --muted: #171717;
+    --border: #262626;
+  }
+
+  .theme-admin {
+    --background: #F8F8F8;
+    --foreground: #111111;
+    --primary: #444444;
+    --muted: #EAEAEA;
+    --border: #DDDDDD;
+  }
+  .dark .theme-admin, .theme-admin.dark {
+    --background: #0A0A0A;
+    --foreground: #E5E5E5;
+    --primary: #888888;
+    --muted: #161616;
+    --border: #222222;
+  }
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
