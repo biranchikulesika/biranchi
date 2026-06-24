@@ -50,7 +50,7 @@ export function FooterBuilder() {
             <Link href="#" className="hover:text-foreground transition-colors truncate">Blogs / Writes</Link>
             <Link href="#" className="hover:text-foreground transition-colors truncate">Terms</Link>
             <Link href="#" className="hover:text-foreground transition-colors truncate">Feedback</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">Support / Fund</Link>
+            <Link href="/fund" className="hover:text-foreground transition-colors truncate">Support / Fund</Link>
           </div>
         </div>
       </div>

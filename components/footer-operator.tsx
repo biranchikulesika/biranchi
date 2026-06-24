@@ -48,7 +48,7 @@ export function FooterOperator() {
             <Link href={getPersonaUrl('operator', '/about')} className="hover:text-foreground transition-colors truncate">About</Link>
             <Link href="#" className="hover:text-foreground transition-colors truncate">Logs</Link>
             <Link href="#" className="hover:text-foreground transition-colors truncate">Feedback</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">Support</Link>
+            <Link href="/fund" className="hover:text-foreground transition-colors truncate">Support / Fund</Link>
           </div>
         </div>
       </div>
