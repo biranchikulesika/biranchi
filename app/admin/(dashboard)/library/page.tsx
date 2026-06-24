@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { 
   Search, Filter, SlidersHorizontal, ArrowUpDown, Edit2, Trash2, Plus, ExternalLink, 
-  HelpCircle, Check, Play, BookOpen, AlertCircle, RefreshCw, Layers, Sparkles, Brain, CheckCircle
+  HelpCircle, Check, Play, BookOpen, AlertCircle, RefreshCw, Layers, Sparkles, Brain, CheckCircle, Loader2
 } from 'lucide-react';
 import { getPosts, deletePost } from '@/app/admin/actions/posts.actions';
 import { getFieldNotes, deleteFieldNote, updateFieldNote } from '@/app/admin/actions/fieldNotes.actions';
@@ -32,9 +32,13 @@ interface UnifiedItem {
 
 export default function ContentLibraryPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [items, setItems] = useState<UnifiedItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isPending, startTransition] = useTransition();
+
+  const [searchQuery, setSearchQuery] = useState(searchParams?.get('q') || '');
   
   // Filters
   const [selectedPersona, setSelectedPersona] = useState<string>('all');
@@ -48,13 +52,13 @@ export default function ContentLibraryPage() {
   const [savingEdit, setSavingEdit] = useState(false);
   
   // Load All content, join them into standard schema feed
-  const loadLibrary = async () => {
+  const loadLibrary = async (query: string = '') => {
     setLoading(true);
     try {
       const [
         postsRes, fieldNotes, thoughtFragments, fragments, questions, journalMoments
       ] = await Promise.all([
-        getPosts(),
+        getPosts(query),
         getFieldNotes(),
         getThoughtFragments(),
         getFragments(),
@@ -190,12 +194,28 @@ export default function ContentLibraryPage() {
   };
 
   useEffect(() => {
-    loadLibrary();
-  }, []);
+    loadLibrary(searchParams?.get('q') || '');
+  }, [searchParams]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentQ = searchParams?.get('q') || '';
+      if (searchQuery !== currentQ) {
+        const params = new URLSearchParams(searchParams?.toString() || '');
+        if (searchQuery) params.set('q', searchQuery);
+        else params.delete('q');
+        
+        startTransition(() => {
+          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        });
+      }
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery, pathname, router, searchParams]);
 
   // Filter & Search Logic
   const filteredItems = items.filter(item => {
-    // 1. Search Query Match
+    // 1. Search Query Match (still done client-side for non-post types, and as fallback)
     const q = searchQuery.toLowerCase();
     const matchesSearch = q === '' || 
       item.title.toLowerCase().includes(q) || 

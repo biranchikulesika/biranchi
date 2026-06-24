@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Loader2 } from 'lucide-react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 import { Post } from '@/lib/types';
 import { PERSONA_BLOG_THEMES } from './themes';
@@ -12,11 +13,17 @@ import { ArchiveTimeline } from './ArchiveTimeline';
 export interface ArchivePageProps {
   persona: 'main' | 'wanderer' | 'thinker' | 'builder' | 'operator';
   databasePosts: any[];
+  initialSearchQuery?: string;
 }
 
-export function ArchivePage({ persona, databasePosts }: ArchivePageProps) {
+export function ArchivePage({ persona, databasePosts, initialSearchQuery = '' }: ArchivePageProps) {
   const theme = PERSONA_BLOG_THEMES[persona] || PERSONA_BLOG_THEMES.wanderer;
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [posts, setPosts] = useState<any[]>([]);
 
   useEffect(() => {
@@ -25,21 +32,28 @@ export function ArchivePage({ persona, databasePosts }: ArchivePageProps) {
       ? databasePosts.filter(p => !p.hidden && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft'))
       : databasePosts.filter(p => p.persona === persona && !p.hidden && p.draft !== true && (!p.status || p.status.toLowerCase() !== 'draft'));
 
-    setTimeout(() => {
-      setPosts(dbPosts);
-    }, 0);
-  }, [persona]);
+    setPosts(dbPosts);
+  }, [persona, databasePosts]);
 
-  // Filter posts by search query matching title, subtitle, category or excerpt
-  const filteredPosts = posts.filter(post => {
-    if (!searchQuery.trim()) return true;
-    const query = searchQuery.toLowerCase();
-    const titleVal = (post.title || '').toLowerCase();
-    const subVal = (post.subtitle || '').toLowerCase();
-    const excerptVal = (post.excerpt || '').toLowerCase();
-    const catVal = (post.category || '').toLowerCase();
-    return titleVal.includes(query) || subVal.includes(query) || excerptVal.includes(query) || catVal.includes(query);
-  });
+  // Debounce search query to URL
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentQ = searchParams.get('q') || '';
+      if (searchQuery !== currentQ) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (searchQuery) {
+          params.set('q', searchQuery);
+        } else {
+          params.delete('q');
+        }
+        startTransition(() => {
+          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        });
+      }
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [searchQuery, pathname, router, searchParams]);
 
   return (
     <div className={`w-full min-h-screen ${theme.containerClass}`}>
@@ -61,10 +75,15 @@ export function ArchivePage({ persona, databasePosts }: ArchivePageProps) {
         </header>
 
         {/* CHRONOLOGICAL TIMELINE */}
-        <section id="archive-chronological-feed" className="py-6 select-text">
+        <section id="archive-chronological-feed" className="py-6 select-text relative">
+          {isPending && (
+            <div className="absolute inset-0 z-10 flex items-start justify-center pt-20 bg-background/50 backdrop-blur-[1px]">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          )}
           <AnimatePresence mode="wait">
-            {filteredPosts.length > 0 ? (
-              <ArchiveTimeline posts={filteredPosts} persona={persona} />
+            {posts.length > 0 ? (
+              <ArchiveTimeline posts={posts} persona={persona} />
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}

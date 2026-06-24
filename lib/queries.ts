@@ -15,8 +15,8 @@ import { OperatorFocusService } from '@/lib/services/operatorFocus.service';
 const safeArray = async (fn: () => Promise<any>) => { try { return await fn() || []; } catch (e) { console.error("Query failed", e); return []; } };
 const safeSingle = async (fn: () => Promise<any>) => { try { return await fn() || null; } catch (e) { console.error("Query failed", e); return null; } };
 
-export async function getPosts() { return safeArray(() => new PostService().getAll()); }
-export async function getPostsMeta() { return safeArray(() => new PostService().getAllMeta()); }
+export async function getPosts(searchQuery?: string) { return safeArray(() => new PostService().getAll(searchQuery)); }
+export async function getPostsMeta(searchQuery?: string) { return safeArray(() => new PostService().getAllMeta(searchQuery)); }
 export async function getPostBySlug(slug: string, persona?: string) { return safeSingle(() => new PostService().getBySlug(slug, persona)); }
 export async function getFragments() { return safeArray(() => new FragmentService().getAll()); }
 export async function getJournalMoments() { return safeArray(() => new JournalMomentService().getAll()); }

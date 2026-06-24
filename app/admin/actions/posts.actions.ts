@@ -22,10 +22,10 @@ function handleError(error: any): { success: false; error: string } {
   return { success: false, error: message };
 }
 
-export async function getPosts(): Promise<ActionResponse<any[]>> {
+export async function getPosts(searchQuery?: string): Promise<ActionResponse<any[]>> {
   try {
     await verifyAuth();
-    const data = await postService.getAll();
+    const data = await postService.getAll(searchQuery);
     return { success: true, data };
   } catch (error) {
     return handleError(error);

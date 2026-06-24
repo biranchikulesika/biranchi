@@ -92,19 +92,34 @@ function fromDbFormat(dbData: any): Post {
 }
 
 export class PostSupabaseRepository implements IRepository<Post> {
-  async getAll(): Promise<Post[]> {
-    const { data, error } = await (supabaseServer as any).from('posts').select('*').order('created_at', { ascending: false });
+  async getAll(searchQuery?: string): Promise<Post[]> {
+    let query = (supabaseServer as any).from('posts').select('*').order('created_at', { ascending: false });
+    
+    if (searchQuery && searchQuery.trim() !== '') {
+      const q = searchQuery.trim().replace(/"/g, ''); // strip quotes to safely embed
+      // Using PostgREST wfts (websearch_to_tsquery) for optimized full-text search
+      query = query.or(`title.wfts."${q}",excerpt.wfts."${q}",content.wfts."${q}"`);
+    }
+
+    const { data, error } = await query;
     if (error) throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
     return (data || []).map(fromDbFormat);
   }
 
-  async getAllMeta(): Promise<Post[]> {
+  async getAllMeta(searchQuery?: string): Promise<Post[]> {
     const now = new Date().toISOString();
-    const { data, error } = await (supabaseServer as any).from('posts')
+    let query = (supabaseServer as any).from('posts')
       .select('id, title, subtitle, byline, slug, old_slugs, excerpt, status, persona, cover_image_url, cover_image_alt, cover_image_caption, cover_image_location, cover_image_credit, auto_cover_image, reading_time, featured, hidden, published_at, tags, created_at, updated_at')
       .eq('status', 'published')
       .lte('published_at', now)
       .order('created_at', { ascending: false });
+
+    if (searchQuery && searchQuery.trim() !== '') {
+      const q = searchQuery.trim().replace(/"/g, ''); // strip quotes
+      query = query.or(`title.wfts."${q}",excerpt.wfts."${q}",content.wfts."${q}"`);
+    }
+
+    const { data, error } = await query;
     if (error) throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
     return (data || []).map(fromDbFormat);
   }

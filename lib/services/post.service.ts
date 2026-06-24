@@ -8,21 +8,21 @@ export class PostService {
     this.repository = repositoryRegistry.getPostRepository();
   }
 
-  async getAll(): Promise<Post[]> {
+  async getAll(searchQuery?: string): Promise<Post[]> {
     try {
-      return await this.repository.getAll();
+      return await (this.repository as any).getAll(searchQuery);
     } catch (error) {
       console.error("Failed to get posts:", error);
       throw error;
     }
   }
 
-  async getAllMeta(): Promise<Post[]> {
+  async getAllMeta(searchQuery?: string): Promise<Post[]> {
     try {
       if ((this.repository as any).getAllMeta) {
-        return await (this.repository as any).getAllMeta();
+        return await (this.repository as any).getAllMeta(searchQuery);
       }
-      const all = await this.getAll();
+      const all = await this.getAll(searchQuery);
       // Remove content if repository fallback is used
       return all.map((p) => {
         const { content, ...meta } = p;
