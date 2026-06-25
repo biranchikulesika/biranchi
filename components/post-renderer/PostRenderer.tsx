@@ -71,9 +71,10 @@ export interface PostRendererProps {
   post: any | undefined;
   slug: string;
   allPosts: any[];
+  fallbackPersona?: string;
 }
 
-export default function PostRenderer({ post, slug, allPosts }: PostRendererProps) {
+export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: PostRendererProps) {
   const [copied, setCopied] = useState(false);
   const [, setScrollPercent] = useState(0);
   const [, setShowToTop] = useState(false);
@@ -122,7 +123,7 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
     }
   };
 
-  const p = post?.persona || 'wanderer';
+  const p = post?.persona || fallbackPersona || 'wanderer';
 
   const themes = {
     "wanderer": {
@@ -445,45 +446,45 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
     </div>
   );
 
-  const displayDate = post.date || (post.publishedAt ? new Intl.DateTimeFormat('en-US', {month:'long', day:'numeric', year:'numeric'}).format(new Date(post.publishedAt)) : 'Unknown Date');
+  const displayDate = post?.date || (post?.publishedAt ? new Intl.DateTimeFormat('en-US', {month:'long', day:'numeric', year:'numeric'}).format(new Date(post.publishedAt)) : 'Unknown Date');
 
   const renderArticleHeader = () => (
     <>
       <div className={"mb-2 select-none " + theme.meta}>
-        {p.toUpperCase()} • {displayDate.toUpperCase()} • {String(post.readingTime || '').toUpperCase()} {typeof post.readingTime === 'number' ? 'MIN READ' : ''}
+        {p.toUpperCase()} • {displayDate.toUpperCase()} • {String(post?.readingTime || '').toUpperCase()} {typeof post?.readingTime === 'number' ? 'MIN READ' : ''}
       </div>
 
       <h1 className={theme.title}>
-        {post.title}
+        {post?.title}
       </h1>
 
       <div className={theme.subtitle}>
-        {post.subtitle}
+        {post?.subtitle}
       </div>
 
-      {post.byline && (
+      {post?.byline && (
         <div className="text-xs font-mono text-primary/60 mb-6 font-medium tracking-wide uppercase select-none pb-2 border-b border-border">
-          {post.byline}
+          {post?.byline}
         </div>
       )}
 
-      {post.heroImage && (
+      {post?.heroImage && (
         <div className="my-[2.5rem] block w-full relative">
           <div className={`relative overflow-hidden w-full border ${theme.heroBg} ${theme.heroBorder}`}>
             <img 
-              src={post.heroImage} 
-              alt={post.title} 
+              src={post?.heroImage} 
+              alt={post?.title} 
               className={`w-full h-auto aspect-[16/10] object-cover ${theme.heroFilter}`}
               referrerPolicy="no-referrer"
             />
-            {post.location && (
+            {post?.location && (
               <div className={`absolute top-4 right-4 z-10 flex items-center gap-1.5 px-3 py-1 text-[10.5px] backdrop-blur-[6px] rounded-full select-none ${theme.badgeClass}`}>
                 <span>{getEmojiForLocation(post.location)}</span>
                 <span>{post.location}</span>
               </div>
             )}
           </div>
-          {post.heroCaption && (
+          {post?.heroCaption && (
             <div className={"mt-2.5 text-center text-[11px] uppercase max-w-[80%] mx-auto opacity-55 leading-relaxed select-none " + theme.caption}>
               {post.heroCaption}
             </div>
@@ -494,8 +495,8 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
   );
 
   const renderArticleBody = () => {
-    let parsedContent = post.content;
-    if (typeof post.content === 'string') {
+    let parsedContent = post?.content;
+    if (typeof post?.content === 'string') {
       try {
         const maybeJson = JSON.parse(post.content);
         if (Array.isArray(maybeJson)) {
@@ -679,7 +680,7 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
   };
 
   const renderContextMarker = () => {
-    if (!post.location) return null;
+    if (!post?.location) return null;
 
     let type = 'observed-at';
     let value = post.location;
@@ -947,9 +948,44 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
         <div className="max-w-[1050px] mx-auto w-full">
           
           {!post ? (
-            <div className="py-32 flex items-center justify-center">
-              <div className="px-8 py-12 border border-border bg-muted/30 w-full max-w-2xl text-center shadow-sm">
-                <p className="text-xl font-mono text-foreground">post not found. 404.</p>
+            <div className="py-24 md:py-32 flex items-center justify-center">
+              <div className="w-full max-w-2xl text-center space-y-6">
+                <h1 className={theme.title}>page not found</h1>
+                <div className={`space-y-2 opacity-80 ${theme.paragraph}`}>
+                  {p === 'builder' && (
+                    <>
+                      <p>The requested blueprint could not be located in the current schematic.</p>
+                      <p>We are missing the cornerstone for this specific structure.</p>
+                      <p>Please review the architecture and verify the building blocks.</p>
+                    </>
+                  )}
+                  {p === 'operator' && (
+                    <>
+                      <p>Exception: Invalid command path execution failure.</p>
+                      <p>The target system directory is missing or inaccessible.</p>
+                      <p>Please re-initialize terminal sequence.</p>
+                    </>
+                  )}
+                  {p === 'thinker' && (
+                    <>
+                      <p>This thought remains unmapped, resting quietly in the margins.</p>
+                      <p>A missing page from the ledger of ideas.</p>
+                      <p>Perhaps it is an unspoken premise waiting to be discovered.</p>
+                    </>
+                  )}
+                  {p === 'wanderer' && (
+                    <>
+                      <p>You have stepped past the edge of the map.</p>
+                      <p>This is a path that hasn't been traveled yet, a sudden fork in the road.</p>
+                      <p>Take a breath and find your bearings.</p>
+                    </>
+                  )}
+                </div>
+                <div className="pt-8">
+                  <Link href={`/${p === 'wanderer' ? 'wanderer' : p}`} className={"inline-block px-6 py-2 transition-colors border " + theme.badgeClass}>
+                    return to {p === 'builder' ? 'workbench' : p === 'operator' ? 'console' : p === 'thinker' ? 'index' : 'camp'}
+                  </Link>
+                </div>
               </div>
             </div>
           ) : (

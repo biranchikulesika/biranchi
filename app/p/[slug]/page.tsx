@@ -80,5 +80,5 @@ export default async function Page({
   const posts = await getPostsMeta();
   const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
   
-  return <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} />;
+  return <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} fallbackPersona={resolvedSearch?.persona} />;
 }
