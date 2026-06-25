@@ -1139,16 +1139,20 @@ function ComposePageContent() {
                     }}
                   />
                   
-                  <textarea
+                  <input
+                    type="text"
                     value={formData.subtitle} 
                     onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                     placeholder="An elegant subtitle leads the narrative..."
-                    className="w-full bg-transparent border-none text-lg text-neutral-400 font-light outline-none placeholder-neutral-800 font-sans resize-none focus:ring-0 focus:outline-none"
-                    rows={1}
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement;
-                      target.style.height = 'auto';
-                      target.style.height = `${target.scrollHeight}px`;
+                    className="w-full bg-transparent border-none text-lg text-neutral-400 font-light outline-none placeholder-neutral-800 font-sans focus:ring-0 focus:outline-none"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const firstBlockInput = document.querySelector('textarea[data-block-id]');
+                        if (firstBlockInput) {
+                          (firstBlockInput as HTMLTextAreaElement).focus();
+                        }
+                      }
                     }}
                   />
                 </div>
