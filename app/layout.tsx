@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import { cookies } from 'next/headers';
 import { Inter, JetBrains_Mono, Playfair_Display, Cormorant_Garamond, Spectral } from 'next/font/google';
 import './globals.css'; // Global styles
 import { ThemeProvider } from '@/components/theme-provider';
@@ -46,11 +47,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default async function RootLayout({children}: {children: React.ReactNode}) {
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get('theme');
+  const serverTheme = themeCookie ? themeCookie.value : 'dark';
+
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${spectral.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${serverTheme} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${spectral.variable}`}>
       <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/20">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme={serverTheme} enableSystem={false}>
           {children}
           <Analytics />
         </ThemeProvider>
