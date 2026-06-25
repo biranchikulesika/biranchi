@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { getPersonaUrl } from '@/lib/utils';
+import { SOCIAL_LINKS } from '@/lib/config/socials';
 
 export function FooterThinker() {
   return (
@@ -43,11 +44,11 @@ export function FooterThinker() {
           
           <div className="flex flex-col gap-3 text-[13.5px] font-light">
             <h3 className="font-cormorant text-foreground text-[16px] mb-1 truncate tracking-wide">Presence</h3>
-            <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">GitHub</Link>
-            <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">LinkedIn</Link>
-            <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Twitter</Link>
-            <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">HackTheBox</Link>
-            <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Instagram</Link>
+            <Link href={SOCIAL_LINKS.github} className="text-primary hover:text-foreground transition-colors duration-500 truncate">GitHub</Link>
+            <Link href={SOCIAL_LINKS.linkedin} className="text-primary hover:text-foreground transition-colors duration-500 truncate">LinkedIn</Link>
+            <Link href={SOCIAL_LINKS.twitter} className="text-primary hover:text-foreground transition-colors duration-500 truncate">Twitter</Link>
+            <Link href={SOCIAL_LINKS.hackTheBox} className="text-primary hover:text-foreground transition-colors duration-500 truncate">HackTheBox</Link>
+            <Link href={SOCIAL_LINKS.instagram} className="text-primary hover:text-foreground transition-colors duration-500 truncate">Instagram</Link>
           </div>
           
           <div className="flex flex-col gap-3 text-[13.5px] font-light">

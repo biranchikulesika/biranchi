@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { getPersonaUrl } from '@/lib/utils';
+import { SOCIAL_LINKS } from '@/lib/config/socials';
 
 export function FooterOperator() {
   return (
@@ -38,10 +39,10 @@ export function FooterOperator() {
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
             <h3 className="font-normal text-primary/80 mb-3 tracking-[0.1em] md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[connections]</h3>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">GitHub</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">LinkedIn</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">Twitter</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">Instagram</Link>
+            <Link href={SOCIAL_LINKS.github} className="hover:text-foreground transition-colors truncate">GitHub</Link>
+            <Link href={SOCIAL_LINKS.linkedin} className="hover:text-foreground transition-colors truncate">LinkedIn</Link>
+            <Link href={SOCIAL_LINKS.twitter} className="hover:text-foreground transition-colors truncate">Twitter</Link>
+            <Link href={SOCIAL_LINKS.instagram} className="hover:text-foreground transition-colors truncate">Instagram</Link>
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
             <h3 className="font-normal text-primary/80 mb-3 tracking-[0.1em] md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[resources]</h3>

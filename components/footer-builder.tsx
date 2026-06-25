@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { getPersonaUrl } from '@/lib/utils';
+import { SOCIAL_LINKS } from '@/lib/config/socials';
 
 export function FooterBuilder() {
   return (
@@ -38,11 +39,11 @@ export function FooterBuilder() {
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
             <h3 className="font-semibold text-foreground mb-2 uppercase tracking-wider text-[10px] md:text-xs">Social</h3>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">GitHub</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">LinkedIn</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">Twitter (X)</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">HackTheBox</Link>
-            <Link href="#" className="hover:text-foreground transition-colors truncate">Instagram</Link>
+            <Link href={SOCIAL_LINKS.github} className="hover:text-foreground transition-colors truncate">GitHub</Link>
+            <Link href={SOCIAL_LINKS.linkedin} className="hover:text-foreground transition-colors truncate">LinkedIn</Link>
+            <Link href={SOCIAL_LINKS.twitter} className="hover:text-foreground transition-colors truncate">Twitter (X)</Link>
+            <Link href={SOCIAL_LINKS.hackTheBox} className="hover:text-foreground transition-colors truncate">HackTheBox</Link>
+            <Link href={SOCIAL_LINKS.instagram} className="hover:text-foreground transition-colors truncate">Instagram</Link>
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
             <h3 className="font-semibold text-foreground mb-2 uppercase tracking-wider text-[10px] md:text-xs truncate">Legal & Resources</h3>
