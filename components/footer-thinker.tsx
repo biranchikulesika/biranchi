@@ -44,11 +44,11 @@ export function FooterThinker() {
           
           <div className="flex flex-col gap-3 text-[13.5px] font-light">
             <h3 className="font-cormorant text-foreground text-[16px] mb-1 truncate tracking-wide">Presence</h3>
-            <Link href={SOCIAL_LINKS.github} className="text-primary hover:text-foreground transition-colors duration-500 truncate">GitHub</Link>
-            <Link href={SOCIAL_LINKS.linkedin} className="text-primary hover:text-foreground transition-colors duration-500 truncate">LinkedIn</Link>
-            <Link href={SOCIAL_LINKS.twitter} className="text-primary hover:text-foreground transition-colors duration-500 truncate">Twitter</Link>
-            <Link href={SOCIAL_LINKS.hackTheBox} className="text-primary hover:text-foreground transition-colors duration-500 truncate">HackTheBox</Link>
-            <Link href={SOCIAL_LINKS.instagram} className="text-primary hover:text-foreground transition-colors duration-500 truncate">Instagram</Link>
+            <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors duration-500 truncate">GitHub</a>
+            <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors duration-500 truncate">LinkedIn</a>
+            <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Twitter</a>
+            <a href={SOCIAL_LINKS.hackTheBox} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors duration-500 truncate">HackTheBox</a>
+            <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Instagram</a>
           </div>
           
           <div className="flex flex-col gap-3 text-[13.5px] font-light">

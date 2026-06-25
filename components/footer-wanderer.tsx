@@ -40,10 +40,10 @@ export function FooterWanderer() {
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
             <h3 className="font-sans font-medium mb-2 text-primary/80 uppercase tracking-[0.15em] text-[10px] md:text-xs truncate">Artifacts</h3>
-            <Link href={SOCIAL_LINKS.github} className="text-primary hover:text-foreground transition-colors truncate">GitHub</Link>
-            <Link href={SOCIAL_LINKS.linkedin} className="text-primary hover:text-foreground transition-colors truncate">LinkedIn</Link>
-            <Link href={SOCIAL_LINKS.twitter} className="text-primary hover:text-foreground transition-colors truncate">Twitter</Link>
-            <Link href={SOCIAL_LINKS.instagram} className="text-primary hover:text-foreground transition-colors truncate">Instagram</Link>
+            <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors truncate">GitHub</a>
+            <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors truncate">LinkedIn</a>
+            <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors truncate">Twitter</a>
+            <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-foreground transition-colors truncate">Instagram</a>
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
             <h3 className="font-sans font-medium mb-2 text-primary/80 uppercase tracking-[0.15em] text-[10px] md:text-xs truncate">Index</h3>
