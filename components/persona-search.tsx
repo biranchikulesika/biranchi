@@ -43,7 +43,7 @@ export function PersonaSearch({ persona, mobileBgColor }: PersonaSearchProps) {
     }
   }, [debouncedQuery]);
 
-  let placeholderText = persona ? `Search in ${persona}...` : 'Search posts...';
+  let placeholderText = (persona && persona.toLowerCase() !== 'main') ? `Search in ${persona}...` : 'Search posts...';
   if (persona?.toLowerCase() === 'operator') {
     placeholderText = 'Search signals...';
   } else if (persona?.toLowerCase() === 'wanderer') {

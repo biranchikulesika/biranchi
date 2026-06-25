@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { ArrowLeft, Calendar, Clock, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Copy, Check, Search } from 'lucide-react';
 
 import { FooterThinker } from '@/components/footer-thinker';
 import { FooterBuilder } from '@/components/footer-builder';
 import { FooterWanderer } from '@/components/footer-wanderer';
 import { FooterOperator } from '@/components/footer-operator';
+import { FooterMain } from '@/components/footer-main';
 import { MarkdownRenderer } from '@/components/mdx/MarkdownRenderer';
 
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -348,7 +349,31 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
     }
   };
 
-  const theme = themes[p] || themes.wanderer;
+  themes["main"] = {
+    ...themes.wanderer,
+    "wrapper": `font-sans bg-background text-foreground selection:bg-primary/20 min-h-screen`,
+    "title": `font-sans font-bold leading-[1.12] text-3xl md:text-4.5xl lg:text-5xl tracking-tight text-foreground mb-3`,
+  };
+
+  const theme = themes[p as keyof typeof themes] || themes.wanderer;
+
+  const [notFoundSearchQuery, setNotFoundSearchQuery] = useState('');
+  const [notFoundResults, setNotFoundResults] = useState<any[] | null>(null);
+
+  const handleNotFoundSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!notFoundSearchQuery.trim()) {
+      setNotFoundResults(null);
+      return;
+    }
+    const targetPersona = p === 'main' ? undefined : p;
+    const q = notFoundSearchQuery.toLowerCase();
+    const results = allPosts.filter(item => {
+      if (targetPersona && item.persona !== targetPersona) return false;
+      return item.title?.toLowerCase().includes(q) || item.subtitle?.toLowerCase().includes(q);
+    });
+    setNotFoundResults(results);
+  };
 
   // Safeguard
   const databasePosts = allPosts || [];
@@ -923,7 +948,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
     </>
   );
 
-  const CurrentFooter = { thinker: FooterThinker, builder: FooterBuilder, operator: FooterOperator, wanderer: FooterWanderer }[p] || FooterWanderer;
+  const CurrentFooter = { thinker: FooterThinker, builder: FooterBuilder, operator: FooterOperator, wanderer: FooterWanderer, main: FooterMain }[p] || FooterMain;
   const personaCapitalized = p.charAt(0).toUpperCase() + p.slice(1);
   const mobileNavBg = "bg-background";
 
@@ -950,19 +975,19 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
           {!post ? (
             <div className="py-24 md:py-32 flex items-center justify-center">
               <div className="w-full max-w-2xl text-center space-y-6">
-                <h1 className={theme.title}>page not found</h1>
+                <h1 className={theme.title}>post not found</h1>
                 <div className={`space-y-2 opacity-80 ${theme.paragraph}`}>
                   {p === 'builder' && (
                     <>
-                      <p>The requested blueprint could not be located in the current schematic.</p>
+                      <p>The requested build log could not be located in the current schematic.</p>
                       <p>We are missing the cornerstone for this specific structure.</p>
                       <p>Please review the architecture and verify the building blocks.</p>
                     </>
                   )}
                   {p === 'operator' && (
                     <>
-                      <p>Exception: Invalid command path execution failure.</p>
-                      <p>The target system directory is missing or inaccessible.</p>
+                      <p>Exception: Signal not found. Command path execution failure.</p>
+                      <p>The target signal directory is missing or inaccessible.</p>
                       <p>Please re-initialize terminal sequence.</p>
                     </>
                   )}
@@ -976,14 +1001,54 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                   {p === 'wanderer' && (
                     <>
                       <p>You have stepped past the edge of the map.</p>
-                      <p>This is a path that hasn't been traveled yet, a sudden fork in the road.</p>
+                      <p>This story hasn't been written yet, a sudden fork in the road.</p>
                       <p>Take a breath and find your bearings.</p>
                     </>
                   )}
+                  {p === 'main' && (
+                    <>
+                      <p>The requested document could not be located in the ecosystem.</p>
+                      <p>It may have been moved, archived, or never existed.</p>
+                      <p>Please use the search to find what you are looking for.</p>
+                    </>
+                  )}
                 </div>
-                <div className="pt-8">
+
+                <div className="pt-6 max-w-md mx-auto">
+                  <form onSubmit={handleNotFoundSearch} className="flex flex-col gap-3 relative">
+                    <div className={`relative flex items-center border-b ${theme.heroBorder}`}>
+                      <input 
+                        type="text"
+                        value={notFoundSearchQuery}
+                        onChange={(e) => setNotFoundSearchQuery(e.target.value)}
+                        placeholder={`Search ${p !== 'main' ? p : ''} posts...`}
+                        className={`w-full bg-transparent border-none outline-none py-2 px-1 transition-colors ${theme.themeToggleText}`}
+                      />
+                      <button type="submit" className={`absolute right-1 p-1 opacity-70 hover:opacity-100 transition-opacity ${theme.themeToggleText}`}>
+                        <Search className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </form>
+                  {notFoundResults !== null && (
+                    <div className="mt-6 text-left space-y-4 max-h-[30vh] overflow-y-auto pr-2">
+                      {notFoundResults.length > 0 ? notFoundResults.map((r, i) => (
+                        <Link key={i} href={`/p/${r.slug}`} className={`block group`}>
+                          <h4 className={`font-medium group-hover:opacity-70 transition-opacity ${theme.relatedTitleText}`}>{r.title}</h4>
+                          <p className={`text-xs mt-1 ${theme.relatedDate}`}>{new Date(r.publishedAt || r.date || r.createdAt).toLocaleDateString()}</p>
+                        </Link>
+                      )) : (
+                        <p className={`text-sm italic opacity-60 ${theme.paragraph}`}>No posts found matching your query.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link href="/" className={"inline-block px-6 py-2 transition-colors border " + theme.badgeClass}>
-                    return to {p === 'builder' ? 'workbench' : p === 'operator' ? 'console' : p === 'thinker' ? 'index' : 'camp'}
+                    return to {p === 'builder' ? 'workbench' : p === 'operator' ? 'console' : p === 'thinker' ? 'index' : p === 'wanderer' ? 'camp' : 'ecosystem'}
+                  </Link>
+                  <Link href={p === 'main' ? '/' : `/${p}`} className={`inline-block px-6 py-2 transition-colors border border-transparent ${theme.viewAllAction}`}>
+                    browse posts
                   </Link>
                 </div>
               </div>

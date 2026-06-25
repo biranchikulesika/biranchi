@@ -78,6 +78,7 @@ export default async function Page({
     else if (host.startsWith('operator.')) detectedPersona = 'operator';
     else if (host.startsWith('thinker.')) detectedPersona = 'thinker';
     else if (host.startsWith('wanderer.')) detectedPersona = 'wanderer';
+    else detectedPersona = 'main';
   }
   
   const post = await getPostBySlug(resolvedParams.slug);
@@ -86,11 +87,6 @@ export default async function Page({
   let finalPost = post;
   if (!post || (!isPreview && (post.status === 'draft' || (post.status && post.status.toLowerCase() === 'draft') || post.hidden === true))) {
     finalPost = undefined;
-  }
-
-  // If no post and no persona detected, trigger the global 404
-  if (!finalPost && !detectedPersona) {
-    notFound();
   }
 
   // Fetch only necessary posts metadata for related posts in the renderer
