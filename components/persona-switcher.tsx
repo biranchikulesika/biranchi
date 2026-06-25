@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { getPersonaUrl } from '@/lib/utils';
+import { ChevronDown } from 'lucide-react';
 
 const PERSONAS = [
   { name: 'Builder', path: getPersonaUrl('builder'), color: 'text-foreground', font: 'font-mono', highlight: 'bg-neutral-400 shadow-[0_0_10px_rgba(163,163,163,0.5)]' },
@@ -38,14 +39,22 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
         <span className={`w-1.5 h-1.5 rotate-45 ${activePersona?.highlight || 'bg-current'} opacity-90 transition-all duration-500`}></span>
       </div>
 
-      <div className="relative" ref={menuRef}>
-        <motion.button
-          onClick={() => setIsOpen(!isOpen)}
-          whileHover={{ scale: 1.05, x: 2 }}
-          whileTap={{ scale: 0.95 }}
-          className={`uppercase tracking-widest text-sm flex items-center gap-1 ${currentStyle} transition-colors`}
+      <div className="relative flex items-center gap-1.5" ref={menuRef}>
+        <Link
+          href={activePersona?.path || '#'}
+          className={`uppercase tracking-widest text-sm flex items-center ${currentStyle} transition-opacity hover:opacity-75`}
         >
           {currentPersona}
+        </Link>
+        
+        <motion.button
+          onClick={() => setIsOpen(!isOpen)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="text-muted-foreground hover:text-foreground transition-colors p-0.5 rounded-sm flex items-center justify-center opacity-70 hover:opacity-100"
+          aria-label="Switch Persona"
+        >
+          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
         </motion.button>
         
         <AnimatePresence>
