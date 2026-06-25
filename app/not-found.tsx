@@ -1,37 +1,25 @@
 'use client';
 import Link from 'next/link';
-import { motion } from 'motion/react';
-import { PersonaSearch } from '@/components/persona-search';
-import { ArrowLeft } from 'lucide-react';
 
 export default function GlobalNotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-6">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full space-y-8 text-center"
-      >
-        <div className="space-y-4">
-          <h1 className="text-8xl font-serif font-light tracking-tighter">404</h1>
-          <h2 className="text-2xl font-medium opacity-80">Signal Lost</h2>
-          <p className="text-muted-foreground">The page you are looking for has drifted into the void. Use the search to recalibrate your coordinates.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50">
+      <div className="max-w-md w-full text-center space-y-6">
+        <h1 className="text-3xl font-medium lowercase tracking-tight">page not found</h1>
+        <div className="space-y-2 opacity-70 text-sm">
+          <p>The requested destination could not be resolved.</p>
+          <p>It appears you have reached an invalid route.</p>
         </div>
         
-        <div className="flex justify-center my-8">
-          <div className="bg-card border border-border rounded-full px-2 py-1 shadow-sm">
-            <PersonaSearch mobileBgColor="bg-background" />
-          </div>
+        <div className="pt-8">
+          <Link 
+            href="/" 
+            className="inline-flex px-6 py-2 rounded-full bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 font-medium hover:opacity-80 transition-opacity text-sm"
+          >
+            Return to Dashboard
+          </Link>
         </div>
-        
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors text-primary font-medium"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Return to Dashboard
-        </Link>
-      </motion.div>
+      </div>
     </div>
   );
 }

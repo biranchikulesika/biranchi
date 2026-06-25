@@ -1,81 +1,28 @@
-'use client';
 import Link from 'next/link';
-import { motion } from 'motion/react';
-import { PersonaSearch } from '@/components/persona-search';
-import { Terminal, RefreshCcw, Home } from 'lucide-react';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function BuilderNotFound() {
-  const [isRecompiling, setIsRecompiling] = useState(false);
-  const router = useRouter();
-
-  const handleRecompile = () => {
-    setIsRecompiling(true);
-    setTimeout(() => {
-      router.push('/builder');
-    }, 2000);
-  };
-
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center bg-black text-[#00ff00] p-6 font-mono selection:bg-[#00ff00]/30 selection:text-white">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="w-full max-w-3xl space-y-6"
-      >
-        <div className="border border-[#00ff00]/30 rounded-lg overflow-hidden bg-black/50 backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,0,0.1)]">
-          <div className="bg-[#00ff00]/10 border-b border-[#00ff00]/30 p-3 flex items-center gap-2">
-            <Terminal className="w-4 h-4 opacity-70" />
-            <span className="text-sm font-medium opacity-80">builder_exception.log</span>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="opacity-80">
-              <span className="text-red-500 font-bold">[ERROR]</span> 404: Unhandled Routing Exception at /builder/*
-            </div>
-            <div className="text-[#00ff00]/60 text-sm opacity-70 leading-relaxed">
-              Traceback (most recent call last):<br/>
-              &nbsp;&nbsp;File "next/router.js", line 42, in route_resolve<br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;raise MissingNodeError("The requested module node is undefined or out of scope.")<br/>
-              MissingNodeError: Could not locate compiled assets for the requested path.
-            </div>
-            
-            {isRecompiling && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="pt-4 text-[#00ff00] animate-pulse"
-              >
-                &gt; Recompiling system index... [||||||||||||||------] 70%
-              </motion.div>
-            )}
-          </div>
+    <div className="min-h-[80vh] flex flex-col items-center justify-center bg-slate-900 text-slate-300 p-6 font-mono relative overflow-hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#334155_1px,transparent_1px),linear-gradient(to_bottom,#334155_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 pointer-events-none" />
+      
+      <div className="relative z-10 w-full max-w-2xl border border-slate-700 bg-slate-800/80 backdrop-blur-md p-12 shadow-2xl">
+        <h1 className="text-2xl text-slate-100 mb-6 lowercase">page not found</h1>
+        
+        <div className="space-y-2 text-sm leading-relaxed text-slate-400">
+          <p>Error: The requested blueprint could not be located in the current schematic.</p>
+          <p>We are missing the cornerstone for this specific structure.</p>
+          <p>Please review the architecture and verify the building blocks.</p>
         </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4">
-          <div className="bg-black border border-[#00ff00]/30 rounded-full px-2 py-1">
-            <PersonaSearch persona="builder" mobileBgColor="bg-black" />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={handleRecompile}
-              disabled={isRecompiling}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-[#00ff00]/50 hover:bg-[#00ff00]/10 transition-colors font-medium disabled:opacity-50"
-            >
-              <RefreshCcw className={`w-4 h-4 ${isRecompiling ? 'animate-spin' : ''}`} />
-              {isRecompiling ? 'Recompiling...' : 'Run Build Repair Tool'}
-            </button>
-            <Link 
-              href="/builder" 
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-[#00ff00]/20 hover:bg-[#00ff00]/30 transition-colors font-medium"
-            >
-              <Home className="w-4 h-4" />
-              Return Home
-            </Link>
-          </div>
+        
+        <div className="mt-12 pt-6 border-t border-slate-700">
+          <Link 
+            href="/builder" 
+            className="inline-block px-4 py-2 border border-slate-500 hover:bg-slate-700 hover:text-slate-100 transition-colors text-slate-300 text-sm"
+          >
+            Return to Dashboard
+          </Link>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
