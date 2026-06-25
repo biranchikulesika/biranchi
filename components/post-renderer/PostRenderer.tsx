@@ -105,28 +105,6 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  if (!post) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center px-6 py-20 font-mono text-center">
-        <div className="max-w-md w-full space-y-6">
-          <div className="text-primary/70 text-xs tracking-widest uppercase">[ ERROR: 404 ]</div>
-          <h1 className="font-serif text-2xl tracking-tight text-foreground">Article Not Found</h1>
-          <p className="text-xs font-light text-primary/80 leading-relaxed">
-            The slug &quot;{slug}&quot; does not resolve to any publication within the multi-persona ecosystem.
-          </p>
-          <div className="pt-4">
-            <Link 
-              href="/" 
-              className="inline-flex items-center gap-2 border border-border hover:bg-muted transition-all text-xs px-5 py-2"
-            >
-              <ArrowLeft className="w-3 h-3" /> Return to Hub
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
       navigator.clipboard.writeText(window.location.href);
@@ -144,7 +122,7 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
     }
   };
 
-  const p = post.persona;
+  const p = post?.persona || 'wanderer';
 
   const themes = {
     "wanderer": {
@@ -395,7 +373,7 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
   const relatedPostsList: { title: string; slug: string; date: string }[] = [];
 
   otherPosts.forEach((postItem: any) => {
-    if (!uniqueRelatedTitles.has(postItem.title) && postItem.title !== post.title) {
+    if (!uniqueRelatedTitles.has(postItem.title) && postItem.title !== post?.title) {
       uniqueRelatedTitles.add(postItem.title);
       relatedPostsList.push({ 
         title: postItem.title, 
@@ -968,39 +946,49 @@ export default function PostRenderer({ post, slug, allPosts }: PostRendererProps
       <main className="flex-1 w-full px-5 sm:px-8 md:px-12 lg:px-16 pt-8 md:pt-10 pb-20 relative z-10">
         <div className="max-w-[1050px] mx-auto w-full">
           
-          <div className="hidden lg:grid grid-cols-10 gap-16 w-full items-start">
-            <div className="col-span-6 flex flex-col w-full">
-              {renderArticleHeader()}
-              {renderArticleBody()}
-              {renderContextMarker()}
-              {renderShareSection()}
-              {renderDiscoveryDesktop()}
-            </div>
-
-            <div className="col-span-4 pl-4 sticky top-24 h-[calc(100vh-6rem)] flex flex-col justify-center self-start">
-              <div className="space-y-12 w-full">
-                {renderRelatedReflections()}
-                {renderNewsletter(true)}
+          {!post ? (
+            <div className="py-32 flex items-center justify-center">
+              <div className="px-8 py-12 border border-border bg-muted/30 w-full max-w-2xl text-center shadow-sm">
+                <p className="text-xl font-mono text-foreground">post not found. 404.</p>
               </div>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="hidden lg:grid grid-cols-10 gap-16 w-full items-start">
+                <div className="col-span-6 flex flex-col w-full">
+                  {renderArticleHeader()}
+                  {renderArticleBody()}
+                  {renderContextMarker()}
+                  {renderShareSection()}
+                  {renderDiscoveryDesktop()}
+                </div>
 
-          <div className="block lg:hidden w-full max-w-[650px] mx-auto flex flex-col">
-            {renderArticleHeader()}
-            {renderArticleBody()}
-            {renderContextMarker()}
-            {renderShareSection()}
-            
-            <div className={`mb-6 pb-6 border-b ${theme.relatedSectionBorder}`}>
-              {renderRelatedReflections()}
-            </div>
+                <div className="col-span-4 pl-4 sticky top-24 h-[calc(100vh-6rem)] flex flex-col justify-center self-start">
+                  <div className="space-y-12 w-full">
+                    {renderRelatedReflections()}
+                    {renderNewsletter(true)}
+                  </div>
+                </div>
+              </div>
 
-            <div className={`mb-6 pb-6 border-b ${theme.relatedSectionBorder}`}>
-              {renderNewsletter(false)}
-            </div>
+              <div className="block lg:hidden w-full max-w-[650px] mx-auto flex flex-col">
+                {renderArticleHeader()}
+                {renderArticleBody()}
+                {renderContextMarker()}
+                {renderShareSection()}
+                
+                <div className={`mb-6 pb-6 border-b ${theme.relatedSectionBorder}`}>
+                  {renderRelatedReflections()}
+                </div>
 
-            {renderDiscoveryMobile()}
-          </div>
+                <div className={`mb-6 pb-6 border-b ${theme.relatedSectionBorder}`}>
+                  {renderNewsletter(false)}
+                </div>
+
+                {renderDiscoveryMobile()}
+              </div>
+            </>
+          )}
 
         </div>
       </main>

@@ -70,20 +70,15 @@ export default async function Page({
   
   const post = await getPostBySlug(resolvedParams.slug);
 
-  // Prevent public viewing of draft/hidden posts via the dynamic route
+  // For a missing post, or draft/hidden (unless preview), pass undefined
+  let finalPost = post;
   if (!post || (!isPreview && (post.status === 'draft' || (post.status && post.status.toLowerCase() === 'draft') || post.hidden === true))) {
-    return (
-      <div className="py-32 flex items-center justify-center">
-        <div className="px-8 py-12 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 w-full max-w-2xl text-center shadow-sm">
-          <p className="text-xl font-mono text-zinc-900 dark:text-zinc-100">post not found. 404.</p>
-        </div>
-      </div>
-    );
+    finalPost = undefined;
   }
 
   // Fetch only necessary posts metadata for related posts in the renderer
   const posts = await getPostsMeta();
   const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
   
-  return <PostPageClient post={post} slug={resolvedParams.slug} allPosts={publishedPosts} />;
+  return <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} />;
 }
