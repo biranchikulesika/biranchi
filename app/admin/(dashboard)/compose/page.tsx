@@ -1194,7 +1194,7 @@ function ComposePageContent() {
                     coverImageUrl: getEffectiveCoverImage(),
                     coverImageLocation: formData.coverImageLocation,
                     autoCoverImage: formData.autoCoverImage,
-                    content: formData.content, 
+                    content: JSON.stringify(composerBlocks), 
                     featured: formData.featured,
                     hidden: formData.hidden,
                     status: 'draft',

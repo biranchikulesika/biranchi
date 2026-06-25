@@ -6,8 +6,17 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterOperator } from '@/components/footer-operator';
 
 export const metadata: Metadata = {
-  title: 'Operator | Biranchi',
-  description: 'Cybersecurity, Ethical Hacking, OSINT',
+  title: {
+    default: "Operator Workspace",
+    template: "%s | Operator Workspace"
+  },
+  description: "Cybersecurity, Ethical Hacking, OSINT",
+  openGraph: {
+    images: ['/images/og-fallback-operator.png']
+  },
+  twitter: {
+    card: 'summary_large_image'
+  }
 };
 
 export default function OperatorLayout({ children }: { children: React.ReactNode }) {

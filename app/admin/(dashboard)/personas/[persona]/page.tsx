@@ -478,6 +478,13 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                     <td className="px-6 py-4 align-top text-right">
                       <div className="flex justify-end gap-1">
                         <Link 
+                          href={`/p/${post.slug}?preview=true`}
+                          target="_blank"
+                          className="p-1 px-2.5 bg-[#171717] border border-[#222] hover:bg-[#222] hover:text-white rounded text-xs text-neutral-400 font-mono transition-colors"
+                        >
+                          VIEW
+                        </Link>
+                        <Link 
                           href={`/admin/compose?id=${post.id || post.slug}`}
                           className="p-1 px-2.5 bg-[#171717] border border-[#222] hover:bg-[#222] hover:text-white rounded text-xs text-neutral-400 font-mono transition-colors"
                         >

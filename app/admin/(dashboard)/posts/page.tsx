@@ -1536,7 +1536,7 @@ export default function PostPage() {
     {/* Live preview */}
     {activeTab === 'preview' && (
       <div className="w-full min-h-[550px] bg-[#0a0a0a] border border-[#222] rounded-lg p-6 sm:p-8 overflow-y-auto">
-        <MarkdownRenderer content={formData.content || ''} />
+        <MarkdownRenderer content={compileFromBlocks(composerBlocks)} />
       </div>
     )}
   </div>

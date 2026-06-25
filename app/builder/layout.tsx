@@ -6,8 +6,17 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterBuilder } from '@/components/footer-builder';
 
 export const metadata: Metadata = {
-  title: 'Builder | Biranchi',
-  description: 'Systems, Code, Open Source',
+  title: {
+    default: "Forge Workspace",
+    template: "%s | Forge Workspace"
+  },
+  description: "Systems, Code, Open Source",
+  openGraph: {
+    images: ['/images/og-fallback-builder.png']
+  },
+  twitter: {
+    card: 'summary_large_image'
+  }
 };
 
 export default function BuilderLayout({ children }: { children: React.ReactNode }) {

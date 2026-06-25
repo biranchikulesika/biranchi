@@ -32,8 +32,18 @@ const spectral = Spectral({
 });
 
 export const metadata: Metadata = {
-  title: 'Biranchi',
-  description: 'Systems, stories, and thoughts from the evolving world of Biranchi.',
+  title: {
+    default: "Biranchi",
+    template: "%s | Biranchi"
+  },
+  description: "Personal digital garden and portfolio of Biranchi Kulesika, featuring the Builder, Operator, Thinker, and Wanderer personas.",
+  openGraph: {
+    type: 'website',
+    images: ['/images/og-main.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {

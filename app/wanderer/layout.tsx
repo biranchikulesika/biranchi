@@ -6,8 +6,17 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterWanderer } from '@/components/footer-wanderer';
 
 export const metadata: Metadata = {
-  title: 'Wanderer | Biranchi',
-  description: 'Stories, Memories, Personal Journey',
+  title: {
+    default: "Scribble Explorer",
+    template: "%s | Scribble Explorer"
+  },
+  description: "Journeys, stories, and wanderings.",
+  openGraph: {
+    images: ['/images/og-fallback-wanderer.png']
+  },
+  twitter: {
+    card: 'summary_large_image'
+  }
 };
 
 export default function WandererLayout({ children }: { children: React.ReactNode }) {

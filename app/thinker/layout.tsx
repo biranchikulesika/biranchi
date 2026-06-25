@@ -6,8 +6,17 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterThinker } from '@/components/footer-thinker';
 
 export const metadata: Metadata = {
-  title: 'Thinker | Biranchi',
-  description: 'Philosophy, Psychology, Deep Thoughts',
+  title: {
+    default: "Inside The Head",
+    template: "%s | Inside The Head"
+  },
+  description: "Thoughts, essays, and intellectual explorations.",
+  openGraph: {
+    images: ['/images/og-fallback-thinker.png']
+  },
+  twitter: {
+    card: 'summary_large_image'
+  }
 };
 
 export default function ThinkerLayout({ children }: { children: React.ReactNode }) {
