@@ -50,7 +50,7 @@ export function FooterWanderer() {
             <Link href="#" className="text-primary hover:text-foreground transition-colors truncate">Journal</Link>
             <Link href="#" className="text-primary hover:text-foreground transition-colors truncate">Agreements</Link>
             <Link href="#" className="text-primary hover:text-foreground transition-colors truncate">Feedback</Link>
-            <Link href="/fund" className="text-primary hover:text-foreground transition-colors truncate">Patronage / Fund</Link>
+            <Link href={getPersonaUrl('main', '/fund')} className="text-primary hover:text-foreground transition-colors truncate">Patronage / Fund</Link>
           </div>
         </div>
       </div>

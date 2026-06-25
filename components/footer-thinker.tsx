@@ -56,7 +56,7 @@ export function FooterThinker() {
             <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Writings</Link>
             <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Terms</Link>
             <Link href="#" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Feedback</Link>
-            <Link href="/fund" className="text-primary hover:text-foreground transition-colors duration-500 truncate">Support / Fund</Link>
+            <Link href={getPersonaUrl('main', '/fund')} className="text-primary hover:text-foreground transition-colors duration-500 truncate">Support / Fund</Link>
           </div>
         </div>
         

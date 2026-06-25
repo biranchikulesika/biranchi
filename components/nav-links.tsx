@@ -34,7 +34,7 @@ export function DesktopNav({ persona }: { persona?: 'main' | 'builder' | 'operat
           {link.name}
         </Link>
       ))}
-      <Link href="/fund" className="opacity-80 hover:opacity-100 transition-all border border-current/30 px-4 py-1.5 hover:bg-current/5">
+      <Link href={getPersonaUrl('main', '/fund')} className="opacity-80 hover:opacity-100 transition-all border border-current/30 px-4 py-1.5 hover:bg-current/5">
         Fund
       </Link>
     </nav>
@@ -108,7 +108,7 @@ export function MobileNav({ mobileBgColor, persona }: { mobileBgColor: string, p
             ))}
             <div className={`my-1 border-t border-border`}></div>
             <Link
-              href="/fund"
+              href={getPersonaUrl('main', '/fund')}
               onClick={() => setIsOpen(false)}
               className={`mx-2 my-2 px-4 py-2 text-[10px] tracking-[0.2em] uppercase transition-colors text-center rounded opacity-80 hover:opacity-100 border border-border hover:bg-muted font-light`}
             >
