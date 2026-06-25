@@ -66,12 +66,12 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="absolute top-full left-0 mt-4 bg-background backdrop-blur-xl border border-border rounded-lg p-2 shadow-2xl min-w-[180px] flex flex-col gap-1 overflow-hidden"
             >
-              {PERSONAS.map(p => (
+              {PERSONAS.filter(p => p.name !== currentPersona).map(p => (
                 <Link
                   key={p.name}
                   href={p.path}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-3 text-sm transition-all rounded-md flex items-center gap-2 ${p.font} ${p.color} hover:bg-muted ${p.name === currentPersona ? 'bg-muted/50 opacity-50 cursor-default pointer-events-none' : ''}`}
+                  className={`px-4 py-3 text-sm transition-all rounded-md flex items-center gap-2 ${p.font} ${p.color} hover:bg-muted`}
                 >
                   <span className="uppercase tracking-wider">{p.name}</span>
                 </Link>
