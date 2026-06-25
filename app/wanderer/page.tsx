@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { getFragments } from '@/lib/queries';
 import { getJournalMoments } from '@/lib/queries';
 import { getPostsMeta } from '@/lib/queries';
+import { getPersonaUrl } from '@/lib/utils';
 
 // Poetry and Fragments for the interactive cyclical button
 
@@ -409,7 +410,7 @@ export default function WandererPage() {
 
             <div className="pt-6 sm:pt-8 select-none">
               <Link
-                href="/wanderer/blogs"
+                href={getPersonaUrl('wanderer', '/blogs')}
                 className="group inline-flex items-center gap-2 font-mono text-[10px] sm:text-[10.5px] uppercase tracking-widest text-[#B67A55] dark:text-[#B97A56] hover:underline"
                 id="enter-notebook-feed-link"
               >

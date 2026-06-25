@@ -7,6 +7,7 @@ import { getQuestions } from '@/lib/queries';
 import { getThoughtFragments } from '@/lib/queries';
 import { getBooks } from '@/lib/queries';
 import { getPostsMeta } from '@/lib/queries';
+import { getPersonaUrl } from '@/lib/utils';
 
 // Authentically crafted, personal, student-first questions
 
@@ -128,7 +129,7 @@ export default function ThinkerPage() {
                 </a>
                 
                 <Link 
-                  href="/thinker/about"
+                  href={getPersonaUrl('thinker', '/about')}
                   className="group text-[12px] tracking-widest uppercase font-mono text-[#7E7A73] border-b border-transparent pb-1.5 inline-flex items-center gap-2 hover:text-[#2F3134] dark:hover:text-[#DEDAD3] hover:border-[#2F3134] dark:hover:border-[#DEDAD3] transition-all duration-300"
                 >
                   About This Space
@@ -246,7 +247,7 @@ export default function ThinkerPage() {
                   Stay curious. Keep learning.
                 </p>
                 <Link 
-                  href="/thinker/about" 
+                  href={getPersonaUrl('thinker', '/about')} 
                   className="inline-block text-[11px] tracking-widest font-mono text-[#2F3134] dark:text-[#DEDAD3] uppercase border-b border-[#2F3134] dark:border-[#DEDAD3] pb-1 hover:opacity-70 transition-opacity"
                 >
                   About The Thinker &rarr;
@@ -308,7 +309,7 @@ export default function ThinkerPage() {
               </div>
               <div className="pt-4 border-t border-dashed border-[#E2DFDA] dark:border-[rgba(255,255,255,0.03)] mt-4">
                 <Link 
-                  href="/thinker/reading"
+                  href={getPersonaUrl('thinker', '/reading')}
                   className="group text-[12px] tracking-wider font-mono text-[#7E7A73]/90 hover:text-[#2F3134] dark:hover:text-[#DEDAD3] hover:underline underline-offset-4 transition-colors duration-300 inline-flex items-center gap-1"
                 >
                   Explore Reading Shelf <span className="transform group-hover:translate-x-0.5 duration-300 transition-transform">&rarr;</span>
@@ -338,7 +339,7 @@ export default function ThinkerPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link 
-                href="/thinker/about"
+                href={getPersonaUrl('thinker', '/about')}
                 className="group text-[12px] tracking-widest uppercase font-mono text-[#2F3134] dark:text-[#DEDAD3] border-b border-[#2F3134] dark:border-[#DEDAD3] pb-1 inline-flex items-center gap-1.5 hover:opacity-75 transition-all duration-300 w-fit"
               >
                 About This Space &rarr;
@@ -483,7 +484,7 @@ export default function ThinkerPage() {
               ))}
               <div className="pt-2">
                 <Link 
-                  href="/thinker/reading"
+                  href={getPersonaUrl('thinker', '/reading')}
                   className="group text-[11.5px] tracking-wider font-mono text-[#7E7A73]/90 hover:text-[#2F3134] dark:hover:text-[#DEDAD3] hover:underline underline-offset-4 transition-colors duration-300 inline-flex items-center gap-1"
                 >
                   Explore Reading Shelf <span className="transform group-hover:translate-x-0.5 duration-300 transition-transform">&rarr;</span>
@@ -504,7 +505,7 @@ export default function ThinkerPage() {
               Stay curious. Keep learning.
             </p>
             <Link 
-              href="/thinker/about" 
+              href={getPersonaUrl('thinker', '/about')} 
               className="inline-block text-[11px] tracking-widest font-mono text-[#2F3134] dark:text-[#DEDAD3] uppercase border-b border-[#2F3134] dark:border-[#DEDAD3] pb-0.5"
             >
               About The Thinker &rarr;

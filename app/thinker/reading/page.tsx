@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { getPersonaUrl } from '@/lib/utils';
 
 interface Book {
   title: string;
@@ -222,7 +223,7 @@ export default function ReadingPage() {
         
         {/* Back navigation */}
         <Link 
-          href="/thinker" 
+          href={getPersonaUrl('thinker', '/')} 
           className="group text-[11px] tracking-[0.15em] font-mono text-[#7E7A73] hover:text-[#2F3134] dark:hover:text-[#DEDAD3] transition-colors duration-300 inline-flex items-center gap-2 mb-12 uppercase"
         >
           <span>&larr;</span> Back to Thinker

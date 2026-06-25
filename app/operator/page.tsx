@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 import { getOperatorFocuss } from '@/lib/queries';
 import { getPostsMeta } from '@/lib/queries';
+import { getPersonaUrl } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
 export default function OperatorPage() {
@@ -112,7 +113,7 @@ export default function OperatorPage() {
                   View Field Notes <span className="opacity-50">↓</span>
                 </a>
                 <Link 
-                  href="/operator/blogs"
+                  href={getPersonaUrl('operator', '/blogs')}
                   className="text-xs font-mono tracking-wide text-primary/80 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                 >
                   View Archive <span className="opacity-50">→</span>
@@ -172,7 +173,7 @@ export default function OperatorPage() {
 </div>
 
               <div className="pt-8 max-w-[600px]">
-                 <Link href="/operator/blogs/archive" className="text-xs font-mono tracking-wide text-primary/80 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5 focus:outline-none">
+                 <Link href={getPersonaUrl('operator', '/blogs/archive')} className="text-xs font-mono tracking-wide text-primary/80 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5 focus:outline-none">
                     View Observation Archive <span className="opacity-50">&rarr;</span>
                  </Link>
               </div>
