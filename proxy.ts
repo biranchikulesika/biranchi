@@ -59,6 +59,10 @@ export default async function proxy(req: NextRequest) {
 
   if (isDirectPersonaPath) {
     // Rewrite to a non-existent path to trigger a 404
+    // If we're on a persona subdomain, rewrite to a non-existent path within that persona so it uses the persona's 404
+    if (mappedPath) {
+      return NextResponse.rewrite(new URL(`${mappedPath}/404-not-found-blocked`, req.url));
+    }
     return NextResponse.rewrite(new URL('/404-not-found-blocked', req.url));
   }
 

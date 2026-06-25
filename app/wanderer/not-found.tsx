@@ -2,16 +2,16 @@ import Link from 'next/link';
 
 export default function WandererNotFound() {
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 bg-[#eef1ed] text-[#4a5d4e]">
-      <div className="w-full max-w-lg text-center space-y-8">
-        <h1 className="text-4xl font-light tracking-wide">page not found</h1>
-        <div className="space-y-3 opacity-80 text-lg leading-relaxed font-light">
+    <div className="py-24 md:py-32 flex items-center justify-center">
+      <div className="w-full max-w-2xl text-center space-y-6">
+        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight text-foreground">page not found</h1>
+        <div className="space-y-2 opacity-80 font-serif text-lg md:text-xl text-foreground/80 leading-relaxed font-light">
           <p>You have stepped past the edge of the map.</p>
           <p>This is a path that hasn't been traveled yet, a sudden fork in the road.</p>
           <p>Take a breath and find your bearings.</p>
         </div>
-        <div className="pt-12">
-          <Link href="/" className="inline-block px-8 py-3 rounded-full border border-[#4a5d4e]/30 hover:bg-[#4a5d4e]/10 transition-colors font-medium tracking-wide text-sm uppercase">
+        <div className="pt-8">
+          <Link href="/" className="inline-block transition-colors border font-serif border-border text-foreground hover:bg-muted bg-background text-sm italic rounded-full px-8 py-3">
             return to camp
           </Link>
         </div>

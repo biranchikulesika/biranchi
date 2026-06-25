@@ -88,6 +88,11 @@ export default async function Page({
     finalPost = undefined;
   }
 
+  // If no post and no persona detected, trigger the global 404
+  if (!finalPost && !detectedPersona) {
+    notFound();
+  }
+
   // Fetch only necessary posts metadata for related posts in the renderer
   const posts = await getPostsMeta();
   const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
