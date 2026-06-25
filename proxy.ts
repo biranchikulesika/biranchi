@@ -50,9 +50,21 @@ export default async function proxy(req: NextRequest) {
     return await updateSession(req);
   }
 
+  // Prevent direct access to persona directories in the URL path
+  const isDirectPersonaPath = 
+    url.pathname === '/builder' || url.pathname.startsWith('/builder/') ||
+    url.pathname === '/operator' || url.pathname.startsWith('/operator/') ||
+    url.pathname === '/wanderer' || url.pathname.startsWith('/wanderer/') ||
+    url.pathname === '/thinker' || url.pathname.startsWith('/thinker/');
+
+  if (isDirectPersonaPath) {
+    // Rewrite to a non-existent path to trigger a 404
+    return NextResponse.rewrite(new URL('/404-not-found-blocked', req.url));
+  }
+
   // If a subdomain is matched and path is not a bypass path, rewrite the URL to that specific path directory.
   // We avoid rewriting if the URL already starts with that path to avoid infinite loops.
-  if (mappedPath && !url.pathname.startsWith(mappedPath) && !isBypassPath) {
+  if (mappedPath && !isBypassPath) {
     // We rewrite the URL to /subdomain_path/original_path
     // E.g., builder.biranchi.../about -> /builder/about
     return NextResponse.rewrite(new URL(`${mappedPath}${url.pathname}`, req.url));

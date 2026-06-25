@@ -12,7 +12,7 @@ export default function BuilderNotFound() {
           <p>Please review the architecture and verify the building blocks.</p>
         </div>
         <div className="mt-12 pt-6 border-t border-slate-700">
-          <Link href="/builder" className="inline-block px-4 py-2 border border-slate-500 hover:bg-slate-700 hover:text-slate-100 transition-colors text-slate-300 text-sm">
+          <Link href="/" className="inline-block px-4 py-2 border border-slate-500 hover:bg-slate-700 hover:text-slate-100 transition-colors text-slate-300 text-sm">
             return to workbench
           </Link>
         </div>

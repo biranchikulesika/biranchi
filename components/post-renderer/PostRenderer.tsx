@@ -982,7 +982,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                   )}
                 </div>
                 <div className="pt-8">
-                  <Link href={`/${p === 'wanderer' ? 'wanderer' : p}`} className={"inline-block px-6 py-2 transition-colors border " + theme.badgeClass}>
+                  <Link href="/" className={"inline-block px-6 py-2 transition-colors border " + theme.badgeClass}>
                     return to {p === 'builder' ? 'workbench' : p === 'operator' ? 'console' : p === 'thinker' ? 'index' : 'camp'}
                   </Link>
                 </div>

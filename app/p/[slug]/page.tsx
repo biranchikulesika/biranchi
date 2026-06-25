@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getPostsMeta, getPostBySlug } from '@/lib/queries';
 import PostPageClient from './PostPageClient';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export async function generateStaticParams() {
   const posts = await getPostsMeta();
@@ -68,6 +69,17 @@ export default async function Page({
   const resolvedSearch = searchParams ? await searchParams : undefined;
   const isPreview = resolvedSearch?.preview === 'true';
   
+  const headersList = await headers();
+  const host = headersList.get('host') || '';
+  
+  let detectedPersona = resolvedSearch?.persona;
+  if (!detectedPersona) {
+    if (host.startsWith('builder.')) detectedPersona = 'builder';
+    else if (host.startsWith('operator.')) detectedPersona = 'operator';
+    else if (host.startsWith('thinker.')) detectedPersona = 'thinker';
+    else if (host.startsWith('wanderer.')) detectedPersona = 'wanderer';
+  }
+  
   const post = await getPostBySlug(resolvedParams.slug);
 
   // For a missing post, or draft/hidden (unless preview), pass undefined
@@ -80,5 +92,5 @@ export default async function Page({
   const posts = await getPostsMeta();
   const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
   
-  return <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} fallbackPersona={resolvedSearch?.persona} />;
+  return <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} fallbackPersona={detectedPersona} />;
 }

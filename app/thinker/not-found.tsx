@@ -11,7 +11,7 @@ export default function ThinkerNotFound() {
           <p>Perhaps it is an unspoken premise waiting to be discovered.</p>
         </div>
         <div className="pt-16 flex justify-center">
-          <Link href="/thinker" className="text-sm uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity font-sans">
+          <Link href="/" className="text-sm uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity font-sans">
             return to index
           </Link>
         </div>

@@ -11,7 +11,7 @@ export default function OperatorNotFound() {
           <p>Please re-initialize terminal sequence.</p>
         </div>
         <div className="mt-10">
-          <Link href="/operator" className="inline-block px-4 py-2 bg-[#00ff00]/10 hover:bg-[#00ff00]/30 border border-[#00ff00]/50 transition-colors uppercase tracking-widest text-sm">
+          <Link href="/" className="inline-block px-4 py-2 bg-[#00ff00]/10 hover:bg-[#00ff00]/30 border border-[#00ff00]/50 transition-colors uppercase tracking-widest text-sm">
             [ return to console ]
           </Link>
         </div>

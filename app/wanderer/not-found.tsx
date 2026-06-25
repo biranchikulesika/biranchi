@@ -11,7 +11,7 @@ export default function WandererNotFound() {
           <p>Take a breath and find your bearings.</p>
         </div>
         <div className="pt-12">
-          <Link href="/wanderer" className="inline-block px-8 py-3 rounded-full border border-[#4a5d4e]/30 hover:bg-[#4a5d4e]/10 transition-colors font-medium tracking-wide text-sm uppercase">
+          <Link href="/" className="inline-block px-8 py-3 rounded-full border border-[#4a5d4e]/30 hover:bg-[#4a5d4e]/10 transition-colors font-medium tracking-wide text-sm uppercase">
             return to camp
           </Link>
         </div>
