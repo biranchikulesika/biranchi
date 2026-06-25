@@ -8,6 +8,7 @@ import { getPersonaUrl } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { getRedistributionRecords } from '@/lib/queries';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { SOCIAL_LINKS } from '@/lib/config/socials';
 
 
 
@@ -376,11 +377,11 @@ This contribution will become part of a future redistribution cycle.`;
 
           {/* Right */}
           <div className="md:flex-1 flex justify-center md:justify-end items-center gap-5 md:gap-6 order-3 font-sans font-light text-[14px] dark:text-stone-500/60 text-[#6E6A64]/60">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
+            <a href={SOCIAL_LINKS.github} target="_blank" rel="noreferrer" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
               GitHub
             </a>
             <span className="dark:text-stone-800/50 text-[#6E6A64]/40 md:hidden">·</span>
-            <a href="mailto:#" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
+            <a href={SOCIAL_LINKS.email} className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
               Email
             </a>
           </div>
@@ -678,11 +679,11 @@ This contribution will become part of a future redistribution cycle.`;
 
         {/* Right */}
         <div className="md:flex-1 flex justify-center md:justify-end items-center gap-5 md:gap-6 order-3 font-sans font-light text-[14px] dark:text-stone-500/60 text-[#6E6A64]/60">
-          <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
+          <a href={SOCIAL_LINKS.github} target="_blank" rel="noreferrer" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
             GitHub
           </a>
           <span className="dark:text-stone-800/50 text-[#6E6A64]/40 md:hidden">·</span>
-          <a href="mailto:#" className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
+          <a href={SOCIAL_LINKS.email} className="hover:dark:text-stone-400 hover:text-stone-900 transition-colors duration-500">
             Email
           </a>
         </div>

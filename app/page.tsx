@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from 'react';
 import PHRASES from './phrases.json';
 import QUOTES from './quotes.json';
 import { getPersonaUrl } from '@/lib/utils';
+import { SOCIAL_LINKS } from '@/lib/config/socials';
 
 // Components
 function Typewriter() {
@@ -606,11 +607,11 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.2 }}
             className="md:flex-1 flex justify-center md:justify-end items-center gap-5 md:gap-6 order-3 font-sans font-light text-[14px] text-primary/80"
           >
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors duration-500">
+            <a href={SOCIAL_LINKS.github} target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors duration-500">
               GitHub
             </a>
             <span className="text-primary/40 md:hidden">·</span>
-            <a href="mailto:#" className="hover:text-foreground transition-colors duration-500">
+            <a href={SOCIAL_LINKS.email} className="hover:text-foreground transition-colors duration-500">
               Email
             </a>
           </motion.div>

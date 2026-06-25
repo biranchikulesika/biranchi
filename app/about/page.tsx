@@ -7,6 +7,7 @@ import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { PersonaSearch } from '@/components/persona-search';
 import { getPersonaUrl } from '@/lib/utils';
 import { ArrowUpRight } from 'lucide-react';
+import { SOCIAL_LINKS } from '@/lib/config/socials';
 
 function CornerCard({ title, subtitle, desc, href, type }: { title: string, subtitle: string, desc: string, href: string, type: 'builder' | 'operator' | 'thinker' | 'wanderer' }) {
   const hoverStyles = {
@@ -258,11 +259,11 @@ export default function AboutPage() {
           transition={{ duration: 1, delay: 0.2 }}
           className="md:flex-1 flex justify-center md:justify-end items-center gap-5 md:gap-6 order-3 font-sans font-light text-[14px] text-primary/60"
         >
-          <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors duration-500">
+          <a href={SOCIAL_LINKS.github} target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors duration-500">
             GitHub
           </a>
           <span className="text-primary/40 md:hidden">·</span>
-          <a href="mailto:#" className="hover:text-foreground transition-colors duration-500">
+          <a href={SOCIAL_LINKS.email} className="hover:text-foreground transition-colors duration-500">
             Email
           </a>
         </motion.div>
