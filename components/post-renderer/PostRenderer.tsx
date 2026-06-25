@@ -1047,9 +1047,6 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                   <Link href="/" className={"inline-block px-6 py-2 transition-colors border " + theme.badgeClass}>
                     return to {p === 'builder' ? 'workbench' : p === 'operator' ? 'console' : p === 'thinker' ? 'index' : p === 'wanderer' ? 'camp' : 'ecosystem'}
                   </Link>
-                  <Link href={p === 'main' ? '/' : `/${p}`} className={`inline-block px-6 py-2 transition-colors border border-transparent ${theme.viewAllAction}`}>
-                    browse posts
-                  </Link>
                 </div>
               </div>
             </div>
