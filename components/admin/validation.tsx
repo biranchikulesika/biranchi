@@ -72,7 +72,7 @@ export function ValidationSummary({
   warnings?: string[];
   title?: string;
 }) {
-  const errorCount = Object.keys(errors).length;
+  const errorCount = errors ? Object.keys(errors).length : 0;
   const warningCount = warnings?.length || 0;
 
   if (errorCount === 0 && warningCount === 0) return null;

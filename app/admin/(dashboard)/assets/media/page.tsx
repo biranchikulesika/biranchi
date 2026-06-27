@@ -189,7 +189,7 @@ export default function MediaAssetsPage() {
             );
           })}
 
-          {files.length === 0 && (
+          {(files?.length || 0) === 0 && (
             <div className="col-span-full py-16 text-center border border-dashed border-[#1a1a1a] rounded-lg bg-[#111111]/30">
               <UploadCloud className="w-8 h-8 text-neutral-700 mx-auto mb-2" />
               <p className="text-xs font-mono text-neutral-500">No layout assets uploaded in this folder path.</p>

@@ -12,9 +12,12 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
   // Need to handle cases where we might be outside the App Router provider in standalone tests,
   // but it's safe to assume this will run in Next.js environment.
   
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
+
   const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    supabaseUrl,
+    supabaseKey
   );
 
   useEffect(() => {
@@ -38,7 +41,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [pathname, router, supabase.auth]);
 
-  const isPublicRoute = pathname === '/admin/login' || pathname.startsWith('/admin/auth/callback');
+  const isPublicRoute = pathname === '/admin/login' || (pathname?.startsWith('/admin/auth/callback') ?? false);
 
   if (loading && !isPublicRoute) {
     return (

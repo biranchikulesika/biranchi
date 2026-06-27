@@ -395,7 +395,7 @@ export default function Home() {
                 <ul className="flex flex-col gap-2.5 md:gap-3 font-sans font-light text-foreground/90 text-[15px] md:text-base leading-relaxed">
                   <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Personal digital ecosystem</li>
                   <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Minimal web experiences</li>
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> AI workflows</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Systems thinking</li>
                 </ul>
               </motion.div>
 

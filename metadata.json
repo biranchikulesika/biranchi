@@ -2,5 +2,5 @@
   "name": "Biranchi",
   "description": "A personal universe of systems, stories, ideas, and thoughts.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": []
 }
