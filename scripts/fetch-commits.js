@@ -1,7 +1,6 @@
 /**
  * Fetch and Group Commits
- * 
- * Fetches commits from GitHub for the last N days
+ * * Fetches commits from GitHub for the last N days
  * Groups them intelligently by feature area
  * Filters out noise (meta commits, automated changes)
  */
@@ -20,27 +19,27 @@ async function fetchLastNDaysCommits(daysBack = 1) {
   const commits = [];
   const sinceDate = new Date();
   sinceDate.setDate(sinceDate.getDate() - daysBack);
-  
+
   console.log(`     Fetching since: ${sinceDate.toISOString().split('T')[0]}`);
-  
+
   for (const { owner, repo } of WATCHED_REPOS) {
     try {
       const url = `https://api.github.com/repos/${owner}/${repo}/commits?since=${sinceDate.toISOString()}&per_page=100`;
-      
+
       const response = await fetch(url, {
-        headers: { 
+        headers: {
           'Authorization': `token ${process.env.GITHUB_TOKEN}`,
           'Accept': 'application/vnd.github.v3+json'
         }
       });
-      
+
       if (!response.ok) {
         console.warn(`     ⚠ Warning: Failed to fetch ${owner}/${repo} (${response.status})`);
         continue;
       }
-      
+
       const data = await response.json();
-      
+
       // Map GitHub API response to our format
       const repoCommits = data.map(c => ({
         repo,
@@ -51,14 +50,14 @@ async function fetchLastNDaysCommits(daysBack = 1) {
         date: c.commit.author.date,
         url: c.html_url
       }));
-      
+
       commits.push(...repoCommits);
-      
+
     } catch (error) {
       console.warn(`     ⚠ Error fetching ${owner}/${repo}:`, error.message);
     }
   }
-  
+
   return commits;
 }
 
@@ -68,22 +67,22 @@ async function fetchLastNDaysCommits(daysBack = 1) {
  */
 function groupCommits(commits) {
   const groups = {};
-  
+
   for (const commit of commits) {
     // Skip noise
     if (isNoise(commit.message)) {
       continue;
     }
-    
+
     // Detect feature area from commit message
     const feature = detectFeatureArea(commit.message);
-    
+
     if (!groups[feature]) {
       groups[feature] = [];
     }
     groups[feature].push(commit);
   }
-  
+
   return groups;
 }
 
@@ -103,9 +102,9 @@ function isNoise(message) {
     /^merge/i,
     /^conflict/i,
   ];
-  
+
   const firstLine = message.split('\n')[0].toLowerCase();
-  
+
   return noisePatterns.some(pattern => pattern.test(firstLine));
 }
 
@@ -115,7 +114,7 @@ function isNoise(message) {
  */
 function detectFeatureArea(message) {
   const lowercased = message.toLowerCase();
-  
+
   // Keyword → Feature mapping
   const patterns = {
     'TYPOGRAPHY': [
@@ -140,4 +139,36 @@ function detectFeatureArea(message) {
       'theme', 'dark:', 'opacity', 'hover', 'transition'
     ],
     'CONTENT': [
-      'content', 'copy', 'text', 'markdown', 'post',\n      'article', 'essay', 'writing'\n    ],\n    'SYSTEM': [\n      'system', 'refactor', 'architecture', 'pattern',\n      'component', 'lib', 'util', 'type', 'interface'\n    ],\n    'DATABASE': [\n      'db', 'table', 'schema', 'query', 'supabase',\n      'migration', 'seed'\n    ],\n    'API': [\n      'api', 'endpoint', 'route', 'fetch', 'request',\n      'response', 'handler'\n    ]\n  };\n  \n  // Find first matching pattern\n  for (const [area, keywords] of Object.entries(patterns)) {\n    if (keywords.some(kw => lowercased.includes(kw))) {\n      return area;\n    }\n  }\n  \n  return 'GENERAL';\n}\n\nmodule.exports = { \n  fetchLastNDaysCommits, \n  groupCommits,\n  detectFeatureArea,\n  WATCHED_REPOS\n};\n
+      'content', 'copy', 'text', 'markdown', 'post',
+      'article', 'essay', 'writing'
+    ],
+    'SYSTEM': [
+      'system', 'refactor', 'architecture', 'pattern',
+      'component', 'lib', 'util', 'type', 'interface'
+    ],
+    'DATABASE': [
+      'db', 'table', 'schema', 'query', 'supabase',
+      'migration', 'seed'
+    ],
+    'API': [
+      'api', 'endpoint', 'route', 'fetch', 'request',
+      'response', 'handler'
+    ]
+  };
+
+  // Find first matching pattern
+  for (const [area, keywords] of Object.entries(patterns)) {
+    if (keywords.some(kw => lowercased.includes(kw))) {
+      return area;
+    }
+  }
+
+  return 'GENERAL';
+}
+
+export {
+  fetchLastNDaysCommits,
+  groupCommits,
+  detectFeatureArea,
+  WATCHED_REPOS
+};

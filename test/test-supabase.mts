@@ -1,11 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 async function run() {
   const envPath = path.resolve(process.cwd(), '.env');
+
   if (fs.existsSync(envPath)) {
     const envConfig = fs.readFileSync(envPath, 'utf-8');
+
     envConfig.split('\n').forEach(line => {
       const match = line.match(/^([^=]+)=(.*)$/);
       if (match) {
@@ -58,9 +60,10 @@ async function run() {
 
     if (deleteError) throw deleteError;
     console.log('✅ Delete successful for:', insertData.id);
-    
+
     console.log('\n✅ All read/write operations verified successfully.');
-  } catch (err: any) {
+
+  } catch (err) {
     console.error('\n❌ Operation failed:', err.message || err);
     process.exit(1);
   }

@@ -1,19 +1,18 @@
 /**
  * Save Build Log to Supabase
- * 
- * Inserts generated log entry into PostgreSQL build_logs table
+ * * Inserts generated log entry into PostgreSQL build_logs table
  * via Supabase service role
  */
 
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 async function saveBuildLog(logEntry) {
   // Initialize Supabase client with service role (full access)
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
-  
+
   // Check if an entry for today already exists with same title
   // (prevents duplicate inserts if workflow runs multiple times)
   const { data: existing, error: checkError } = await supabase
@@ -22,17 +21,17 @@ async function saveBuildLog(logEntry) {
     .eq('date', logEntry.date)
     .eq('title', logEntry.title)
     .limit(1);
-  
+
   if (checkError) {
     console.error(`       ✗ Error checking existing entries:`, checkError.message);
     return null;
   }
-  
+
   if (existing && existing.length > 0) {
     console.log(`       → Entry already exists in database. Skipping.`);
     return existing[0];
   }
-  
+
   // Prepare database payload
   // Match your database column names (snake_case)
   const dbPayload = {
@@ -47,20 +46,20 @@ async function saveBuildLog(logEntry) {
     related_repositories: logEntry.relatedRepositories || [],
     hidden: logEntry.hidden || false
   };
-  
+
   // Insert into build_logs table
   const { data, error } = await supabase
     .from('build_logs')
     .insert([dbPayload])
     .select()
     .single();
-  
+
   if (error) {
     console.error(`       ✗ Database insert error:`, error.message);
     if (error.details) console.error(`       Details:`, error.details);
     return null;
   }
-  
+
   return data;
 }
 
@@ -70,31 +69,31 @@ async function saveBuildLog(logEntry) {
  */
 async function updateBuildLog(id, updates) {
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
-  
+
   const dbPayload = {};
-  
+
   if (updates.title !== undefined) dbPayload.title = updates.title;
   if (updates.description !== undefined) dbPayload.description = updates.description;
   if (updates.hidden !== undefined) dbPayload.hidden = updates.hidden;
   if (updates.ai_generated !== undefined) dbPayload.ai_generated = updates.ai_generated;
-  
+
   dbPayload.updated_at = new Date().toISOString();
-  
+
   const { data, error } = await supabase
     .from('build_logs')
     .update(dbPayload)
     .eq('id', id)
     .select()
     .single();
-  
+
   if (error) {
     console.error(`Failed to update build log:`, error.message);
     return null;
   }
-  
+
   return data;
 }
 
@@ -110,24 +109,24 @@ async function hideBuildLog(id) {
  */
 async function deleteBuildLog(id) {
   const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
-  
+
   const { error } = await supabase
     .from('build_logs')
     .delete()
     .eq('id', id);
-  
+
   if (error) {
     console.error(`Failed to delete build log:`, error.message);
     return false;
   }
-  
+
   return true;
 }
 
-module.exports = {
+export {
   saveBuildLog,
   updateBuildLog,
   hideBuildLog,

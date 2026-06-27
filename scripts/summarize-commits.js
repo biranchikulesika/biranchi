@@ -1,7 +1,6 @@
 /**
- * Summarize Commits with OpenAI
- * 
- * Takes a group of related commits and generates a structured
+ * Summarize Commits with NVIDIA NIM API
+ * * Takes a group of related commits and generates a structured
  * build log entry matching the Builder persona voice.
  */
 
@@ -10,7 +9,7 @@ async function generateLogEntry(commits, feature) {
   const commitList = commits
     .map(c => `- ${c.message.split('\n')[0].trim()}`)
     .join('\n');
-  
+
   // Craft the system prompt to enforce Builder persona
   const systemPrompt = `You are a technical writer generating build logs for a Builder persona.
 
@@ -50,14 +49,16 @@ Requirements:
 - Focus on systems and patterns, not individual fixes`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // NVIDIA NIM API handles requests using the standard OpenAI payload layout
+    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.NVIDIA_API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        // Pick an available, high-performance chat/reasoning model from your dashboard
+        model: 'deepseek-ai/deepseek-v4-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -67,16 +68,16 @@ Requirements:
         top_p: 0.9
       })
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
-      console.error(`       ✗ OpenAI API error (${response.status}):`, error.error.message);
+      console.error(`       ✗ NVIDIA API error (${response.status}):`, error.error?.message || error);
       return null;
     }
-    
+
     const data = await response.json();
     const content = data.choices[0].message.content.trim();
-    
+
     // Parse the JSON response
     let parsed;
     try {
@@ -86,7 +87,7 @@ Requirements:
       console.error(`       Response was: ${content.substring(0, 100)}...`);
       return null;
     }
-    
+
     // Build the complete log entry
     const logEntry = {
       // UI fields (for builder page)
@@ -97,35 +98,35 @@ Requirements:
       summary: parsed.summary || '',
       why: parsed.problem || '',
       affectedAreas: [parsed.tag || feature],
-      
+
       // Database fields
       source: 'automated',
       aiGenerated: true,
       generatedAt: new Date().toISOString(),
-      generationModel: 'gpt-4o-mini',
+      generationModel: 'deepseek-v4-flash',
       relatedCommits: commits.map(c => c.sha),
       relatedRepositories: [...new Set(commits.map(c => c.repo))],
       hidden: false,
-      
+
       // Raw AI output (for reference)
       _aiGenerated: parsed
     };
-    
+
     return logEntry;
-    
+
   } catch (error) {
-    console.error(`       ✗ OpenAI request failed:`, error.message);
+    console.error(`       ✗ NVIDIA request failed:`, error.message);
     return null;
   }
 }
 
 /**
  * Alternative: Local summarization (fallback)
- * If OpenAI is down or you want cost-free option
+ * If API is down or you want cost-free option
  */
 function generateLogEntryLocal(commits, feature) {
   const firstCommit = commits[0].message.split('\n')[0];
-  
+
   return {
     title: firstCommit.substring(0, 60),
     description: `Completed ${commits.length} commits in ${feature}`,
@@ -142,7 +143,7 @@ function generateLogEntryLocal(commits, feature) {
   };
 }
 
-module.exports = { 
+export {
   generateLogEntry,
-  generateLogEntryLocal 
+  generateLogEntryLocal
 };
