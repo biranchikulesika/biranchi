@@ -30,6 +30,13 @@
 
   /* Persona Typography */
   --font-persona: var(--font-persona-family);
+
+  /* Shadows utilizing persona tint */
+  --shadow-sm: 0 1px 2px 0 var(--shadow-color);
+  --shadow-md: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -4px var(--shadow-color);
+  --shadow-xl: 0 20px 25px -5px var(--shadow-color), 0 8px 10px -6px var(--shadow-color);
+  --shadow-2xl: 0 25px 50px -12px var(--shadow-color);
 }
 
 @layer base {
@@ -43,6 +50,7 @@
     --foreground: #18181b; /* zinc-900 */
     --muted: #f4f4f5; /* zinc-100 */
     --border: #e4e4e7; /* zinc-200 */
+    --shadow-color: rgba(15, 23, 42, 0.05);
   }
   
   .dark {
@@ -54,17 +62,19 @@
     --foreground: #e5e5e5;
     --muted: #1a1a1a;
     --border: #262626;
+    --shadow-color: rgba(0, 0, 0, 0.5);
   }
 
   /* Keeping original theme classes for elements that still use them, though we'll override in style */
   .theme-thinker {
-    --bg-canvas: #fdfbf7;
-    --bg-surface: #ffffff;
-    --color-accent: #991b1b;
+    --bg-canvas: #FDFBF7;
+    --bg-surface: #F7F4EF;
+    --color-accent: #9A3412;
     --font-persona-family: var(--font-lora), serif;
-    --foreground: #18181b;
-    --muted: #f4f4f5;
-    --border: #ffedd5; /* orange-100 */
+    --foreground: #2D241E;
+    --muted: #F7F4EF;
+    --border: #E6DFD5;
+    --shadow-color: rgba(154, 52, 18, 0.04);
   }
   .dark .theme-thinker, .theme-thinker.dark {
     --bg-canvas: #111417;
@@ -73,16 +83,18 @@
     --foreground: #D7D4CE;
     --muted: #1A1E24;
     --border: #23282D;
+    --shadow-color: rgba(0, 0, 0, 0.5);
   }
 
   .theme-wanderer {
-    --bg-canvas: #fffbeb;
-    --bg-surface: #ffffff;
-    --color-accent: #d97706;
+    --bg-canvas: #F5F5F0;
+    --bg-surface: #FFFFFF;
+    --color-accent: #D97706;
     --font-persona-family: var(--font-quicksand), sans-serif;
-    --foreground: #18181b;
-    --muted: #f4f4f5;
-    --border: #fde68a; /* amber-200 */
+    --foreground: #242721;
+    --muted: #E4E6DC;
+    --border: #E4E6DC;
+    --shadow-color: rgba(217, 119, 6, 0.05);
   }
   .dark .theme-wanderer, .theme-wanderer.dark {
     --bg-canvas: #1B1613;
@@ -91,16 +103,18 @@
     --foreground: #E1D5C8;
     --muted: #26201B;
     --border: #352B24;
+    --shadow-color: rgba(0, 0, 0, 0.5);
   }
 
   .theme-operator {
-    --bg-canvas: #fafaf9;
-    --bg-surface: #ffffff;
-    --color-accent: #059669;
+    --bg-canvas: #F2F7F5;
+    --bg-surface: #FFFFFF;
+    --color-accent: #10B981;
     --font-persona-family: var(--font-space-grotesk), sans-serif;
-    --foreground: #18181b;
-    --muted: #f4f4f5;
-    --border: #e7e5e4; /* stone-200 */
+    --foreground: #1A2E26;
+    --muted: #EAF2EE;
+    --border: #D1E2DC;
+    --shadow-color: rgba(16, 185, 129, 0.05);
   }
   .dark .theme-operator, .theme-operator.dark {
     --bg-canvas: #080b09;
@@ -109,16 +123,18 @@
     --foreground: #7f9e8a;
     --muted: #121A15;
     --border: #1E2722;
+    --shadow-color: rgba(0, 0, 0, 0.5);
   }
 
   .theme-builder {
-    --bg-canvas: #f8fafc;
-    --bg-surface: #ffffff;
-    --color-accent: #2563eb;
+    --bg-canvas: #F4F6F8;
+    --bg-surface: #FFFFFF;
+    --color-accent: #3B82F6;
     --font-persona-family: var(--font-mono), monospace;
-    --foreground: #18181b;
-    --muted: #f4f4f5;
-    --border: #e2e8f0; /* slate-200 */
+    --foreground: #1E293B;
+    --muted: #E2E8F0;
+    --border: #E2E8F0;
+    --shadow-color: rgba(59, 130, 246, 0.06);
   }
   .dark .theme-builder, .theme-builder.dark {
     --bg-canvas: #0a0a0a;
@@ -127,6 +143,7 @@
     --foreground: #d4d4d4;
     --muted: #171717;
     --border: #262626;
+    --shadow-color: rgba(0, 0, 0, 0.5);
   }
 
   .theme-admin {

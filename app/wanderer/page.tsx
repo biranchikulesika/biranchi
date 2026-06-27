@@ -157,7 +157,7 @@ export default function WandererPage() {
                     {/* Mobile view post structure - Completely simplified and beautiful */}
                     <div className="block lg:hidden space-y-4">
                       {/* [thumbnail] */}
-                      <div className="relative aspect-[3/2] w-full overflow-hidden bg-[#EAE3D5] dark:bg-[#15110E] border border-[#E5DCCF] dark:border-[#E5DCCF]/15 rounded-[1px]">
+                      <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm">
                         {post.thumbnailUrl ? (
                           <Image
                             src={post.thumbnailUrl}
@@ -193,7 +193,7 @@ export default function WandererPage() {
                         <>
                           {/* Post 1: Image Left, Text Right */}
                           <div className="lg:col-span-5 pr-10">
-                            <div className="relative aspect-[3/2] w-full overflow-hidden bg-[#EAE3D5] dark:bg-[#15110E] border border-[#E5DCCF] dark:border-[#E5DCCF]/15 rounded-[1px] shadow-[0_1px_8px_rgba(0,0,0,0.015)] my-2">
+                            <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm my-2">
                               {post.thumbnailUrl ? (
                                 <Image
                                   src={post.thumbnailUrl}
@@ -245,7 +245,7 @@ export default function WandererPage() {
                           <div className="lg:col-span-1" />
 
                           <div className="lg:col-span-4">
-                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EAE3D5] dark:bg-[#15110E] border border-[#E5DCCF] dark:border-[#E5DCCF]/15 rounded-[1px] my-1 opacity-90">
+                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface border border-border rounded-[1px] my-1 opacity-90 shadow-sm">
                               {post.thumbnailUrl ? (
                                 <Image
                                   src={post.thumbnailUrl}
@@ -267,7 +267,7 @@ export default function WandererPage() {
                         <>
                           {/* Post 3: Alternate Ratio Image Left, Gap, Text Right */}
                           <div className="lg:col-span-4">
-                            <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EAE3D5] dark:bg-[#15110E] border border-[#E5DCCF] dark:border-[#E5DCCF]/15 rounded-[1px] shadow-[0_1px_8px_rgba(0,0,0,0.015)] my-2">
+                            <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm my-2">
                               {post.thumbnailUrl ? (
                                 <Image
                                   src={post.thumbnailUrl}

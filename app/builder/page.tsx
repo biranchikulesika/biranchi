@@ -124,8 +124,8 @@ const renderStatusBadge = (status: SystemStatus | string) => {
 const SystemShowcase = ({ system }: { system: SystemItem }) => {
   const isDashed = system.status === 'lab';
   const borderClass = isDashed 
-    ? "border border-dashed border-neutral-200/70 dark:border-neutral-900/35"
-    : "border border-neutral-200/70 dark:border-neutral-900/35";
+    ? "border border-dashed border-border"
+    : "border border-border";
 
   return (
     <motion.div 
@@ -133,7 +133,7 @@ const SystemShowcase = ({ system }: { system: SystemItem }) => {
         hidden: { opacity: 0, y: 12 },
         show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
       }}
-      className={`lg:col-span-7 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-[#E7E4DD]/12 ${borderClass} hover:border-neutral-350 dark:hover:border-neutral-700 hover:bg-[#E7E4DD]/20 dark:hover:bg-neutral-900/10 hover:-translate-y-[1px] transition-all duration-200 ease-out rounded-[3px] group`}
+      className={`lg:col-span-7 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-surface ${borderClass} hover:border-border dark:hover:border-neutral-700 hover:bg-muted dark:hover:bg-neutral-900/10 hover:-translate-y-[1px] transition-all duration-200 ease-out rounded-[3px] shadow-sm group`}
     >
       <div>
         <div className="flex items-start justify-between gap-4 mb-2">
@@ -163,8 +163,8 @@ const SystemShowcase = ({ system }: { system: SystemItem }) => {
 const SystemCard = ({ system }: { system: SystemItem }) => {
   const isDashed = system.status === 'lab';
   const borderClass = isDashed 
-    ? "border border-dashed border-neutral-200/70 dark:border-neutral-900/35"
-    : "border border-neutral-200/70 dark:border-neutral-900/35";
+    ? "border border-dashed border-border"
+    : "border border-border";
 
   return (
     <motion.div 
@@ -172,7 +172,7 @@ const SystemCard = ({ system }: { system: SystemItem }) => {
         hidden: { opacity: 0, y: 12 },
         show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
       }}
-      className={`lg:col-span-5 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-[#E7E4DD]/12 ${borderClass} hover:border-neutral-350 dark:hover:border-neutral-700 hover:bg-[#E7E4DD]/20 dark:hover:bg-neutral-900/10 hover:-translate-y-[1px] transition-all duration-200 ease-out rounded-[3px] group`}
+      className={`lg:col-span-5 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-surface ${borderClass} hover:border-border dark:hover:border-neutral-700 hover:bg-muted dark:hover:bg-neutral-900/10 hover:-translate-y-[1px] transition-all duration-200 ease-out rounded-[3px] shadow-sm group`}
     >
       <div>
         <div className="flex items-start justify-between gap-4 mb-2">
@@ -297,7 +297,7 @@ export default function BuilderPage() {
 
             {/* RIGHT SIDE ACTIVE SYSTEMS PANEL - Tightened layout, visually snug */}
             <div className="lg:col-span-4 lg:col-start-9 w-full order-2 lg:row-start-1 lg:row-span-2 lg:mt-2">
-              <div className="border border-neutral-200/70 dark:border-neutral-900 p-5 md:p-6 dark:bg-neutral-900/5 bg-[#E7E4DD]/10 rounded-[3px] space-y-4 relative overflow-hidden">
+              <div className="border border-border p-5 md:p-6 dark:bg-neutral-900/5 bg-surface shadow-sm rounded-[3px] space-y-4 relative overflow-hidden">
                 <div className="flex justify-between items-center text-[10px] dark:text-neutral-500 text-[#8B867C] tracking-wide font-medium">
                   <span>Operational state</span>
                   <span className="flex h-1.5 w-1.5 relative">
