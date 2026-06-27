@@ -12,15 +12,15 @@ export default function OperatorAboutPage() {
         className="max-w-2xl"
       >
         <div className="mb-12 md:mb-14">
-          <span className="text-[10px] md:text-[11px] tracking-wider dark:text-[#4e6054] text-[#5C6A61]/90 block mb-6 md:mb-8 font-mono">
+          <span className="text-[10px] md:text-[11px] tracking-wider text-primary/80 block mb-6 md:mb-8 font-mono">
             signal://
           </span>
-          <h1 className="text-3xl md:text-4xl font-medium text-[#c2d6c9] tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-medium text-foreground tracking-tight">
             Why Signal Exists
           </h1>
         </div>
         
-        <div className="space-y-8 md:space-y-10 dark:text-[#7f9e8a] text-[#5F7A69] leading-[1.8] md:leading-[1.9] text-[15.5px] md:text-[16.5px]">
+        <div className="space-y-8 md:space-y-10 text-foreground/80 leading-[1.8] md:leading-[1.9] text-[15.5px] md:text-[16.5px]">
           <p>
             Operator is where I think about infrastructure, cybersecurity, operational thinking, and the invisible systems that quietly power the internet.
           </p>
@@ -31,7 +31,7 @@ export default function OperatorAboutPage() {
             This corner focuses less on performance and more on understanding. Logs, architecture, networks, and operational systems are not just technical subjects to me. They are ways of observing how modern digital life actually functions beneath the surface.
           </p>
           <div className="pt-14 md:pt-16 border-t border-transparent">
-            <p className="text-[13px] md:text-[14px] dark:text-[#4e6054] text-[#5C6A61]/90 tracking-wide font-light">
+            <p className="text-[13px] md:text-[14px] text-primary/80 tracking-wide font-light">
               Reliable systems are usually invisible.
             </p>
           </div>

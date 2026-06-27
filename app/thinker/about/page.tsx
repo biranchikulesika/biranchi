@@ -12,15 +12,15 @@ export default function ThinkerAboutPage() {
         className="max-w-xl"
       >
         <div className="mb-10 md:mb-14">
-          <span className="text-[10px] md:text-[11px] tracking-[0.2em] text-[#7E7A73] mb-6 md:mb-8 block font-mono uppercase opacity-70">
+          <span className="text-[10px] md:text-[11px] tracking-[0.2em] text-primary/70 mb-6 md:mb-8 block font-mono uppercase opacity-70">
             Inside the Head
           </span>
-          <h1 className="text-4xl md:text-5xl text-[#DEDAD3] tracking-wide font-cormorant font-normal leading-snug">
+          <h1 className="text-4xl md:text-5xl text-foreground tracking-wide font-cormorant font-normal leading-snug">
             Why Thinker Exists
           </h1>
         </div>
         
-        <div className="space-y-8 md:space-y-12 text-[#A7A39B] leading-[1.95] text-[15px] md:text-lg font-light antialiased">
+        <div className="space-y-8 md:space-y-12 text-foreground/80 leading-[1.95] text-[15px] md:text-lg font-light antialiased">
           <p>
             Thinker is the quietest part of the ecosystem. It holds reflections, internal conversations, observations, unfinished thoughts, philosophy, psychology, and questions that continue to stay with me.
           </p>
@@ -32,7 +32,7 @@ export default function ThinkerAboutPage() {
           </p>
           
           <div className="pt-8 md:pt-12">
-            <p className="text-[13.5px] md:text-[14.5px] text-[#7E7A73] tracking-wide font-cormorant italic text-xl">
+            <p className="text-[13.5px] md:text-[14.5px] text-primary/80 tracking-wide font-cormorant italic text-xl">
               Some thoughts stay longer than expected.
             </p>
           </div>
