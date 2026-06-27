@@ -19,9 +19,16 @@ export const metadata: Metadata = {
   }
 };
 
+import { JetBrains_Mono } from 'next/font/google';
+
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
+
 export default function BuilderLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="font-mono theme-builder bg-background text-foreground min-h-screen selection:bg-primary/20 flex flex-col">
+    <div className={`${mono.variable} font-persona theme-builder bg-background text-foreground min-h-screen selection:bg-primary/20 flex flex-col`}>
       <header className="sticky top-0 z-50 w-full p-4 md:p-6 flex justify-between items-center border-b border-border bg-background/80 backdrop-blur-md">
         <PersonaSwitcher currentPersona="Builder" currentStyle="text-primary font-mono" />
         <div className="flex items-center gap-1 md:gap-2">

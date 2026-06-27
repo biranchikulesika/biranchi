@@ -19,9 +19,16 @@ export const metadata: Metadata = {
   }
 };
 
+import { Quicksand } from 'next/font/google';
+
+const quicksand = Quicksand({
+  subsets: ['latin'],
+  variable: '--font-quicksand',
+});
+
 export default function WandererLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="font-spectral theme-wanderer bg-background text-foreground min-h-screen selection:bg-primary/20 flex flex-col leading-relaxed relative z-0">
+    <div className={`${quicksand.variable} font-persona theme-wanderer bg-background text-foreground min-h-screen selection:bg-primary/20 flex flex-col leading-relaxed relative z-0`}>
       <div className="pointer-events-none fixed inset-0 z-[-1] dark:bg-[radial-gradient(ellipse_at_50%_0%,rgba(34,28,24,0.3)_0%,transparent_70%)] bg-[radial-gradient(ellipse_at_50%_0%,rgba(238,231,222,0.8)_0%,transparent_70%)]" />
       <div className="relative z-10 flex flex-col min-h-screen">
         <header className="sticky top-0 z-50 w-full px-6 py-6 transition-colors duration-1000 flex justify-between items-center bg-background/90 backdrop-blur-xl border-b border-border">
