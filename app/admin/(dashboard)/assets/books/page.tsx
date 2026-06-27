@@ -14,10 +14,6 @@ export default function BooksAdminPage() {
   const [submitError, setSubmitError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = async () => {
     setLoading(true);
     try {
@@ -29,6 +25,10 @@ export default function BooksAdminPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

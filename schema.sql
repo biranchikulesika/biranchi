@@ -11,29 +11,19 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
-DO $$ BEGIN
-    CREATE TYPE "public"."newsletter_status" AS ENUM ('draft', 'published', 'archived');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "public"."book_status" AS ENUM ('to-read', 'reading', 'read');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
-    CREATE TYPE "public"."persona_type" AS ENUM ('builder', 'operator', 'thinker', 'wanderer');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
 -- 3. FUNCTIONS
 CREATE OR REPLACE FUNCTION "public"."update_updated_at_column"()
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION "public"."update_updatedAt_column"()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW."updatedAt" = NOW();
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -45,8 +35,7 @@ CREATE TABLE IF NOT EXISTS "public"."active_systems" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "url" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'active',
+    "status" TEXT NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -58,17 +47,16 @@ CREATE TABLE IF NOT EXISTS "public"."books" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "title" TEXT NOT NULL,
     "author" TEXT NOT NULL,
-    "cover_image" TEXT,
-    "link" TEXT,
-    "status" book_status NOT NULL DEFAULT 'to-read',
-    "rating" INTEGER CHECK (rating >= 1 AND rating <= 5),
-    "review" TEXT,
-    "date_finished" TIMESTAMPTZ,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    "coverImage" TEXT,
+    "category" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "notes" TEXT,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 DROP TRIGGER IF EXISTS update_books_updated_at ON "public"."books";
-CREATE TRIGGER update_books_updated_at BEFORE UPDATE ON "public"."books" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_books_updated_at BEFORE UPDATE ON "public"."books" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
 CREATE INDEX IF NOT EXISTS idx_books_status ON "public"."books"("status");
 
 -- BUILD LOGS
@@ -77,26 +65,25 @@ CREATE TABLE IF NOT EXISTS "public"."build_logs" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "date" DATE NOT NULL DEFAULT CURRENT_DATE,
-    "source" VARCHAR(20) DEFAULT 'manual',
-    "ai_generated" BOOLEAN DEFAULT FALSE,
+    "source" TEXT DEFAULT 'manual',
+    "ai_generated" BOOLEAN DEFAULT false,
     "generated_at" TIMESTAMPTZ,
-    "generation_model" VARCHAR(100),
+    "generation_model" TEXT,
     "related_commits" TEXT[] DEFAULT '{}',
     "related_repositories" TEXT[] DEFAULT '{}',
-    "hidden" BOOLEAN DEFAULT FALSE,
-    "system_id" UUID REFERENCES "public"."active_systems"("id") ON DELETE SET NULL,
+    "hidden" BOOLEAN DEFAULT false,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 DROP TRIGGER IF EXISTS update_build_logs_updated_at ON "public"."build_logs";
 CREATE TRIGGER update_build_logs_updated_at BEFORE UPDATE ON "public"."build_logs" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE INDEX IF NOT EXISTS idx_build_logs_system ON "public"."build_logs"("system_id");
 
 -- BUILDER STATUS
 CREATE TABLE IF NOT EXISTS "public"."builder_status" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "operational_state" TEXT NOT NULL,
+    "status_text" TEXT NOT NULL,
     "current_focus" TEXT NOT NULL,
-    "is_active" BOOLEAN DEFAULT true,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -107,21 +94,26 @@ CREATE TRIGGER update_builder_status_updated_at BEFORE UPDATE ON "public"."build
 CREATE TABLE IF NOT EXISTS "public"."field_notes" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "title" TEXT NOT NULL,
+    "excerpt" TEXT,
     "content" TEXT NOT NULL,
-    "location" TEXT,
-    "date" TIMESTAMPTZ DEFAULT NOW(),
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    "category" TEXT NOT NULL,
+    "publishedAt" TIMESTAMPTZ,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    "hidden" BOOLEAN NOT NULL DEFAULT false,
+    "draft" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 DROP TRIGGER IF EXISTS update_field_notes_updated_at ON "public"."field_notes";
-CREATE TRIGGER update_field_notes_updated_at BEFORE UPDATE ON "public"."field_notes" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_field_notes_updated_at BEFORE UPDATE ON "public"."field_notes" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
 
 -- FRAGMENTS
 CREATE TABLE IF NOT EXISTS "public"."fragments" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "content" TEXT NOT NULL,
-    "type" TEXT,
-    "tags" TEXT[],
+    "quote" TEXT NOT NULL,
+    "source" TEXT NOT NULL,
+    "title" TEXT,
+    "body" TEXT,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -132,8 +124,6 @@ CREATE TRIGGER update_fragments_updated_at BEFORE UPDATE ON "public"."fragments"
 CREATE TABLE IF NOT EXISTS "public"."thought_fragments" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "content" TEXT NOT NULL,
-    "source" TEXT,
-    "tags" TEXT[],
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -145,7 +135,6 @@ CREATE TABLE IF NOT EXISTS "public"."journal_moments" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "content" TEXT NOT NULL,
     "mood" TEXT,
-    "date" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -155,56 +144,58 @@ CREATE TRIGGER update_journal_moments_updated_at BEFORE UPDATE ON "public"."jour
 -- NEWSLETTER PROFILES
 CREATE TABLE IF NOT EXISTS "public"."newsletter_profiles" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "name" TEXT NOT NULL,
-    "description" TEXT,
-    "from_email" TEXT,
-    "from_name" TEXT,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    "persona" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "frequencyText" TEXT NOT NULL,
+    "philosophyText" TEXT NOT NULL,
+    "expectationItems" TEXT[] DEFAULT '{}',
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 DROP TRIGGER IF EXISTS update_newsletter_profiles_updated_at ON "public"."newsletter_profiles";
-CREATE TRIGGER update_newsletter_profiles_updated_at BEFORE UPDATE ON "public"."newsletter_profiles" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_newsletter_profiles_updated_at BEFORE UPDATE ON "public"."newsletter_profiles" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
 
 -- NEWSLETTER ISSUES
 CREATE TABLE IF NOT EXISTS "public"."newsletter_issues" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "profile_id" UUID REFERENCES "public"."newsletter_profiles"("id") ON DELETE CASCADE,
+    "persona" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "slug" TEXT UNIQUE NOT NULL,
+    "subject" TEXT,
+    "previewText" TEXT,
     "content" TEXT NOT NULL,
-    "status" newsletter_status NOT NULL DEFAULT 'draft',
-    "published_at" TIMESTAMPTZ,
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    "publishedAt" TIMESTAMPTZ,
+    "hidden" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 DROP TRIGGER IF EXISTS update_newsletter_issues_updated_at ON "public"."newsletter_issues";
-CREATE TRIGGER update_newsletter_issues_updated_at BEFORE UPDATE ON "public"."newsletter_issues" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE INDEX IF NOT EXISTS idx_nl_issues_profile ON "public"."newsletter_issues"("profile_id");
-CREATE INDEX IF NOT EXISTS idx_nl_issues_status ON "public"."newsletter_issues"("status");
+CREATE TRIGGER update_newsletter_issues_updated_at BEFORE UPDATE ON "public"."newsletter_issues" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
+CREATE INDEX IF NOT EXISTS idx_nl_issues_persona ON "public"."newsletter_issues"("persona");
 
 -- SUBSCRIBERS
 CREATE TABLE IF NOT EXISTS "public"."subscribers" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "email" TEXT UNIQUE NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'active',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    "source" TEXT,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 DROP TRIGGER IF EXISTS update_subscribers_updated_at ON "public"."subscribers";
-CREATE TRIGGER update_subscribers_updated_at BEFORE UPDATE ON "public"."subscribers" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_subscribers_updated_at BEFORE UPDATE ON "public"."subscribers" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
 
 -- SUBSCRIPTIONS
 CREATE TABLE IF NOT EXISTS "public"."subscriptions" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    "subscriber_id" UUID NOT NULL REFERENCES "public"."subscribers"("id") ON DELETE CASCADE,
-    "profile_id" UUID NOT NULL REFERENCES "public"."newsletter_profiles"("id") ON DELETE CASCADE,
-    "status" TEXT NOT NULL DEFAULT 'subscribed',
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE("subscriber_id", "profile_id")
+    "subscriberId" UUID NOT NULL REFERENCES "public"."subscribers"("id") ON DELETE CASCADE,
+    "persona" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE("subscriberId", "persona")
 );
 DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON "public"."subscriptions";
-CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON "public"."subscriptions" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON "public"."subscriptions" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
 
 -- OPERATOR FOCUSES
 CREATE TABLE IF NOT EXISTS "public"."operator_focuses" (
@@ -212,7 +203,7 @@ CREATE TABLE IF NOT EXISTS "public"."operator_focuses" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "status" TEXT NOT NULL DEFAULT 'in-progress',
-    "priority" INTEGER DEFAULT 0,
+    "priority" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -242,15 +233,15 @@ CREATE TABLE IF NOT EXISTS "public"."posts" (
     "featured" BOOLEAN DEFAULT false,
     "hidden" BOOLEAN DEFAULT false,
     "published_at" TIMESTAMPTZ,
-    "tags" TEXT[],
+    "tags" TEXT[] DEFAULT '{}',
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE NULLS NOT DISTINCT ("persona", "slug")
 );
 DROP TRIGGER IF EXISTS update_posts_updated_at ON "public"."posts";
 CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON "public"."posts" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE INDEX IF NOT EXISTS idx_posts_status on "public"."posts"("status");
-CREATE INDEX IF NOT EXISTS idx_posts_persona on "public"."posts"("persona");
+CREATE INDEX IF NOT EXISTS idx_posts_status ON "public"."posts"("status");
+CREATE INDEX IF NOT EXISTS idx_posts_persona ON "public"."posts"("persona");
 
 -- QUESTIONS
 CREATE TABLE IF NOT EXISTS "public"."questions" (
@@ -268,18 +259,19 @@ CREATE TRIGGER update_questions_updated_at BEFORE UPDATE ON "public"."questions"
 CREATE TABLE IF NOT EXISTS "public"."redistribution_records" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "amount" DECIMAL(12,2) NOT NULL,
-    "recipient" TEXT NOT NULL,
-    "description" TEXT,
-    "date" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    "destination" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "proofUrl" TEXT,
+    "internalNotes" TEXT,
+    "donatedAt" TIMESTAMPTZ NOT NULL,
+    "transactionReference" TEXT,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 DROP TRIGGER IF EXISTS update_redistribution_records_updated_at ON "public"."redistribution_records";
-CREATE TRIGGER update_redistribution_records_updated_at BEFORE UPDATE ON "public"."redistribution_records" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
+CREATE TRIGGER update_redistribution_records_updated_at BEFORE UPDATE ON "public"."redistribution_records" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
 
 -- 5. ROW LEVEL SECURITY (RLS)
--- Enable RLS on all tables
 ALTER TABLE "public"."active_systems" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."books" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."build_logs" ENABLE ROW LEVEL SECURITY;
@@ -297,17 +289,6 @@ ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."questions" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."redistribution_records" ENABLE ROW LEVEL SECURITY;
 
--- Clear previous policies to enforce idempotency
-DO $$ 
-DECLARE
-    row RECORD;
-BEGIN
-    FOR row IN SELECT tablename, policyname FROM pg_policies WHERE schemaname = 'public' 
-    LOOP
-        EXECUTE format('DROP POLICY IF EXISTS %I ON "public".%I', row.policyname, row.tablename);
-    END LOOP;
-END $$;
-
 -- Admin full access across all tables
 DO $$
 DECLARE
@@ -319,34 +300,27 @@ BEGIN
     END LOOP;
 END $$;
 
--- Public read access policies for published or public data
+-- Public read access policies
 CREATE POLICY "Public read active systems" ON "public"."active_systems" FOR SELECT USING (status = 'active');
 CREATE POLICY "Public read books" ON "public"."books" FOR SELECT USING (true);
-CREATE POLICY "Public read build logs" ON "public"."build_logs" FOR SELECT USING (true);
+CREATE POLICY "Public read build logs" ON "public"."build_logs" FOR SELECT USING (hidden = false);
 CREATE POLICY "Public read builder status" ON "public"."builder_status" FOR SELECT USING (true);
-CREATE POLICY "Public read field notes" ON "public"."field_notes" FOR SELECT USING (true);
+CREATE POLICY "Public read field notes" ON "public"."field_notes" FOR SELECT USING (hidden = false AND draft = false);
 CREATE POLICY "Public read fragments" ON "public"."fragments" FOR SELECT USING (true);
 CREATE POLICY "Public read thought fragments" ON "public"."thought_fragments" FOR SELECT USING (true);
 CREATE POLICY "Public read journal moments" ON "public"."journal_moments" FOR SELECT USING (true);
 CREATE POLICY "Public read newsletter profiles" ON "public"."newsletter_profiles" FOR SELECT USING (true);
-CREATE POLICY "Public read published newsletter issues" ON "public"."newsletter_issues" FOR SELECT USING (status = 'published');
+CREATE POLICY "Public read published newsletter issues" ON "public"."newsletter_issues" FOR SELECT USING (hidden = false);
 CREATE POLICY "Public read operator focuses" ON "public"."operator_focuses" FOR SELECT USING (true);
-CREATE POLICY "Public read published posts" ON "public"."posts" FOR SELECT USING (status = 'published');
-CREATE POLICY "Public read questions" ON "public"."questions" FOR SELECT USING (true);
+CREATE POLICY "Public read published posts" ON "public"."posts" FOR SELECT USING (status = 'published' AND hidden = false);
+CREATE POLICY "Public read questions" ON "public"."questions" FOR SELECT USING (status != 'archived');
 CREATE POLICY "Public read redistribution records" ON "public"."redistribution_records" FOR SELECT USING (true);
 
 -- Allow public to insert into subscriber tables
 CREATE POLICY "Public can subscribe" ON "public"."subscribers" FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public can manage own subscription" ON "public"."subscriptions" FOR ALL USING (true);
 
--- Validation Note:
--- SELECT * FROM "public"."posts" LIMIT 1;
--- Queries shouldn't fail and should respect RLS.
-
--- Constraints and Formatting
-ALTER TABLE "public"."build_logs" DROP CONSTRAINT IF EXISTS build_logs_system_id_fkey;
-ALTER TABLE "public"."build_logs" ADD CONSTRAINT build_logs_system_id_fkey FOREIGN KEY ("system_id") REFERENCES "public"."active_systems"("id") ON DELETE CASCADE;
-
+-- 6. ADDITIONAL CONSTRAINTS & TRIGGERS
 CREATE OR REPLACE FUNCTION validate_published_post()
 RETURNS trigger
 LANGUAGE plpgsql

@@ -7,9 +7,14 @@ export class BuildLogSupabaseRepository implements IRepository<BuildLog> {
     const dbObj: any = {};
     if (data.title !== undefined) dbObj.title = data.title;
     if (data.description !== undefined) dbObj.description = data.description;
-    if ((data as any).excerpt !== undefined) dbObj.description = (data as any).excerpt; // UI mapping
+    if (data.date !== undefined) dbObj.date = data.date;
     if (data.source !== undefined) dbObj.source = data.source;
-    if (data.date !== undefined) dbObj.created_at = data.date; // Use date for created_at if valid
+    if (data.aiGenerated !== undefined) dbObj.ai_generated = data.aiGenerated;
+    if (data.generatedAt !== undefined) dbObj.generated_at = data.generatedAt;
+    if (data.generationModel !== undefined) dbObj.generation_model = data.generationModel;
+    if (data.relatedCommits !== undefined) dbObj.related_commits = data.relatedCommits;
+    if (data.relatedRepositories !== undefined) dbObj.related_repositories = data.relatedRepositories;
+    if (data.hidden !== undefined) dbObj.hidden = data.hidden;
     return dbObj;
   }
 
@@ -18,16 +23,17 @@ export class BuildLogSupabaseRepository implements IRepository<BuildLog> {
       id: dbData.id,
       title: dbData.title || '',
       description: dbData.description || '',
-      excerpt: dbData.description || '', // UI mapping
-      date: dbData.created_at,
+      date: dbData.date || dbData.created_at,
       source: dbData.source || 'manual',
-      aiGenerated: false,
-      relatedCommits: [],
-      relatedRepositories: [],
-      hidden: false,
+      aiGenerated: dbData.ai_generated || false,
+      generatedAt: dbData.generated_at,
+      generationModel: dbData.generation_model,
+      relatedCommits: dbData.related_commits || [],
+      relatedRepositories: dbData.related_repositories || [],
+      hidden: dbData.hidden || false,
       createdAt: dbData.created_at,
       updatedAt: dbData.updated_at,
-    } as any;
+    };
   }
 
 
