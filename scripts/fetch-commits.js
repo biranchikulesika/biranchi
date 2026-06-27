@@ -7,10 +7,63 @@
 
 // Which repos to monitor
 const WATCHED_REPOS = [
+  { owner: 'biranchikulesika', repo: '4life' },
+  { owner: 'biranchikulesika', repo: 'pracg' },
   { owner: 'biranchikulesika', repo: 'biranchi' },
+  { owner: 'biranchikulesika', repo: 'velcroso' },
+  { owner: 'biranchikulesika', repo: 'lipi-frontend' },
+  { owner: 'biranchikulesika', repo: 'lipy' },
+  { owner: 'biranchikulesika', repo: 'Assignments' },
+  { owner: 'biranchikulesika', repo: 'bayo' },
+  { owner: 'biranchikulesika', repo: 'LiPiD' },
+  { owner: 'biranchikulesika', repo: 'imca_2025_batch' },
+  { owner: 'biranchikulesika', repo: 'BLA' },
+  { owner: 'biranchikulesika', repo: 'imca_food_census' },
+  { owner: 'biranchikulesika', repo: 'nusca' },
+  { owner: 'biranchikulesika', repo: 'prashnify' },
+  { owner: 'biranchikulesika', repo: 'imca_first_year' },
+  { owner: 'biranchikulesika', repo: 'agrovision' },
+  { owner: 'biranchikulesika', repo: 'puppy' },
+  { owner: 'biranchikulesika', repo: 'NIELET' },
+  { owner: 'biranchikulesika', repo: 'deeler' },
+  { owner: 'biranchikulesika', repo: 'Supo' },
+  { owner: 'biranchikulesika', repo: 'AuthLens' },
+  { owner: 'biranchikulesika', repo: 'Alumni-Website' },
+  { owner: 'biranchikulesika', repo: 'pracg.in' },
+  { owner: 'biranchikulesika', repo: 'Homework' },
+  { owner: 'biranchikulesika', repo: 'Web_Scrapper' },
+  { owner: 'biranchikulesika', repo: 'Keeler' },
+  { owner: 'biranchikulesika', repo: 'photo_cleanup' },
+  { owner: 'biranchikulesika', repo: 'scraper' },
+  { owner: 'biranchikulesika', repo: 'operational-manual' },
+  { owner: 'biranchikulesika', repo: 'sjsc' },
+  { owner: 'biranchikulesika', repo: 'scrible' },
+  { owner: 'biranchikulesika', repo: 'Testing' },
+  { owner: 'biranchikulesika', repo: 'HackJyoti' },
+  { owner: 'biranchikulesika', repo: 'resume_code' },
+  { owner: 'biranchikulesika', repo: 'VelcrosoScanner' },
+  { owner: 'biranchikulesika', repo: 'biranchikulesika' },
+  { owner: 'biranchikulesika', repo: 'TRB' },
+  { owner: 'biranchikulesika', repo: 'IMCA_ALUMNI' },
+  { owner: 'biranchikulesika', repo: 'Shell_Script' },
+  { owner: 'biranchikulesika', repo: 'OS_programs' },
+  { owner: 'Gundala-Anushka', repo: 'LipyFrontEnd' },
+  { owner: 'biranchikulesika', repo: 'CodeHub' }
+
+  
+
   // Add more repos:
   // { owner: 'biranchikulesika', repo: 'other-project' },
 ];
+
+
+
+
+
+
+
+
+
 
 /**
  * Fetch commits from GitHub API for last N days
