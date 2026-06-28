@@ -15,7 +15,7 @@ function OperationalDivider({ label, phrases }: { label: string; phrases: string
   return (
     <div className="w-full pt-8 pb-4 select-none font-mono">
       <div className="max-w-5xl mx-auto px-6 md:px-12">
-        <div className="w-full h-[1px] bg-neutral-200/15 dark:bg-neutral-900/25 mb-4" />
+        <div className="w-full h-px bg-neutral-200/15 dark:bg-neutral-900/25 mb-4" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[10px] md:text-[11px] uppercase tracking-[0.25em] py-1 dark:text-neutral-500 text-[#8B867C]/95">
           <span className="font-semibold">{label}</span>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-medium opacity-80">
@@ -40,7 +40,7 @@ function CinematicSeparator({ title, subtitle }: { title: string; subtitle: stri
         <span className="text-[10px] md:text-[11px] dark:text-neutral-400 text-[#8B867C] tracking-[0.35em] uppercase font-bold text-center">
           [ {title} ]
         </span>
-        <div className="w-16 h-[1px] bg-neutral-200/15 dark:bg-neutral-900/25" />
+        <div className="w-16 h-px bg-neutral-200/15 dark:bg-neutral-900/25" />
         <span className="text-[8px] md:text-[9px] dark:text-neutral-500/60 text-neutral-500/50 tracking-[0.25em] uppercase text-center leading-normal max-w-sm">
           {subtitle}
         </span>
@@ -96,25 +96,25 @@ const renderStatusBadge = (status: SystemStatus | string) => {
   switch (normStatus) {
     case 'stable':
       return (
-        <span className="text-[9px] dark:text-[#7f9e8a] text-[#5F7A69] tracking-[0.2em] border border-emerald-500/15 dark:bg-emerald-950/15 bg-emerald-50 px-2 py-0.5 rounded-[2px] font-bold uppercase">
+        <span className="text-[9px] dark:text-[#7f9e8a] text-[#5F7A69] tracking-[0.2em] border border-emerald-500/15 dark:bg-emerald-950/15 bg-emerald-50 px-2 py-0.5 rounded-xs font-bold uppercase">
           STABLE
         </span>
       );
     case 'active':
       return (
-        <span className="text-[9px] dark:text-neutral-500 text-[#8B867C] tracking-[0.2em] border border-neutral-500/15 dark:bg-neutral-800/50 bg-neutral-100 px-2 py-0.5 rounded-[2px] font-bold uppercase">
+        <span className="text-[9px] dark:text-neutral-500 text-[#8B867C] tracking-[0.2em] border border-neutral-500/15 dark:bg-neutral-800/50 bg-neutral-100 px-2 py-0.5 rounded-xs font-bold uppercase">
           ACTIVE
         </span>
       );
     case 'lab':
       return (
-        <span className="text-[9px] dark:text-amber-500 text-amber-600 tracking-[0.2em] border border-dashed border-amber-500/20 dark:bg-amber-950/15 bg-amber-50 px-2 py-0.5 rounded-[2px] font-bold uppercase">
+        <span className="text-[9px] dark:text-amber-500 text-amber-600 tracking-[0.2em] border border-dashed border-amber-500/20 dark:bg-amber-950/15 bg-amber-50 px-2 py-0.5 rounded-xs font-bold uppercase">
           LAB
         </span>
       );
     default:
       return (
-        <span className="text-[9px] dark:text-neutral-500 text-[#8B867C] tracking-[0.2em] border border-neutral-500/15 dark:bg-neutral-800/50 bg-neutral-100 px-2 py-0.5 rounded-[2px] font-bold uppercase">
+        <span className="text-[9px] dark:text-neutral-500 text-[#8B867C] tracking-[0.2em] border border-neutral-500/15 dark:bg-neutral-800/50 bg-neutral-100 px-2 py-0.5 rounded-xs font-bold uppercase">
           {normStatus}
         </span>
       );
@@ -123,17 +123,17 @@ const renderStatusBadge = (status: SystemStatus | string) => {
 
 const SystemShowcase = ({ system }: { system: SystemItem }) => {
   const isDashed = system.status === 'lab';
-  const borderClass = isDashed 
+  const borderClass = isDashed
     ? "border border-dashed border-border"
     : "border border-border";
 
   return (
-    <motion.div 
+    <motion.div
       variants={{
         hidden: { opacity: 0, y: 12 },
         show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
       }}
-      className={`lg:col-span-7 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-surface ${borderClass} hover:border-border dark:hover:border-neutral-700 hover:bg-muted dark:hover:bg-neutral-900/10 hover:-translate-y-[1px] transition-all duration-200 ease-out rounded-[3px] shadow-sm group`}
+      className={`lg:col-span-7 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-surface ${borderClass} hover:border-border dark:hover:border-neutral-700 hover:bg-muted dark:hover:bg-neutral-900/10 hover:-translate-y-px transition-all duration-200 ease-out rounded-[3px] shadow-sm group`}
     >
       <div>
         <div className="flex items-start justify-between gap-4 mb-2">
@@ -142,11 +142,11 @@ const SystemShowcase = ({ system }: { system: SystemItem }) => {
               <Link href={system.url} className="hover:underline">{system.title || system.name}</Link>
             ) : system.name}
           </h3>
-          <div className="shrink-0 mt-[2px]">
+          <div className="shrink-0 mt-0.5">
             {renderStatusBadge(system.status)}
           </div>
         </div>
-        
+
         <p className="text-[13px] dark:text-neutral-400 text-[#5E5A53] leading-relaxed max-w-xl">
           {system.description}
         </p>
@@ -162,17 +162,17 @@ const SystemShowcase = ({ system }: { system: SystemItem }) => {
 
 const SystemCard = ({ system }: { system: SystemItem }) => {
   const isDashed = system.status === 'lab';
-  const borderClass = isDashed 
+  const borderClass = isDashed
     ? "border border-dashed border-border"
     : "border border-border";
 
   return (
-    <motion.div 
+    <motion.div
       variants={{
         hidden: { opacity: 0, y: 12 },
         show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
       }}
-      className={`lg:col-span-5 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-surface ${borderClass} hover:border-border dark:hover:border-neutral-700 hover:bg-muted dark:hover:bg-neutral-900/10 hover:-translate-y-[1px] transition-all duration-200 ease-out rounded-[3px] shadow-sm group`}
+      className={`lg:col-span-5 flex flex-col justify-between p-4 md:p-5 dark:bg-neutral-900/5 bg-surface ${borderClass} hover:border-border dark:hover:border-neutral-700 hover:bg-muted dark:hover:bg-neutral-900/10 hover:-translate-y-px transition-all duration-200 ease-out rounded-[3px] shadow-sm group`}
     >
       <div>
         <div className="flex items-start justify-between gap-4 mb-2">
@@ -181,11 +181,11 @@ const SystemCard = ({ system }: { system: SystemItem }) => {
               <Link href={system.url} className="hover:underline">{system.title || system.name}</Link>
             ) : system.name}
           </h3>
-          <div className="shrink-0 mt-[2px]">
+          <div className="shrink-0 mt-0.5">
             {renderStatusBadge(system.status)}
           </div>
         </div>
-        
+
         <p className="text-[13px] dark:text-neutral-400 text-[#5E5A53] leading-relaxed">
           {system.description}
         </p>
@@ -236,7 +236,7 @@ export default function BuilderPage() {
         if (logsData) {
           const enrichedLogs = logsData.map((l:any, i:number) => ({
             ...l,
-            category: l.source || l.title || 'System',
+            category: l.catagory || l.title || 'System',
             summary: l.description || '',
             id: l.id || `log-${i}`
           }));
@@ -278,16 +278,16 @@ export default function BuilderPage() {
   if (isLoading) return <div className="p-12 text-center text-neutral-500 font-mono text-xs">Initializing systems...</div>;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="w-full font-mono bg-transparent"
     >      {/* SECTION 1 — HERO / OPERATIONAL ENTRY FRAME (Standalone Slide) */}
-      <section className="w-full min-h-[100svh] flex flex-col justify-center pt-16 md:pt-20 pb-32 md:pb-40 relative">
+      <section className="w-full min-h-svh flex flex-col justify-center pt-16 md:pt-20 pb-32 md:pb-40 relative">
         <div className="max-w-5xl mx-auto px-6 md:px-12 w-full">
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-0 lg:items-start">
-            
+
             {/* HEADLINE */}
             <div className="lg:col-span-7 order-1 lg:row-start-1">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium dark:text-neutral-100 text-[#111111] leading-tight tracking-tight max-w-xl">
@@ -305,7 +305,7 @@ export default function BuilderPage() {
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#5F7A69]"></span>
                   </span>
                 </div>
-                
+
                 {operationalStateEntries.map((entry, index) => (
                   <div key={index} className="border-t border-[#E7E4DD]/70 dark:border-neutral-900/30 pt-3">
                     <span className="text-[10px] dark:text-neutral-500 text-[#8B867C] block mb-0.5 font-bold">[ {entry.label} ]</span>
@@ -320,18 +320,18 @@ export default function BuilderPage() {
 
             {/* DESCRIPTION & LINKS */}
             <div className="lg:col-span-7 flex flex-col items-start space-y-6 lg:space-y-5 order-3 lg:row-start-2 lg:mt-5 pt-2 lg:pt-0">
-              <p className="hidden md:block text-[13px] md:text-sm text-primary/80 leading-relaxed max-w-[280px] sm:max-w-md lg:max-w-lg">
+              <p className="hidden md:block text-[13px] md:text-sm text-primary/80 leading-relaxed max-w-70 sm:max-w-md lg:max-w-lg">
                 I build tools, systems, experiments, workflows, and digital environments focused on clarity, structure, and long-term usefulness.
               </p>
 
               <div className="flex flex-wrap gap-6 pt-1 lg:pt-2">
-                <button 
+                <button
                   onClick={() => scrollToSection('active-systems')}
                   className="text-xs font-mono tracking-wide text-primary/70 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                 >
                   Explore Systems <span className="opacity-50">↓</span>
                 </button>
-                <button 
+                <button
                   onClick={() => scrollToSection('build-logs')}
                   className="text-xs font-mono tracking-wide text-primary/70 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                 >
@@ -342,15 +342,15 @@ export default function BuilderPage() {
 
           </div>
         </div>
-        
+
 
       </section>
 
       {/* SECTION 2 — ACTIVE SYSTEMS FRAME */}
-      <section id="active-systems" className="w-full min-h-[100svh] flex flex-col justify-center py-16">
+      <section id="active-systems" className="w-full min-h-svh flex flex-col justify-center py-16">
         <div className="max-w-5xl mx-auto px-6 md:px-12 w-full">
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -363,7 +363,7 @@ export default function BuilderPage() {
           </motion.div>
 
           {/* Single neat grid context with stagger reveal booting animation (The Memorable Signature Moment) */}
-          <motion.div 
+          <motion.div
             variants={{
               hidden: {},
               show: {
@@ -377,7 +377,7 @@ export default function BuilderPage() {
             viewport={{ once: true, margin: "-80px" }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch"
           >
-            
+
             {systemsData.length === 0 ? (
               <div className="lg:col-span-12 py-12 text-center text-primary/70 font-sans font-light italic border border-dashed border-border rounded-sm">
                 Systems are being assembled.
@@ -393,9 +393,9 @@ export default function BuilderPage() {
       </section>
 
       {/* SECTION 3 — BUILD LOGS (Calm structural arrival, tight timeline rhythm) */}
-      <section id="build-logs" className="w-full min-h-[100svh] flex flex-col justify-center py-16">
+      <section id="build-logs" className="w-full min-h-svh flex flex-col justify-center py-16">
         <div className="max-w-5xl mx-auto px-6 md:px-12 w-full">
-          
+
           <div className="mb-4 pb-1.5 border-b border-border">
             <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ BUILD LOGS ]
@@ -403,10 +403,10 @@ export default function BuilderPage() {
           </div>
 
           <div className="relative space-y-8 md:space-y-0 md:grid md:grid-cols-12 md:gap-x-12">
-            
+
             {/* LEFT COLUMN: NAVIGATION */}
             <div className="col-span-12 md:col-span-4 lg:col-span-4 flex flex-col md:border-r border-neutral-200/50 dark:border-neutral-900/30 md:pr-8 pb-8 md:pb-0 border-b md:border-b-0 space-y-4 md:space-y-0">
-              
+
               {/* MOBILE HORIZONTAL SELECTOR */}
               <div className="flex md:hidden items-center gap-1 w-full bg-neutral-100/70 dark:bg-neutral-900/40 p-1 rounded-md border border-neutral-200/50 dark:border-neutral-800/50 overflow-hidden">
                 {buildLogsData.length === 0 ? (
@@ -417,7 +417,7 @@ export default function BuilderPage() {
                     <button
                       key={log.id}
                       onClick={() => setActiveLogId(log.id)}
-                      className={`flex-1 flex items-center justify-center gap-1.5 min-w-0 px-1 py-1.5 transition-all rounded-[4px] truncate ${isActive ? 'bg-muted shadow-sm text-foreground' : 'text-primary/70 hover:bg-muted/50'}`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 min-w-0 px-1 py-1.5 transition-all rounded-sm truncate ${isActive ? 'bg-muted shadow-sm text-foreground' : 'text-primary/70 hover:bg-muted/50'}`}
                     >
                       <span className={`text-[8px] shrink-0 ${isActive ? 'text-primary' : 'opacity-50'}`}>
                         {isActive ? '●' : '○'}
@@ -436,24 +436,24 @@ export default function BuilderPage() {
                   <div className="text-[12px] text-primary/70 font-mono">No logs</div>
                 ) : buildLogsData.slice(0, 6).map((log, index) => {
                   const isActive = activeLogId === log.id;
-                  
+
                   return (
                     <div key={log.id} className="flex flex-col">
                       <button
                         onClick={() => setActiveLogId(log.id)}
                         className={`text-left group flex items-start gap-4 py-1 transition-all duration-300 ${isActive ? 'opacity-100 text-foreground' : 'opacity-60 hover:opacity-100 text-primary/80'}`}
                       >
-                        <span className={`text-[12px] mt-[1px] leading-none transition-colors ${isActive ? 'text-primary scale-110' : 'text-primary/70'}`}>
+                        <span className={`text-[12px] mt-px leading-none transition-colors ${isActive ? 'text-primary scale-110' : 'text-primary/70'}`}>
                           {isActive ? '●' : '○'}
                         </span>
                         <span className={`text-[13px] truncate transition-colors ${isActive ? 'text-foreground font-semibold tracking-wide' : 'text-primary/70 font-medium tracking-wide group-hover:text-foreground'}`}>
                           {log.category}
                         </span>
                       </button>
-                      
+
                       {/* Vertical line connecting entries */}
                       {index < Math.min(buildLogsData.length, 6) - 1 && (
-                        <div className="w-[1px] h-6 ml-[5px] my-1 border-l border-border" />
+                        <div className="w-px h-6 ml-1.25 my-1 border-l border-border" />
                       )}
                     </div>
                   );
@@ -463,7 +463,7 @@ export default function BuilderPage() {
             </div>
 
             {/* RIGHT COLUMN: REVISION VIEWER */}
-            <div className="col-span-12 md:col-span-8 lg:col-span-8 md:pl-4 relative min-h-[360px]">
+            <div className="col-span-12 md:col-span-8 lg:col-span-8 md:pl-4 relative min-h-90">
               {buildLogsData.length === 0 ? (
                 <div className="flex items-center justify-center h-full pt-10">
                   <span className="text-primary/70 font-sans font-light italic">No build logs yet.</span>
@@ -536,11 +536,11 @@ export default function BuilderPage() {
       </section>
 
       {/* SECTION 4 — FROM FORGE / EDITORIAL WRITING (reflective, expanded editorial breathing, narrower readable flow) */}
-      
+
       {posts.length > 0 && (
-      <section id="from-forge" className="w-full justify-center py-16 flex flex-col min-h-[100svh]">
+      <section id="from-forge" className="w-full justify-center py-16 flex flex-col min-h-svh">
         <div className="max-w-4xl mx-auto px-6 md:px-10 w-full">
-          
+
           <div className="mb-4 pb-1.5 border-b border-border">
             <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ FROM FORGE ]
@@ -548,7 +548,7 @@ export default function BuilderPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            
+
             {/* FEATURED ESSAYS */}
             <div className="lg:col-span-7 space-y-6">
               {/* PRIMARY FEATURE */}
@@ -557,11 +557,11 @@ export default function BuilderPage() {
                 <h3 className="text-xl md:text-2xl font-semibold text-foreground group-hover:underline leading-tight mb-2">
                   {featuredPost.title}
                 </h3>
-                
+
                 <span className="text-[11px] font-mono text-primary/70 block group-hover:text-primary transition-colors">
                   {featuredPost.publishedAt || 'Unknown'}
                 </span>
-                
+
                 <p className="text-sm text-primary/90 leading-relaxed max-w-xl group-hover:text-primary transition-colors">
                   {featuredPost.excerpt || 'Read reflection.'}
                 </p>
@@ -569,7 +569,7 @@ export default function BuilderPage() {
               )}
 
               {featuredPost && secondaryPost && (
-                <div className="w-full h-[1px] bg-border" />
+                <div className="w-full h-px bg-border" />
               )}
 
               {/* SECONDARY FEATURE */}
@@ -578,11 +578,11 @@ export default function BuilderPage() {
                 <h4 className="text-base md:text-lg font-semibold text-foreground group-hover:underline leading-snug">
                   {secondaryPost.title}
 </h4>
-                
+
                 <span className="text-[10px] font-mono text-primary/70 block group-hover:text-primary transition-colors">
                   {secondaryPost.publishedAt || 'Unknown'}
                 </span>
-                
+
                 <p className="text-xs text-primary/90 leading-relaxed max-w-lg group-hover:text-primary transition-colors">
                   {secondaryPost.excerpt || 'Read reflection.'}
                 </p>
@@ -596,12 +596,12 @@ export default function BuilderPage() {
                 <span className="text-[10px] font-bold text-primary/70 uppercase tracking-[0.2em] block">
                   recent reflections
                 </span>
-                
+
                 <div className="divide-y border-t border-border divide-border border-b">
                   {remainingPosts.map((p:any) => (
-                  <Link 
+                  <Link
                     key={p.id}
-                    href={`/p/${p.slug || p.id}`} 
+                    href={`/p/${p.slug || p.id}`}
                     className="group block py-2.5 hover:bg-muted/10 transition-colors duration-150 px-2 -mx-2"
                   >
                     <h4 className="text-xs font-semibold text-foreground group-hover:text-foreground transition-colors">
@@ -620,7 +620,7 @@ export default function BuilderPage() {
               </div>
 
               <div className="pt-1">
-                <button 
+                <button
                   onClick={() => scrollToSection('build-logs')}
                   className="text-xs text-primary/80 hover:text-foreground transition-all duration-200 hover:underline flex items-center gap-1 cursor-pointer font-bold font-mono"
                 >
@@ -636,7 +636,7 @@ export default function BuilderPage() {
 
       <section className="w-full flex flex-col justify-start pt-12 pb-16 md:pt-16 md:pb-24">
         <div className="max-w-4xl mx-auto px-6 md:px-10 w-full overflow-hidden md:overflow-visible">
-          
+
           <div className="mb-8 pb-1.5 border-b border-border flex justify-between items-end">
             <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ SYSTEM ARCHITECTURE ]
@@ -646,8 +646,8 @@ export default function BuilderPage() {
             </span>
           </div>
 
-          <div className="flex overflow-x-auto gap-x-12 md:gap-x-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:overflow-visible md:grid md:grid-cols-1 md:gap-y-10 pb-4 md:pb-0">
-            
+          <div className="flex overflow-x-auto gap-x-12 md:gap-x-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none md:overflow-visible md:grid md:grid-cols-1 md:gap-y-10 pb-4 md:pb-0">
+
             {/* PAGE 1 */}
             <div className="w-full shrink-0 snap-start grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
               {/* Card 1 */}
@@ -659,7 +659,7 @@ export default function BuilderPage() {
                   Notes • References • Archives
                 </span>
               </div>
-              
+
               {/* Card 2 */}
               <div className="border-l-2 border-border pl-4 py-0.5">
                 <p className="text-sm text-foreground font-semibold tracking-wide">
@@ -692,7 +692,7 @@ export default function BuilderPage() {
                   Preview • Production • Delivery
                 </span>
               </div>
-              
+
               {/* Card 5 */}
               <div className="border-l-2 border-border pl-4 py-0.5">
                 <p className="text-sm text-foreground font-semibold tracking-wide">
@@ -727,7 +727,7 @@ export default function BuilderPage() {
       </section>
 
       {/* SOFTER LANDING ENDING TRANSITION SPACER */}
-      <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-200/50 dark:via-neutral-900/20 to-transparent my-4" />
+      <div className="w-full h-px bg-linear-to-r from-transparent via-neutral-200/50 dark:via-neutral-900/20 to-transparent my-4" />
 
     </motion.div>
   );
