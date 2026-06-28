@@ -390,6 +390,22 @@ export default function FundPage() {
               Share Contribution
             </button>
           </div>
+          
+          <div className="w-full flex justify-center mb-16">
+            <button 
+              onClick={() => {
+                setFlowStep('idle');
+                setAmount('');
+                setDonorName('');
+                setDonorEmail('');
+                setDonorPhone('');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} 
+              className="font-mono text-[10px] uppercase tracking-[0.2em] dark:text-stone-500 text-stone-400 hover:dark:text-stone-300 hover:text-stone-600 transition-colors border-b border-transparent hover:border-current pb-1"
+            >
+              ← Return to Fund Page
+            </button>
+          </div>
 
           <div className="w-full pt-12 border-t dark:border-stone-800/40 border-stone-200/80 text-left flex flex-col gap-4">
             {renderIdentityState()}
