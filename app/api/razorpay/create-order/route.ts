@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       donorPhone: phone || null,
       razorpayOrderId: order.id,
       status: 'pending'
-    });
+    } as any);
 
     if (dbError) {
       console.error('Error saving pending donation:', dbError);

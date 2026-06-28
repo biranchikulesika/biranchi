@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         .update({
           status: 'success',
           razorpayPaymentId: paymentId
-        })
+        } as any)
         .eq('razorpayOrderId', orderId);
 
       if (dbError) {
