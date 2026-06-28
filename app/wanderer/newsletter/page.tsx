@@ -69,7 +69,7 @@ export default function ScribbleNewsletterPage() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-5 p-6 rounded-xl border dark:border-[#26201B] border-[#E5DCCF] dark:bg-[#201B17] bg-[#EEE7DE]"
+              className="p-6 rounded-xl border dark:border-[#26201B] border-[#E5DCCF] dark:bg-[#201B17] bg-[#EEE7DE]"
             >
               <div className="flex justify-between items-center text-[10px] font-mono dark:text-[#B97A56] text-[#B67A55] tracking-widest mb-2 uppercase">
                 <span>MEMORANDUM FILED</span>
@@ -116,7 +116,7 @@ export default function ScribbleNewsletterPage() {
                 </div>
                 <div className="flex flex-col text-right">
                   <span className="dark:text-stone-500 text-stone-500 normal-case font-sans font-light text-[10px] sm:text-[11px] leading-tight">No schedules. no weekly promises.</span>
-                  <span className="dark:text-stone-600 text-[#8A7C70]/80 italic normal-case font-sans font-light text-[10px] sm:text-[11px] leading-tight font-light">only sending when there is something worth sending.</span>
+                  <span className="dark:text-stone-600 text-[#8A7C70]/80 italic normal-case font-sans font-light text-[10px] sm:text-[11px] leading-tight">only sending when there is something worth sending.</span>
                 </div>
               </div>
             </form>

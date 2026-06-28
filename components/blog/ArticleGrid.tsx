@@ -50,13 +50,13 @@ export function ArticleGrid({ posts, persona }: ArticleGridProps) {
                     className={`object-cover w-full h-full filter duration-700 ease-in-out group-hover:scale-[1.015] ${
                       isOperator
                         ? 'grayscale-35 contrast-110'
-                        : 'grayscale-20ntrast-[90%] sepia-10 saturate-80 brightness-92rk:brightness-76 group-hover:grayscale-0 group-hover:contrast-100 group-hover:sepia-0 group-hover:saturate-100 group-hover:brightness-100 dark:group-hover:brightness-90'
+                        : 'grayscale-20 contrast-90 sepia-10 saturate-80 brightness-92 dark:brightness-76 group-hover:grayscale-0 group-hover:contrast-100 group-hover:sepia-0 group-hover:saturate-100 group-hover:brightness-100 dark:group-hover:brightness-90'
                     }`}
                     sizes="(max-w-768px) 100vw, 300px"
                   />
                 </div>
               ) : (
-                <div className={`w-full aspect-3/2order border-dashed flex flex-col justify-center items-center text-center p-6 ${theme.borderColor} ${theme.metaFont}`}>
+                <div className={`w-full aspect-3/2 border border-dashed flex flex-col justify-center items-center text-center p-6 ${theme.borderColor} ${theme.metaFont}`}>
                   <span>Notebook trace</span>
                   <span className="text-[9px] mt-1 italic block opacity-50">Private recollection library</span>
                 </div>
