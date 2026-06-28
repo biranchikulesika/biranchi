@@ -168,8 +168,6 @@ export default function RedistributionRecordPage() {
           )}
         </div>
 
-        <div>
-          <h2 className="text-sm font-medium text-neutral-300 font-sans tracking-tight mb-4 uppercase">Redistribution Logs</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-7 flex flex-col gap-6">
@@ -287,6 +285,7 @@ export default function RedistributionRecordPage() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
