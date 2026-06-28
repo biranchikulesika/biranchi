@@ -25,8 +25,8 @@ export async function POST(req: Request) {
 
     if (event.event === 'payment.captured') {
       const payment = event.payload.payment.entity;
-      const orderId = payment.order_id;
-      const paymentId = payment.id;
+      const orderId = String(payment.order_id);
+      const paymentId = String(payment.id);
 
       const admin = getSupabaseAdmin();
       
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         .update({
           status: 'success',
           razorpayPaymentId: paymentId
-        } as any)
+        })
         .eq('razorpayOrderId', orderId);
 
       if (dbError) {

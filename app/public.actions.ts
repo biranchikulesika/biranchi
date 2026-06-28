@@ -23,7 +23,7 @@ export async function subscribeNewsletter(email: string, personas: string[], sou
     // Upsert subscriber
     const { data: subscriber, error: subError } = await admin
       .from('subscribers')
-      .upsert({ email: validData.email, source: validData.source }, { onConflict: 'email' })
+      .upsert({ email: validData.email }, { onConflict: 'email' })
       .select('id')
       .single();
 

@@ -26,8 +26,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['posts']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['posts']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['posts']['Insert']>;
+        Relationships: [];
       };
       field_notes: {
         Row: {
@@ -43,8 +44,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['field_notes']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['field_notes']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['field_notes']['Insert']>;
+        Relationships: [];
       };
       questions: {
         Row: {
@@ -55,8 +57,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['questions']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['questions']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['questions']['Insert']>;
+        Relationships: [];
       };
       thought_fragments: {
         Row: {
@@ -67,8 +70,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['thought_fragments']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['thought_fragments']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['thought_fragments']['Insert']>;
+        Relationships: [];
       };
       journal_moments: {
         Row: {
@@ -80,8 +84,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['journal_moments']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['journal_moments']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['journal_moments']['Insert']>;
+        Relationships: [];
       };
       fragments: {
         Row: {
@@ -92,8 +97,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['fragments']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['fragments']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['fragments']['Insert']>;
+        Relationships: [];
       };
       books: {
         Row: {
@@ -108,8 +114,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['books']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['books']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['books']['Insert']>;
+        Relationships: [];
       };
       builder_statuses: {
         Row: {
@@ -121,8 +128,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['builder_statuses']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['builder_statuses']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['builder_statuses']['Insert']>;
+        Relationships: [];
       };
       active_systems: {
         Row: {
@@ -136,8 +144,9 @@ export interface Database {
           hidden: boolean;
           createdAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['active_systems']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['active_systems']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['active_systems']['Insert']>;
+        Relationships: [];
       };
       build_logs: {
         Row: {
@@ -153,8 +162,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['build_logs']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['build_logs']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['build_logs']['Insert']>;
+        Relationships: [];
       };
       operator_focuses: {
         Row: {
@@ -166,8 +176,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['operator_focuses']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['operator_focuses']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['operator_focuses']['Insert']>;
+        Relationships: [];
       };
       redistribution_records: {
         Row: {
@@ -181,8 +192,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['redistribution_records']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['redistribution_records']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['redistribution_records']['Insert']>;
+        Relationships: [];
       };
       newsletter_issues: {
         Row: {
@@ -195,8 +207,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['newsletter_issues']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['newsletter_issues']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['newsletter_issues']['Insert']>;
+        Relationships: [];
       };
       newsletter_profiles: {
         Row: {
@@ -209,8 +222,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['newsletter_profiles']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['newsletter_profiles']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['newsletter_profiles']['Insert']>;
+        Relationships: [];
       };
       subscribers: {
         Row: {
@@ -220,8 +234,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['subscribers']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Partial<Database['public']['Tables']['subscribers']['Row']>, 'email'> & { email: string };
         Update: Partial<Database['public']['Tables']['subscribers']['Insert']>;
+        Relationships: [];
       };
       subscriptions: {
         Row: {
@@ -232,8 +247,9 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Omit<Database['public']['Tables']['subscriptions']['Row'], 'createdAt' | 'updatedAt'>;
+        Insert: Omit<Database['public']['Tables']['subscriptions']['Row'], 'id' | 'createdAt' | 'updatedAt'> & { id?: string };
         Update: Partial<Database['public']['Tables']['subscriptions']['Insert']>;
+        Relationships: [];
       };
       donations: {
         Row: {
@@ -272,7 +288,20 @@ export interface Database {
           createdAt?: string;
           updatedAt?: string;
         };
+        Relationships: [];
       };
+    };
+    Views: {
+      [_ in never]: never
+    };
+    Functions: {
+      [_ in never]: never
+    };
+    Enums: {
+      [_ in never]: never
+    };
+    CompositeTypes: {
+      [_ in never]: never
     };
   };
 };
