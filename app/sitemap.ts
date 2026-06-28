@@ -10,6 +10,15 @@ import { SITE_URL } from '@/lib/config/seo';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
+  const getSubdomainUrl = (subdomain: string, path: string = '') => {
+    try {
+      const url = new URL(SITE_URL);
+      return `${url.protocol}//${subdomain}.${url.host}${path}`;
+    } catch (e) {
+      return `https://${subdomain}.biranchi.kulesika.in${path}`;
+    }
+  };
+
   // ── Static routes ──────────────────────────────────────────────────────
   const staticRoutes: MetadataRoute.Sitemap = [
     // Root
@@ -22,25 +31,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/reading`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
 
     // Builder persona
-    { url: `${SITE_URL}/builder`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${SITE_URL}/builder/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${SITE_URL}/builder/blogs`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: getSubdomainUrl('builder'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: getSubdomainUrl('builder', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: getSubdomainUrl('builder', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
 
     // Thinker persona
-    { url: `${SITE_URL}/thinker`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${SITE_URL}/thinker/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${SITE_URL}/thinker/blogs`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${SITE_URL}/thinker/reading`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: getSubdomainUrl('thinker'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: getSubdomainUrl('thinker', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: getSubdomainUrl('thinker', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: getSubdomainUrl('thinker', '/reading'), lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
 
     // Wanderer persona
-    { url: `${SITE_URL}/wanderer`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${SITE_URL}/wanderer/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${SITE_URL}/wanderer/blogs`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: getSubdomainUrl('wanderer'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: getSubdomainUrl('wanderer', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: getSubdomainUrl('wanderer', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
 
     // Operator persona
-    { url: `${SITE_URL}/operator`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${SITE_URL}/operator/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${SITE_URL}/operator/blogs`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: getSubdomainUrl('operator'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: getSubdomainUrl('operator', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: getSubdomainUrl('operator', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
   ];
 
   // ── Dynamic post routes ────────────────────────────────────────────────
