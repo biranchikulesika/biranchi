@@ -111,8 +111,8 @@ function Typewriter() {
   return (
     <span ref={containerRef} className="flex items-center relative h-full">
       <span ref={measureRef} className="invisible absolute top-0 left-0 pointer-events-none whitespace-nowrap h-0 overflow-hidden"></span>
-      <span className="italic text-primary whitespace-nowrap">{text}</span>
-      <span className="animate-[pulse_1.5s_ease-in-out_infinite] text-primary/40 font-light ml-0.5 md:ml-1 -mt-1 font-serif text-[1.1em]">|</span>
+      <span className="italic text-amber-600 dark:text-amber-400 whitespace-nowrap">{text}</span>
+      <span className="animate-[pulse_1.5s_ease-in-out_infinite] text-amber-600/40 dark:text-amber-400/40 font-light ml-0.5 md:ml-1 -mt-1 font-serif text-[1.1em]">|</span>
     </span>
   );
 }
