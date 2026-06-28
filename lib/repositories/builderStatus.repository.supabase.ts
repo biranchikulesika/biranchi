@@ -1,6 +1,6 @@
 import { BuilderStatus } from '../types';
 import { IRepository } from './registry';
-import { supabaseServer } from '../supabase/server';
+import { getSupabaseServerClient } from '../supabase/server';
 
 export class BuilderStatusSupabaseRepository implements IRepository<BuilderStatus> {
   private mapToDB(data: Partial<BuilderStatus>): any {
@@ -29,32 +29,32 @@ export class BuilderStatusSupabaseRepository implements IRepository<BuilderStatu
   }
 
   async getAll(): Promise<BuilderStatus[]> {
-    const { data, error } = await (supabaseServer as any).from('builder_status').select('*');
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('builder_status').select('*');
     if (error) throw error;
     return (data || []).map(this.mapToEntity);
   }
 
   async getById(id: string): Promise<BuilderStatus | null> {
-    const { data, error } = await (supabaseServer as any).from('builder_status').select('*').eq('id', id).single();
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('builder_status').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
     return this.mapToEntity(data);
   }
 
   async create(data: Omit<BuilderStatus, 'id'>): Promise<BuilderStatus | null> {
-    const { data: result, error } = await (supabaseServer as any).from('builder_status').insert(this.mapToDB(data)).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('builder_status').insert(this.mapToDB(data)).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async update(id: string, data: Partial<BuilderStatus>): Promise<BuilderStatus | null> {
-    const { data: result, error } = await (supabaseServer as any).from('builder_status').update(this.mapToDB(data)).eq('id', id).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('builder_status').update(this.mapToDB(data)).eq('id', id).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await (supabaseServer as any).from('builder_status').delete().eq('id', id);
+    const { error } = await ((await getSupabaseServerClient()) as any).from('builder_status').delete().eq('id', id);
     if (error) throw error;
     return true;
   }

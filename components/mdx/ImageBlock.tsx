@@ -15,6 +15,12 @@ export interface ImageBlockProps {
 export function ImageBlock({ src, alt, caption, location, latitude, longitude, credit, align = 'center' }: ImageBlockProps) {
   if (!src) return null;
 
+  // Security: Prevent malicious URL schemes from rendering
+  const lowerSrc = src.toLowerCase();
+  if (lowerSrc.startsWith('javascript:') || lowerSrc.startsWith('data:') || lowerSrc.startsWith('vbscript:')) {
+    return null;
+  }
+
   // Align-specific layout styling classes
   let alignClasses = 'my-8 w-full';
   if (align === 'left') {

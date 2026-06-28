@@ -1,6 +1,6 @@
 import { BuildLog } from '../types';
 import { IRepository } from './registry';
-import { supabaseServer } from '../supabase/server';
+import { getSupabaseServerClient } from '../supabase/server';
 
 export class BuildLogSupabaseRepository implements IRepository<BuildLog> {
   private mapToDB(data: Partial<BuildLog>): any {
@@ -44,32 +44,32 @@ export class BuildLogSupabaseRepository implements IRepository<BuildLog> {
 
 
   async getAll(): Promise<BuildLog[]> {
-    const { data, error } = await (supabaseServer as any).from('build_logs').select('*');
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('build_logs').select('*');
     if (error) throw error;
     return (data || []).map(this.mapToEntity);
   }
 
   async getById(id: string): Promise<BuildLog | null> {
-    const { data, error } = await (supabaseServer as any).from('build_logs').select('*').eq('id', id).single();
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('build_logs').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
     return this.mapToEntity(data);
   }
 
   async create(data: Omit<BuildLog, 'id'>): Promise<BuildLog | null> {
-    const { data: result, error } = await (supabaseServer as any).from('build_logs').insert(this.mapToDB(data)).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('build_logs').insert(this.mapToDB(data)).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async update(id: string, data: Partial<BuildLog>): Promise<BuildLog | null> {
-    const { data: result, error } = await (supabaseServer as any).from('build_logs').update(this.mapToDB(data)).eq('id', id).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('build_logs').update(this.mapToDB(data)).eq('id', id).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await (supabaseServer as any).from('build_logs').delete().eq('id', id);
+    const { error } = await ((await getSupabaseServerClient()) as any).from('build_logs').delete().eq('id', id);
     if (error) throw error;
     return true;
   }

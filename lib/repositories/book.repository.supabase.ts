@@ -1,35 +1,35 @@
 import { Book } from '../types';
 import { IRepository } from './registry';
-import { supabaseServer } from '../supabase/server';
+import { getSupabaseServerClient } from '../supabase/server';
 
 export class BookSupabaseRepository implements IRepository<Book> {
   async getAll(): Promise<Book[]> {
-    const { data, error } = await (supabaseServer as any).from('books').select('*');
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('books').select('*');
     if (error) throw error;
     return data as any as Book[];
   }
 
   async getById(id: string): Promise<Book | null> {
-    const { data, error } = await (supabaseServer as any).from('books').select('*').eq('id', id).single();
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('books').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
     return data as any as Book;
   }
 
   async create(data: Omit<Book, 'id'>): Promise<Book | null> {
-    const { data: result, error } = await (supabaseServer as any).from('books').insert(data as any).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('books').insert(data as any).select().single();
     if (error) throw error;
     return result as any as Book;
   }
 
   async update(id: string, data: Partial<Book>): Promise<Book | null> {
-    const { data: result, error } = await (supabaseServer as any).from('books').update(data as any).eq('id', id).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('books').update(data as any).eq('id', id).select().single();
     if (error) throw error;
     return result as any as Book;
   }
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await (supabaseServer as any).from('books').delete().eq('id', id);
+    const { error } = await ((await getSupabaseServerClient()) as any).from('books').delete().eq('id', id);
     if (error) throw error;
     return true;
   }

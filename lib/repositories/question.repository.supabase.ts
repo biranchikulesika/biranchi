@@ -1,6 +1,6 @@
 import { Question } from '../types';
 import { IRepository } from './registry';
-import { supabaseServer } from '../supabase/server';
+import { getSupabaseServerClient } from '../supabase/server';
 
 export class QuestionSupabaseRepository implements IRepository<Question> {
   private mapToDB(data: Partial<Question>): any {
@@ -25,32 +25,32 @@ export class QuestionSupabaseRepository implements IRepository<Question> {
   }
 
   async getAll(): Promise<Question[]> {
-    const { data, error } = await (supabaseServer as any).from('questions').select('*');
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('questions').select('*');
     if (error) throw error;
     return (data || []).map(this.mapToEntity);
   }
 
   async getById(id: string): Promise<Question | null> {
-    const { data, error } = await (supabaseServer as any).from('questions').select('*').eq('id', id).single();
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('questions').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
     return this.mapToEntity(data);
   }
 
   async create(data: Omit<Question, 'id'>): Promise<Question | null> {
-    const { data: result, error } = await (supabaseServer as any).from('questions').insert(this.mapToDB(data)).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('questions').insert(this.mapToDB(data)).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async update(id: string, data: Partial<Question>): Promise<Question | null> {
-    const { data: result, error } = await (supabaseServer as any).from('questions').update(this.mapToDB(data)).eq('id', id).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('questions').update(this.mapToDB(data)).eq('id', id).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await (supabaseServer as any).from('questions').delete().eq('id', id);
+    const { error } = await ((await getSupabaseServerClient()) as any).from('questions').delete().eq('id', id);
     if (error) throw error;
     return true;
   }

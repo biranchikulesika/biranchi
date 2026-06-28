@@ -1,6 +1,6 @@
 import { Post } from '../types';
 import { IRepository } from './registry';
-import { supabaseServer } from '../supabase/server';
+import { getSupabaseServerClient } from '../supabase/server';
 import { z } from 'zod';
 
 const UpdatePostDTO = z.object({
@@ -102,7 +102,7 @@ function formatSearchQuery(query: string) {
 
 export class PostSupabaseRepository implements IRepository<Post> {
   async getAll(searchQuery?: string): Promise<Post[]> {
-    let query = (supabaseServer as any).from('posts').select('*').order('created_at', { ascending: false });
+    let query = ((await getSupabaseServerClient()) as any).from('posts').select('*').order('created_at', { ascending: false });
     
     if (searchQuery && searchQuery.trim() !== '') {
       const q = formatSearchQuery(searchQuery);
@@ -118,7 +118,7 @@ export class PostSupabaseRepository implements IRepository<Post> {
 
   async getAllMeta(searchQuery?: string): Promise<Post[]> {
     const now = new Date().toISOString();
-    let query = (supabaseServer as any).from('posts')
+    let query = ((await getSupabaseServerClient()) as any).from('posts')
       .select('id, title, subtitle, byline, slug, old_slugs, excerpt, status, persona, cover_image_url, cover_image_alt, cover_image_caption, cover_image_location, cover_image_credit, auto_cover_image, reading_time, featured, hidden, published_at, tags, created_at, updated_at')
       .eq('status', 'published')
       .lte('published_at', now)
@@ -137,14 +137,14 @@ export class PostSupabaseRepository implements IRepository<Post> {
   }
 
   async getById(id: string): Promise<Post | null> {
-    const { data, error } = await (supabaseServer as any).from('posts').select('*').eq('id', id).single();
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('posts').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw new Error(`Supabase Error [${error.code}]: ${error.message}`);
     if (!data) return null;
     return fromDbFormat(data);
   }
 
   async getBySlug(slug: string, persona?: string): Promise<Post | null> {
-    let query = (supabaseServer as any).from('posts').select('*').eq('slug', slug);
+    let query = ((await getSupabaseServerClient()) as any).from('posts').select('*').eq('slug', slug);
     if (persona) {
       query = query.eq('persona', persona);
     }
@@ -155,7 +155,7 @@ export class PostSupabaseRepository implements IRepository<Post> {
   }
 
   async checkSlugExists(slug: string, currentId: string | null, persona: string): Promise<boolean> {
-    let query = (supabaseServer as any).from('posts').select('id', { count: 'exact', head: true }).eq('slug', slug).eq('persona', persona);
+    let query = ((await getSupabaseServerClient()) as any).from('posts').select('id', { count: 'exact', head: true }).eq('slug', slug).eq('persona', persona);
     if (currentId) {
       query = query.neq('id', currentId);
     }
@@ -166,7 +166,7 @@ export class PostSupabaseRepository implements IRepository<Post> {
 
   async create(data: Omit<Post, 'id'>): Promise<Post | null> {
     const payload = toDbFormat(data);
-    const { data: result, error } = await (supabaseServer as any).from('posts').insert(payload).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('posts').insert(payload).select().single();
     if (error) throw new Error(`Database Error on Create [${error.code}]: ${error.message}`);
     return fromDbFormat(result);
   }
@@ -180,13 +180,13 @@ export class PostSupabaseRepository implements IRepository<Post> {
       if ((payload as any)[key] === undefined) delete (payload as any)[key];
     });
 
-    const { data: result, error } = await (supabaseServer as any).from('posts').update(payload).eq('id', id).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('posts').update(payload).eq('id', id).select().single();
     if (error) throw new Error(`Database Error on Update [${error.code}]: ${error.message}`);
     return fromDbFormat(result);
   }
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await (supabaseServer as any).from('posts').delete().eq('id', id);
+    const { error } = await ((await getSupabaseServerClient()) as any).from('posts').delete().eq('id', id);
     if (error) throw new Error(`Database Error on Delete [${error.code}]: ${error.message}`);
     return true;
   }

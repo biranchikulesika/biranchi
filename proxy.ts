@@ -15,7 +15,7 @@ export const config = {
   ],
 };
 
-export default async function proxy(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
   // Get hostname of request (e.g. builder.biranchi.kulesika.in)

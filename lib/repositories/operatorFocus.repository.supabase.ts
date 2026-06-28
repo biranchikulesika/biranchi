@@ -1,6 +1,6 @@
 import { OperatorFocus } from '../types';
 import { IRepository } from './registry';
-import { supabaseServer } from '../supabase/server';
+import { getSupabaseServerClient } from '../supabase/server';
 
 export class OperatorFocusSupabaseRepository implements IRepository<OperatorFocus> {
   private mapToDB(data: Partial<OperatorFocus>): any {
@@ -32,32 +32,32 @@ export class OperatorFocusSupabaseRepository implements IRepository<OperatorFocu
   }
 
   async getAll(): Promise<OperatorFocus[]> {
-    const { data, error } = await (supabaseServer as any).from('operator_focuses').select('*');
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('operator_focuses').select('*');
     if (error) throw error;
     return (data || []).map(this.mapToEntity);
   }
 
   async getById(id: string): Promise<OperatorFocus | null> {
-    const { data, error } = await (supabaseServer as any).from('operator_focuses').select('*').eq('id', id).single();
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('operator_focuses').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
     return this.mapToEntity(data);
   }
 
   async create(data: Omit<OperatorFocus, 'id'>): Promise<OperatorFocus | null> {
-    const { data: result, error } = await (supabaseServer as any).from('operator_focuses').insert(this.mapToDB(data)).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('operator_focuses').insert(this.mapToDB(data)).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async update(id: string, data: Partial<OperatorFocus>): Promise<OperatorFocus | null> {
-    const { data: result, error } = await (supabaseServer as any).from('operator_focuses').update(this.mapToDB(data)).eq('id', id).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('operator_focuses').update(this.mapToDB(data)).eq('id', id).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await (supabaseServer as any).from('operator_focuses').delete().eq('id', id);
+    const { error } = await ((await getSupabaseServerClient()) as any).from('operator_focuses').delete().eq('id', id);
     if (error) throw error;
     return true;
   }

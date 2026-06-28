@@ -1,6 +1,6 @@
 import { ThoughtFragment } from '../types';
 import { IRepository } from './registry';
-import { supabaseServer } from '../supabase/server';
+import { getSupabaseServerClient } from '../supabase/server';
 
 export class ThoughtFragmentSupabaseRepository implements IRepository<ThoughtFragment> {
   private mapToDB(data: Partial<ThoughtFragment>): any {
@@ -26,32 +26,32 @@ export class ThoughtFragmentSupabaseRepository implements IRepository<ThoughtFra
   }
 
   async getAll(): Promise<ThoughtFragment[]> {
-    const { data, error } = await (supabaseServer as any).from('thought_fragments').select('*');
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('thought_fragments').select('*');
     if (error) throw error;
     return (data || []).map(this.mapToEntity);
   }
 
   async getById(id: string): Promise<ThoughtFragment | null> {
-    const { data, error } = await (supabaseServer as any).from('thought_fragments').select('*').eq('id', id).single();
+    const { data, error } = await ((await getSupabaseServerClient()) as any).from('thought_fragments').select('*').eq('id', id).single();
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
     return this.mapToEntity(data);
   }
 
   async create(data: Omit<ThoughtFragment, 'id'>): Promise<ThoughtFragment | null> {
-    const { data: result, error } = await (supabaseServer as any).from('thought_fragments').insert(this.mapToDB(data)).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('thought_fragments').insert(this.mapToDB(data)).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async update(id: string, data: Partial<ThoughtFragment>): Promise<ThoughtFragment | null> {
-    const { data: result, error } = await (supabaseServer as any).from('thought_fragments').update(this.mapToDB(data)).eq('id', id).select().single();
+    const { data: result, error } = await ((await getSupabaseServerClient()) as any).from('thought_fragments').update(this.mapToDB(data)).eq('id', id).select().single();
     if (error) throw error;
     return this.mapToEntity(result);
   }
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await (supabaseServer as any).from('thought_fragments').delete().eq('id', id);
+    const { error } = await ((await getSupabaseServerClient()) as any).from('thought_fragments').delete().eq('id', id);
     if (error) throw error;
     return true;
   }

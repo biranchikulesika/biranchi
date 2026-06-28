@@ -22,18 +22,12 @@ export function useFakeTyping(
   const isIdleRef = useRef(false);
   const isFocusedRef = useRef(false);
   const isHoveringRef = useRef(false);
-  const timeoutRef = useRef<NodeJS.Timeout>(null);
-  const animationRef = useRef<NodeJS.Timeout>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
+  const resetIdleTimerRef = useRef<() => void>(() => {});
   
   const realInputsRef = useRef({ email: realEmail, password: realPassword });
   
-  useEffect(() => {
-    realInputsRef.current = { email: realEmail, password: realPassword };
-    // Whenever real inputs change (e.g. user typing), we should reset the idle timer
-    // but the timer will immediately abort if there is text.
-    resetIdleTimer();
-  }, [realEmail, realPassword]);
-
   // Stop everything immediately on user interaction
   const stopFakeTyping = useCallback(() => {
     if (animationRef.current) clearTimeout(animationRef.current);
@@ -44,50 +38,7 @@ export function useFakeTyping(
     setPasswordText('');
   }, []);
 
-  const resetIdleTimer = useCallback(() => {
-    stopFakeTyping();
-    
-    if (isFocusedRef.current || isHoveringRef.current || realInputsRef.current.email !== '' || realInputsRef.current.password !== '') {
-      return; // Don't become idle if input is focused, hovered, or has text
-    }
-    
-    timeoutRef.current = setTimeout(() => {
-      if (!isFocusedRef.current && !isHoveringRef.current && realInputsRef.current.email === '' && realInputsRef.current.password === '') {
-        isIdleRef.current = true;
-        setIsFakeTyping(true);
-        startFakeSequence();
-      }
-    }, 5000); // 5 seconds of inactivity
-  }, [stopFakeTyping]);
-
-  const handleMouseEnter = useCallback(() => {
-    isHoveringRef.current = true;
-    stopFakeTyping();
-  }, [stopFakeTyping]);
-
-  const handleMouseLeave = useCallback(() => {
-    isHoveringRef.current = false;
-    resetIdleTimer();
-  }, [resetIdleTimer]);
-
-  useEffect(() => {
-    const handleActivity = () => resetIdleTimer();
-    
-    window.addEventListener('mousemove', handleActivity);
-    window.addEventListener('keydown', handleActivity);
-    window.addEventListener('touchstart', handleActivity);
-    
-    resetIdleTimer();
-
-    return () => {
-      window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-      window.removeEventListener('touchstart', handleActivity);
-      stopFakeTyping();
-    };
-  }, [resetIdleTimer, stopFakeTyping]);
-
-  const startFakeSequence = () => {
+  const startFakeSequence = useCallback(() => {
     if (!isIdleRef.current) return;
     
     // Pick random credentials
@@ -132,7 +83,7 @@ export function useFakeTyping(
              // Wait briefly, then reset completely to normal screen and restart idle timer
              animationRef.current = setTimeout(() => {
                if (!isIdleRef.current) return;
-               resetIdleTimer();
+               resetIdleTimerRef.current();
              }, 1000);
           }, Math.random() * 600 + 300); // Pause before submit
         }
@@ -140,7 +91,61 @@ export function useFakeTyping(
     };
 
     typeNextChar();
-  };
+  }, [onFakeSubmit]);
+
+  const resetIdleTimer = useCallback(() => {
+    stopFakeTyping();
+    
+    if (isFocusedRef.current || isHoveringRef.current || realInputsRef.current.email !== '' || realInputsRef.current.password !== '') {
+      return; // Don't become idle if input is focused, hovered, or has text
+    }
+    
+    timeoutRef.current = setTimeout(() => {
+      if (!isFocusedRef.current && !isHoveringRef.current && realInputsRef.current.email === '' && realInputsRef.current.password === '') {
+        isIdleRef.current = true;
+        setIsFakeTyping(true);
+        startFakeSequence();
+      }
+    }, 5000); // 5 seconds of inactivity
+  }, [stopFakeTyping, startFakeSequence]);
+
+  useEffect(() => {
+    resetIdleTimerRef.current = resetIdleTimer;
+  }, [resetIdleTimer]);
+
+  useEffect(() => {
+    realInputsRef.current = { email: realEmail, password: realPassword };
+    // Whenever real inputs change (e.g. user typing), we should reset the idle timer
+    // but the timer will immediately abort if there is text.
+    resetIdleTimer();
+  }, [realEmail, realPassword, resetIdleTimer]);
+
+  const handleMouseEnter = useCallback(() => {
+    isHoveringRef.current = true;
+    stopFakeTyping();
+  }, [stopFakeTyping]);
+
+  const handleMouseLeave = useCallback(() => {
+    isHoveringRef.current = false;
+    resetIdleTimer();
+  }, [resetIdleTimer]);
+
+  useEffect(() => {
+    const handleActivity = () => resetIdleTimer();
+    
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('touchstart', handleActivity);
+    
+    resetIdleTimer();
+
+    return () => {
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('touchstart', handleActivity);
+      stopFakeTyping();
+    };
+  }, [resetIdleTimer, stopFakeTyping]);
 
   const handleInputFocus = () => {
     isFocusedRef.current = true;
