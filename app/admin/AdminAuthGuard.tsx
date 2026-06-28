@@ -21,8 +21,28 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user && pathname !== '/admin/login' && !pathname.startsWith('/admin/auth/callback')) {
+    const checkSessionExpiry = async (session: any) => {
+      if (session && session.user?.last_sign_in_at) {
+        const lastSignIn = new Date(session.user.last_sign_in_at).getTime();
+        const now = Date.now();
+        const hours24 = 24 * 60 * 60 * 1000;
+        
+        if (now - lastSignIn > hours24) {
+          await supabase.auth.signOut();
+          router.push('/admin/login');
+          return true; // Expired
+        }
+      }
+      return false; // Not expired
+    };
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        const isExpired = await checkSessionExpiry(session);
+        if (isExpired) return;
+      }
+      
+      if (!session && pathname !== '/admin/login' && !pathname.startsWith('/admin/auth/callback')) {
         router.push('/admin/login');
       } else {
         setAuthed(true);
@@ -30,7 +50,12 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        const isExpired = await checkSessionExpiry(session);
+        if (isExpired) return;
+      }
+
       if (!session && pathname !== '/admin/login' && !pathname.startsWith('/admin/auth/callback')) {
         router.push('/admin/login');
       } else if (session) {
