@@ -23,15 +23,21 @@ export default function ThinkerNewsletterPage() {
     { title: 'Attention Loss and Living Online', date: 'April 20, 2026' }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailValue) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    const { subscribeNewsletter } = await import('@/app/public.actions');
+    const result = await subscribeNewsletter(emailValue, ['thinker'], 'thinker');
+    
+    setIsSubmitting(false);
+    if (result.success) {
       setIsSubmitted(true);
       setEmailValue('');
-    }, 1200);
+    } else {
+      alert(result.error || 'Failed to subscribe');
+    }
   };
 
   return (

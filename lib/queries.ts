@@ -1,3 +1,5 @@
+'use server';
+
 import { PostService } from '@/lib/services/post.service';
 import { FragmentService } from '@/lib/services/fragment.service';
 import { JournalMomentService } from '@/lib/services/journalMoment.service';

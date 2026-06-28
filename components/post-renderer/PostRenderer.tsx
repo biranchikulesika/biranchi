@@ -17,6 +17,7 @@ import { PersonaSwitcher } from '@/components/persona-switcher';
 import { PersonaSearch } from '@/components/persona-search';
 import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FieldNoteDivider } from '@/components/field-note-divider';
+import { subscribeNewsletter } from '@/app/public.actions';
 
 const getEmojiForLocation = (location: string): string => {
   const loc = location.toLowerCase();
@@ -115,9 +116,11 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
     }
   };
 
-  const handleSubscribeSubmit = (e: React.FormEvent) => {
+  const handleSubscribeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (emailValue.trim()) {
+      const targetPersona = p;
+      await subscribeNewsletter(emailValue.trim(), [targetPersona], targetPersona);
       setIsSubscribed(true);
       setEmailValue('');
       setTimeout(() => setIsSubscribed(false), 5000);

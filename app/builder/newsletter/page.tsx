@@ -23,15 +23,21 @@ export default function ForgeNewsletterPage() {
     { title: 'Designing Systems That Feel Human', date: 'May 08, 2026' }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailValue) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    const { subscribeNewsletter } = await import('@/app/public.actions');
+    const result = await subscribeNewsletter(emailValue, ['builder'], 'builder');
+    
+    setIsSubmitting(false);
+    if (result.success) {
       setIsSubmitted(true);
       setEmailValue('');
-    }, 1200);
+    } else {
+      alert(result.error || 'Failed to subscribe');
+    }
   };
 
   return (

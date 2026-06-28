@@ -9,6 +9,7 @@ import { ArrowRight, Check } from 'lucide-react';
 import { useState, useEffect, useTransition } from 'react';
 import { getNewsletterProfiles } from '@/lib/queries';
 import { getNewsletterIssues } from '@/lib/queries';
+import { subscribeNewsletter } from '@/app/public.actions';
 import { getPersonaUrl } from '@/lib/utils';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
 
@@ -56,7 +57,10 @@ export default function MainNewsletterPage() {
           }));
         }
         setNewsletters(loadedProfiles.length > 0 ? loadedProfiles : [
-           {id:'thinker', persona:'THINKER', name:'Inside the Head', desc:'Reflections...', colorClass:'dark:text-[#A7A39B] text-[#6F7175]', borderColorClass:'dark:border-stone-800/40 border-[#ECEBE6]', selectedColorClass:'dark:bg-stone-900/40 bg-[#E8E6DF]/80'}
+           {id:'builder', persona:'BUILDER', name:'Forge', desc:'code, systems, technology', colorClass:'dark:text-[#A7A39B] text-[#6F7175]', borderColorClass:'dark:border-stone-800/40 border-[#ECEBE6]', selectedColorClass:'dark:bg-stone-900/40 bg-[#E8E6DF]/80'},
+           {id:'operator', persona:'OPERATOR', name:'Signal', desc:'cybersecurity and digital infrastructure', colorClass:'dark:text-[#A7A39B] text-[#6F7175]', borderColorClass:'dark:border-stone-800/40 border-[#ECEBE6]', selectedColorClass:'dark:bg-stone-900/40 bg-[#E8E6DF]/80'},
+           {id:'thinker', persona:'THINKER', name:'Inside the Head', desc:'philosophy, psychology, ideas', colorClass:'dark:text-[#A7A39B] text-[#6F7175]', borderColorClass:'dark:border-stone-800/40 border-[#ECEBE6]', selectedColorClass:'dark:bg-stone-900/40 bg-[#E8E6DF]/80'},
+           {id:'wanderer', persona:'WANDERER', name:'Scribble', desc:'stories, travel, life experiences', colorClass:'dark:text-[#A7A39B] text-[#6F7175]', borderColorClass:'dark:border-stone-800/40 border-[#ECEBE6]', selectedColorClass:'dark:bg-stone-900/40 bg-[#E8E6DF]/80'}
         ]);
         
         if (issues) {
@@ -86,15 +90,20 @@ export default function MainNewsletterPage() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailValue || selectedTopics.length === 0) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    const result = await subscribeNewsletter(emailValue, selectedTopics, 'main');
+    
+    setIsSubmitting(false);
+    if (result.success) {
       setIsSubmitted(true);
       setEmailValue('');
-    }, 1200);
+    } else {
+      alert(result.error || 'Failed to subscribe');
+    }
   };
 
   if (loading) return <div className="p-12 text-center text-[#7A746B] font-mono text-xs dark:bg-[#050505] bg-[#F5F5F2] min-h-screen">Loading...</div>;
