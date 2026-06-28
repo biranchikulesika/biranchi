@@ -11,40 +11,58 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const getSubdomainUrl = (subdomain: string, path: string = '') => {
-    return SITE_URL.replace('://', `://${subdomain}.`) + path;
+    const cleanPath = path === '/' ? '' : path;
+    return SITE_URL.replace('://', `://${subdomain}.`) + cleanPath;
   };
 
   // ── Static routes ──────────────────────────────────────────────────────
+  
+  const mainRoutes = ['', '/about', '/blogs', '/blogs/archive', '/terms', '/fund', '/newsletter'];
+  const builderRoutes = ['', '/about', '/blogs', '/blogs/archive', '/newsletter'];
+  const thinkerRoutes = ['', '/about', '/blogs', '/blogs/archive', '/newsletter', '/reading'];
+  const wandererRoutes = ['', '/about', '/blogs', '/blogs/archive', '/newsletter'];
+  const operatorRoutes = ['', '/about', '/blogs', '/blogs/archive', '/newsletter'];
+
   const staticRoutes: MetadataRoute.Sitemap = [
-    // Root
-    { url: SITE_URL, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
-    { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${SITE_URL}/blogs`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${SITE_URL}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${SITE_URL}/fund`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${SITE_URL}/newsletter`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${SITE_URL}/reading`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    // Main domain routes
+    ...mainRoutes.map((route) => ({
+      url: `${SITE_URL}${route}`,
+      lastModified: now,
+      changeFrequency: (route === '' ? 'daily' : 'monthly') as 'daily' | 'monthly' | 'weekly' | 'yearly',
+      priority: route === '' ? 1.0 : 0.7,
+    })),
 
     // Builder persona
-    { url: getSubdomainUrl('builder'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: getSubdomainUrl('builder', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: getSubdomainUrl('builder', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    ...builderRoutes.map((route) => ({
+      url: getSubdomainUrl('builder', route),
+      lastModified: now,
+      changeFrequency: (route === '' ? 'weekly' : 'monthly') as 'weekly' | 'monthly',
+      priority: route === '' ? 0.8 : 0.6,
+    })),
 
     // Thinker persona
-    { url: getSubdomainUrl('thinker'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: getSubdomainUrl('thinker', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: getSubdomainUrl('thinker', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-    { url: getSubdomainUrl('thinker', '/reading'), lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    ...thinkerRoutes.map((route) => ({
+      url: getSubdomainUrl('thinker', route),
+      lastModified: now,
+      changeFrequency: (route === '' ? 'weekly' : 'monthly') as 'weekly' | 'monthly',
+      priority: route === '' ? 0.8 : 0.6,
+    })),
 
     // Wanderer persona
-    { url: getSubdomainUrl('wanderer'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: getSubdomainUrl('wanderer', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: getSubdomainUrl('wanderer', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    ...wandererRoutes.map((route) => ({
+      url: getSubdomainUrl('wanderer', route),
+      lastModified: now,
+      changeFrequency: (route === '' ? 'weekly' : 'monthly') as 'weekly' | 'monthly',
+      priority: route === '' ? 0.8 : 0.6,
+    })),
 
     // Operator persona
-    { url: getSubdomainUrl('operator'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: getSubdomainUrl('operator', '/about'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: getSubdomainUrl('operator', '/blogs'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    ...operatorRoutes.map((route) => ({
+      url: getSubdomainUrl('operator', route),
+      lastModified: now,
+      changeFrequency: (route === '' ? 'weekly' : 'monthly') as 'weekly' | 'monthly',
+      priority: route === '' ? 0.8 : 0.6,
+    })),
   ];
 
   // ── Dynamic post routes ────────────────────────────────────────────────
@@ -59,12 +77,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         p.hidden !== true
     );
 
-    postRoutes = publishedPosts.map((post: any) => ({
-      url: `${SITE_URL}/p/${post.slug || post.id}`,
-      lastModified: post.updatedAt ? new Date(post.updatedAt) : now,
-      changeFrequency: 'weekly' as const,
-      priority: post.featured ? 0.9 : 0.8,
-    }));
+    const validSubdomains = ['builder', 'thinker', 'wanderer', 'operator'];
+
+    postRoutes = publishedPosts.map((post: any) => {
+      let postUrl = `${SITE_URL}/p/${post.slug || post.id}`;
+      
+      if (post.persona && validSubdomains.includes(post.persona)) {
+        postUrl = getSubdomainUrl(post.persona, `/p/${post.slug || post.id}`);
+      }
+
+      return {
+        url: postUrl,
+        lastModified: post.updatedAt ? new Date(post.updatedAt) : now,
+        changeFrequency: 'weekly' as const,
+        priority: post.featured ? 0.9 : 0.8,
+      };
+    });
   } catch (error) {
     console.error('Sitemap: Failed to fetch posts', error);
   }
