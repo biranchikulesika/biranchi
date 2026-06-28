@@ -1,4 +1,5 @@
 import React from 'react';
+import '@/app/globals.css';
 
 export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
