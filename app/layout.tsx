@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { Inter, JetBrains_Mono, Playfair_Display, Cormorant_Garamond, Spectral } from 'next/font/google';
+import { Inter, JetBrains_Mono, Playfair_Display } from 'next/font/google';
 import './globals.css'; // Global styles
 import { ThemeProvider } from '@/components/theme-provider';
 import { Analytics } from '@vercel/analytics/next';
@@ -9,29 +9,21 @@ import { SITE_URL, SITE_NAME, AUTHOR } from '@/lib/config/seo';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
+  display: 'swap',
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
+  display: 'swap',
 });
 
 const playfairDisplay = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',
+  display: 'swap',
 });
 
-const cormorantGaramond = Cormorant_Garamond({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-  variable: '--font-cormorant',
-});
-
-const spectral = Spectral({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-  variable: '--font-spectral',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -85,7 +77,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const serverTheme = themeCookie ? themeCookie.value : 'dark';
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${serverTheme} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${spectral.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${serverTheme} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable}`}>
       <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/20">
         <ThemeProvider attribute="class" defaultTheme={serverTheme} enableSystem={false}>
           {children}

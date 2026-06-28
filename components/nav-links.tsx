@@ -70,9 +70,11 @@ export function MobileNav({ mobileBgColor, persona }: { mobileBgColor: string, p
         setIsOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isOpen]);
 
   const isThinker = currentPersona === 'thinker';
   const isWanderer = currentPersona === 'wanderer';

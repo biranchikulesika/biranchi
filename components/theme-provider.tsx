@@ -73,23 +73,6 @@ export function ThemeProvider({
     root.classList.add(finalTheme);
   }, [theme]);
 
-  // Sync initial theme on load to avoid hydration mismatches
-  React.useEffect(() => {
-    const root = window.document.documentElement;
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(';').shift();
-      return null;
-    };
-    const localTheme = getCookie('theme') || localStorage.getItem('theme') || defaultTheme;
-    let finalTheme = localTheme;
-    if (localTheme === 'system') {
-      finalTheme = 'dark';
-    }
-    root.classList.remove('light', 'dark');
-    root.classList.add(finalTheme);
-  }, [defaultTheme]);
 
   // Sync across tabs
   React.useEffect(() => {
