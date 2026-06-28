@@ -11,12 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const getSubdomainUrl = (subdomain: string, path: string = '') => {
-    try {
-      const url = new URL(SITE_URL);
-      return `${url.protocol}//${subdomain}.${url.host}${path}`;
-    } catch (e) {
-      return `https://${subdomain}.biranchi.kulesika.in${path}`;
-    }
+    return SITE_URL.replace('://', `://${subdomain}.`) + path;
   };
 
   // ── Static routes ──────────────────────────────────────────────────────
