@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { Inter, JetBrains_Mono, Playfair_Display, Cormorant_Garamond, Spectral } from 'next/font/google';
 import './globals.css'; // Global styles
@@ -45,9 +45,18 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
+  icons: {
+    icon: [
+      { url: '/images/biranchi.png', type: 'image/png' },
+    ],
+    shortcut: ['/images/biranchi.png'],
+    apple: [
+      { url: '/images/biranchi.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 };
 
-export default async function RootLayout({children}: {children: React.ReactNode}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   const themeCookie = cookieStore.get('theme');
   const serverTheme = themeCookie ? themeCookie.value : 'dark';
