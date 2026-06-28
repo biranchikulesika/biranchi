@@ -274,6 +274,22 @@ CREATE TABLE IF NOT EXISTS "public"."redistribution_records" (
 DROP TRIGGER IF EXISTS update_redistribution_records_updated_at ON "public"."redistribution_records";
 CREATE TRIGGER update_redistribution_records_updated_at BEFORE UPDATE ON "public"."redistribution_records" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
 
+-- DONATIONS (INCOMING)
+CREATE TABLE IF NOT EXISTS "public"."donations" (
+    "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "amount" DECIMAL(12,2) NOT NULL,
+    "donorName" TEXT,
+    "donorEmail" TEXT,
+    "donorPhone" TEXT,
+    "razorpayOrderId" TEXT UNIQUE,
+    "razorpayPaymentId" TEXT UNIQUE,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+DROP TRIGGER IF EXISTS update_donations_updated_at ON "public"."donations";
+CREATE TRIGGER update_donations_updated_at BEFORE UPDATE ON "public"."donations" FOR EACH ROW EXECUTE FUNCTION "update_updatedAt_column"();
+
 -- 5. ROW LEVEL SECURITY (RLS)
 ALTER TABLE "public"."active_systems" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."books" ENABLE ROW LEVEL SECURITY;
@@ -291,6 +307,7 @@ ALTER TABLE "public"."operator_focuses" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."questions" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."redistribution_records" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."donations" ENABLE ROW LEVEL SECURITY;
 
 -- Admin full access across all tables
 DO $$
@@ -318,6 +335,7 @@ CREATE POLICY "Public read operator focuses" ON "public"."operator_focuses" FOR 
 CREATE POLICY "Public read published posts" ON "public"."posts" FOR SELECT USING (status = 'published' AND hidden = false);
 CREATE POLICY "Public read questions" ON "public"."questions" FOR SELECT USING (status != 'archived');
 CREATE POLICY "Public read redistribution records" ON "public"."redistribution_records" FOR SELECT USING (true);
+CREATE POLICY "Public read successful donations" ON "public"."donations" FOR SELECT USING (status = 'success');
 
 -- Allow public to insert into subscriber tables
 CREATE POLICY "Public can subscribe" ON "public"."subscribers" FOR INSERT WITH CHECK (true);

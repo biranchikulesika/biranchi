@@ -1,5 +1,6 @@
 'use server';
 import { verifyAuth } from '@/lib/auth/verify';
+import { getSupabaseAdmin } from '@/lib/supabase/server';
 import { RedistributionRecordService } from '@/lib/services/redistributionRecord.service';
 import { redistributionRecordSchema } from '@/lib/schemas';
 
@@ -40,4 +41,19 @@ export async function hideRedistributionRecord(id: string) {
 export async function unhideRedistributionRecord(id: string) {
   await verifyAuth();
   return await redistributionRecordService.unhide(id);
+}
+
+export async function getIncomingDonations() {
+  await verifyAuth();
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
+    .from('donations')
+    .select('*')
+    .order('createdAt', { ascending: false });
+    
+  if (error) {
+    console.error('Error fetching donations:', error);
+    return [];
+  }
+  return data || [];
 }

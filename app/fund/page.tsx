@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { getRedistributionRecords } from '@/lib/queries';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
+import jsPDF from 'jspdf';
 
 
 
@@ -19,6 +20,7 @@ export default function FundPage() {
   const [identityOption, setIdentityOption] = useState<'anonymous' | 'name' | 'name_email'>('anonymous');
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
+  const [donorPhone, setDonorPhone] = useState('');
   const [mockTxId, setMockTxId] = useState('');
   const [mockReceiptId, setMockReceiptId] = useState('');
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -106,6 +108,16 @@ export default function FundPage() {
       }
     }
     load();
+    
+    // Load Razorpay Script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   useEffect(() => {
@@ -134,7 +146,9 @@ export default function FundPage() {
           setLocalCurrency(data);
         }
       } catch (err) {
-        console.error("Could not fetch currency localization info", err);
+        // This commonly fails if the user has an ad-blocker (e.g. Brave) blocking ipapi.co.
+        // It gracefully falls back to displaying INR, so we just log a debug warning.
+        console.warn("Currency localization info skipped (likely blocked by privacy extensions).");
       }
     }
     fetchRates();
@@ -146,42 +160,113 @@ export default function FundPage() {
     setFlowStep('identity');
   };
 
-  const handleIdentitySubmit = (e: React.FormEvent) => {
+  const handleIdentitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (identityOption === 'name' && !donorName) return;
-    if (identityOption === 'name_email' && (!donorName || !donorEmail)) return;
+
 
     setFlowStep('processing');
-    setTimeout(() => {
-      setMockReceiptId(`RG-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
-      setMockTxId('txn_' + Math.random().toString(36).substring(2, 10));
-      if (identityOption === 'name_email') {
-         setSavedEmail(donorEmail);
+    
+    try {
+      // 1. Create order on our backend
+      const res = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          name: donorName.trim() || undefined,
+          email: donorEmail.trim() || undefined,
+          phone: donorPhone.trim() || undefined
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        alert(data.error || 'Failed to create order');
+        setFlowStep('identity');
+        return;
       }
-      setFlowStep('success');
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 1500);
+      
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: 'INR',
+        name: 'Biranchi',
+        description: 'Contribution to Fund',
+        order_id: data.orderId,
+        handler: function (response: any) {
+          // On Success
+          setMockReceiptId(`RG-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
+          setMockTxId(response.razorpay_payment_id);
+          
+          if (identityOption === 'name_email') {
+             setSavedEmail(donorEmail);
+          }
+          setFlowStep('success');
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        },
+        prefill: {
+          name: donorName.trim(),
+          email: donorEmail.trim(),
+          contact: donorPhone.trim()
+        },
+        theme: {
+          color: '#050505'
+        }
+      };
+      
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        alert('Payment failed: ' + response.error.description);
+        setFlowStep('identity');
+      });
+      rzp.open();
+      
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred during checkout');
+      setFlowStep('identity');
+    }
   };
 
   const handleDownloadReceipt = () => {
-    const receiptText = `RECEIPT OF CONTRIBUTION
------------------------
-Contribution ID: ${mockReceiptId}
-Date: ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-Amount: ₹${amount}
-Transaction ID: ${mockTxId}
-Contributor: ${identityOption === 'anonymous' ? 'Anonymous' : donorName}
-Status: Collected (Pending Redistribution)
------------------------
-Thank you for your generosity.
-This contribution will become part of a future redistribution cycle.`;
-    const blob = new Blob([receiptText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Receipt_${mockReceiptId}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const doc = new jsPDF();
+    const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    
+    // Minimalistic modern receipt design
+    doc.setFontSize(22);
+    doc.text('RECEIPT', 20, 30);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('OF CONTRIBUTION', 20, 38);
+    
+    doc.setTextColor(0);
+    doc.setFontSize(12);
+    
+    doc.text(`Receipt ID: ${mockReceiptId}`, 20, 60);
+    doc.text(`Date: ${dateStr}`, 20, 70);
+    doc.text(`Transaction ID: ${mockTxId}`, 20, 80);
+    
+    doc.text(`Contributor: ${donorName || 'Anonymous'}`, 20, 100);
+    if (donorEmail) {
+       doc.text(`Email: ${donorEmail}`, 20, 110);
+    }
+    if (donorPhone) {
+       doc.text(`Phone: ${donorPhone}`, 20, donorEmail ? 120 : 110);
+    }
+    
+    doc.setFontSize(16);
+    doc.text(`Amount: INR ${amount}`, 20, 140);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Status: Collected (Pending Redistribution)', 20, 160);
+    doc.text('Thank you for your generosity.', 20, 170);
+    doc.text('This contribution will become part of a future redistribution cycle.', 20, 176);
+    
+    doc.save(`Receipt_${mockReceiptId}.pdf`);
   };
 
   const handleEmailSave = (e: React.FormEvent) => {
@@ -779,62 +864,35 @@ This contribution will become part of a future redistribution cycle.`;
               <form onSubmit={handleIdentitySubmit} className="flex flex-col gap-6 pt-2">
                  <div className="flex flex-col gap-4">
 
-                   {/* Option Anonymous */}
-                   <label className={`flex flex-col gap-2 p-5 border cursor-pointer transition-colors ${identityOption === 'anonymous' ? 'dark:border-stone-500 border-stone-500 dark:bg-stone-900/30 bg-stone-100' : 'dark:border-stone-800 border-stone-200 hover:dark:border-stone-600 hover:border-stone-400'}`}>
-                     <div className="flex items-center gap-3">
-                       <div className={`w-3.5 h-3.5 rounded-full border flex shrink-0 items-center justify-center transition-colors ${identityOption === 'anonymous' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
-                          {identityOption === 'anonymous' && <div className="w-1.5 h-1.5 rounded-full dark:bg-stone-300 bg-stone-700" />}
-                       </div>
-                       <input type="radio" className="hidden" checked={identityOption === 'anonymous'} onChange={() => setIdentityOption('anonymous')} />
-                       <span className="font-sans text-[15px] dark:text-stone-200 text-stone-800">Remain Anonymous</span>
-                     </div>
-                     {identityOption === 'anonymous' && (
-                       <div className="pl-6 pt-1 font-sans font-light text-[13px] dark:text-stone-400 text-stone-500">
-                         Your contribution will remain anonymous.
-                       </div>
-                     )}
-                   </label>
-
-                   {/* Option Name */}
-                   <label className={`flex flex-col gap-2 p-5 border cursor-pointer transition-colors ${identityOption === 'name' ? 'dark:border-stone-500 border-stone-500 dark:bg-stone-900/30 bg-stone-100' : 'dark:border-stone-800 border-stone-200 hover:dark:border-stone-600 hover:border-stone-400'}`}>
-                     <div className="flex items-center gap-3">
-                       <div className={`w-3.5 h-3.5 rounded-full border flex shrink-0 items-center justify-center transition-colors ${identityOption === 'name' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
-                          {identityOption === 'name' && <div className="w-1.5 h-1.5 rounded-full dark:bg-stone-300 bg-stone-700" />}
-                       </div>
-                       <input type="radio" className="hidden" checked={identityOption === 'name'} onChange={() => setIdentityOption('name')} />
-                       <span className="font-sans text-[15px] dark:text-stone-200 text-stone-800">Share Name</span>
-                     </div>
-                     {identityOption === 'name' && (
-                       <div className="pl-6 pt-1 flex flex-col gap-4 text-left">
-                         <span className="font-sans font-light text-[13px] dark:text-stone-400 text-stone-500">
-                           Your name is used only for contribution records. No public donor lists are published.
-                         </span>
-                         <input autoFocus type="text" placeholder="Your Name" value={donorName} onChange={e => setDonorName(e.target.value)} required className="w-full bg-transparent border-b dark:border-stone-700 border-stone-300 py-2 outline-none font-sans text-[15px] dark:text-stone-200 text-stone-800 focus:dark:border-stone-400 focus:border-stone-600 transition-colors" />
-                       </div>
-                     )}
-                   </label>
-
-                   {/* Option Name & Email */}
-                   <label className={`flex flex-col gap-2 p-5 border cursor-pointer transition-colors ${identityOption === 'name_email' ? 'dark:border-stone-500 border-stone-500 dark:bg-stone-900/30 bg-stone-100' : 'dark:border-stone-800 border-stone-200 hover:dark:border-stone-600 hover:border-stone-400'}`}>
-                     <div className="flex items-center gap-3">
-                       <div className={`w-3.5 h-3.5 rounded-full border flex shrink-0 items-center justify-center transition-colors ${identityOption === 'name_email' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
-                          {identityOption === 'name_email' && <div className="w-1.5 h-1.5 rounded-full dark:bg-stone-300 bg-stone-700" />}
-                       </div>
-                       <input type="radio" className="hidden" checked={identityOption === 'name_email'} onChange={() => setIdentityOption('name_email')} />
-                       <span className="font-sans text-[15px] dark:text-stone-200 text-stone-800">Share Name & Email</span>
-                     </div>
-                     {identityOption === 'name_email' && (
-                       <div className="pl-6 pt-1 flex flex-col gap-4 text-left">
-                         <span className="font-sans font-light text-[13px] dark:text-stone-400 text-stone-500">
-                           Your email may be used to send payment receipts and occasional updates related to redistribution records.
-                         </span>
-                         <div className="flex flex-col gap-3">
-                           <input autoFocus type="text" placeholder="Your Name" value={donorName} onChange={e => setDonorName(e.target.value)} required className="w-full bg-transparent border-b dark:border-stone-700 border-stone-300 py-2 outline-none font-sans text-[15px] dark:text-stone-200 text-stone-800 focus:dark:border-stone-400 focus:border-stone-600 transition-colors" />
-                           <input type="email" placeholder="Your Email" value={donorEmail} onChange={e => setDonorEmail(e.target.value)} required className="w-full bg-transparent border-b dark:border-stone-700 border-stone-300 py-2 outline-none font-sans text-[15px] dark:text-stone-200 text-stone-800 focus:dark:border-stone-400 focus:border-stone-600 transition-colors" />
-                         </div>
-                       </div>
-                     )}
-                   </label>
+                   <div className="flex flex-col gap-4">
+                     <p className="font-sans font-light text-[13px] dark:text-stone-400 text-stone-500 mb-2">
+                       Feel free to provide your details below for the payment receipt. All fields are completely optional—leave them blank to remain anonymous.
+                     </p>
+                     
+                     <input 
+                       type="text" 
+                       placeholder="Name (Optional)" 
+                       value={donorName} 
+                       onChange={e => setDonorName(e.target.value)} 
+                       className="w-full bg-transparent border-b dark:border-stone-700 border-stone-300 py-3 outline-none font-sans text-[15px] dark:text-stone-200 text-stone-800 focus:dark:border-stone-400 focus:border-stone-600 transition-colors" 
+                     />
+                     
+                     <input 
+                       type="email" 
+                       placeholder="Email (Optional)" 
+                       value={donorEmail} 
+                       onChange={e => setDonorEmail(e.target.value)} 
+                       className="w-full bg-transparent border-b dark:border-stone-700 border-stone-300 py-3 outline-none font-sans text-[15px] dark:text-stone-200 text-stone-800 focus:dark:border-stone-400 focus:border-stone-600 transition-colors" 
+                     />
+                     
+                     <input 
+                       type="tel" 
+                       placeholder="Phone Number (Optional)" 
+                       value={donorPhone} 
+                       onChange={e => setDonorPhone(e.target.value)} 
+                       className="w-full bg-transparent border-b dark:border-stone-700 border-stone-300 py-3 outline-none font-sans text-[15px] dark:text-stone-200 text-stone-800 focus:dark:border-stone-400 focus:border-stone-600 transition-colors" 
+                     />
+                   </div>
 
                  </div>
 

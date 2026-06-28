@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Activity, ArrowRightLeft, DollarSign, Wallet } from 'lucide-react';
-import { getRedistributionRecords, createRedistributionRecord, updateRedistributionRecord, deleteRedistributionRecord } from '@/app/admin/actions/redistributionRecords.actions';
+import { getRedistributionRecords, createRedistributionRecord, updateRedistributionRecord, deleteRedistributionRecord, getIncomingDonations } from '@/app/admin/actions/redistributionRecords.actions';
 
 export default function RedistributionRecordPage() {
   const [items, setItems] = useState<any[]>([]);
+  const [donations, setDonations] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [totalRedirected, setTotalRedirected] = useState(0);
+  const [totalCollected, setTotalCollected] = useState(0);
   
   const [formData, setFormData] = useState<any>({ amount: 0, destination: "", description: "", proofUrl: "", donatedAt: "", transactionReference: "", hidden: false });
 
@@ -17,9 +19,16 @@ export default function RedistributionRecordPage() {
     const sorted = (data || []).sort((a: any, b: any) => new Date(b.donatedAt || 0).getTime() - new Date(a.donatedAt || 0).getTime());
     setItems(sorted);
     
-    // Calculate total redistributed
-    const sum = sorted.filter((r:any) => !r.hidden).reduce((acc: number, curr: any) => acc + (Number(curr.amount) || 0), 0);
-    setTotalRedirected(sum);
+    const sumRedirected = sorted.filter((r:any) => !r.hidden).reduce((acc: number, curr: any) => acc + (Number(curr.amount) || 0), 0);
+    setTotalRedirected(sumRedirected);
+
+    const incDonations = await getIncomingDonations();
+    setDonations(incDonations || []);
+    
+    const sumCollected = (incDonations || [])
+      .filter((d:any) => d.status === 'success')
+      .reduce((acc: number, curr: any) => acc + (Number(curr.amount) || 0), 0);
+    setTotalCollected(sumCollected);
   };
 
   useEffect(() => {
@@ -81,7 +90,7 @@ export default function RedistributionRecordPage() {
              <DollarSign className="w-4 h-4 text-neutral-600" />
            </div>
            <div>
-             <div className="text-xl font-medium text-neutral-200 mb-1">₹ ---</div>
+             <div className="text-xl font-medium text-neutral-200 mb-1">₹ {totalCollected.toLocaleString()}</div>
              <div className="text-[10px] font-mono text-neutral-500">Live Razorpay sync incoming</div>
            </div>
         </div>
@@ -97,17 +106,70 @@ export default function RedistributionRecordPage() {
            </div>
         </div>
 
-        <div className="bg-[#111] border border-[#222] rounded p-4 flex flex-col justify-between opacity-50">
+        <div className="bg-[#111] border border-[#222] rounded p-4 flex flex-col justify-between opacity-80">
            <div className="flex justify-between items-center mb-2">
              <span className="text-xs uppercase font-mono tracking-widest text-neutral-400">Balance</span>
              <Wallet className="w-4 h-4 text-neutral-600" />
            </div>
            <div>
-             <div className="text-xl font-medium text-neutral-200 mb-1">₹ ---</div>
-             <div className="text-[10px] font-mono text-neutral-500">Pending full sync</div>
+             <div className="text-xl font-medium text-neutral-200 mb-1">₹ {(totalCollected - totalRedirected).toLocaleString()}</div>
+             <div className="text-[10px] font-mono text-neutral-500">Available to redirect</div>
            </div>
         </div>
       </div>
+
+      <div className="flex flex-col gap-8">
+        
+        <div>
+          <h2 className="text-sm font-medium text-neutral-300 font-sans tracking-tight mb-4 uppercase">Recent Incoming Donations</h2>
+          {donations.length === 0 ? (
+            <div className="text-center py-8 text-neutral-600 font-sans text-sm border border-[#222] rounded border-dashed">
+              No incoming donations found yet.
+            </div>
+          ) : (
+            <div className="bg-[#111] border border-[#222] rounded overflow-x-auto">
+              <table className="w-full text-left text-sm font-sans">
+                <thead className="bg-[#1a1a1a] text-neutral-400 border-b border-[#222]">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">Date</th>
+                    <th className="px-4 py-3 font-medium">Donor</th>
+                    <th className="px-4 py-3 font-medium">Amount</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium">Tx ID</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#222]">
+                  {donations.map((d) => (
+                    <tr key={d.id} className="hover:bg-[#161616] transition-colors">
+                      <td className="px-4 py-3 text-neutral-300">
+                        {new Date(d.createdAt).toLocaleDateString('en-GB')}
+                      </td>
+                      <td className="px-4 py-3 text-neutral-300">
+                        <div>{d.donorName || 'Anonymous'}</div>
+                        {d.donorEmail && <div className="text-[10px] text-neutral-500">{d.donorEmail}</div>}
+                        {d.donorPhone && <div className="text-[10px] text-neutral-500">{d.donorPhone}</div>}
+                      </td>
+                      <td className="px-4 py-3 text-emerald-500 font-mono">₹{d.amount}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 text-[10px] uppercase tracking-wider rounded ${
+                          d.status === 'success' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-yellow-500/10 text-yellow-500'
+                        }`}>
+                          {d.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-neutral-500 font-mono text-[10px] truncate max-w-[120px]">
+                        {d.razorpayPaymentId || d.razorpayOrderId}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <h2 className="text-sm font-medium text-neutral-300 font-sans tracking-tight mb-4 uppercase">Redistribution Logs</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-7 flex flex-col gap-6">
