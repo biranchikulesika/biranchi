@@ -2,7 +2,9 @@ name: Generate Daily Build Logs
 on:
   schedule:
     # 6:00 AM IST = 00:30 UTC
-    - cron: '30 0 * * *'
+    # Note: GitHub Actions often delays jobs scheduled exactly on the hour or half-hour.
+    # We use 00:27 UTC (5:57 AM IST) to ensure it gets picked up before 6:00 AM IST.
+    - cron: '27 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -23,8 +25,12 @@ jobs:
       - name: Generate and save build logs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY}}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/generate-build-logs.js

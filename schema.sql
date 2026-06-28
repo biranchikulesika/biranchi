@@ -63,6 +63,9 @@ CREATE INDEX IF NOT EXISTS idx_books_status ON "public"."books"("status");
 CREATE TABLE IF NOT EXISTS "public"."build_logs" (
     "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     "title" TEXT NOT NULL,
+    "category" TEXT,
+    "short_summary" TEXT,
+    "long_summary" TEXT,
     "description" TEXT,
     "date" DATE NOT NULL DEFAULT CURRENT_DATE,
     "source" TEXT DEFAULT 'manual',

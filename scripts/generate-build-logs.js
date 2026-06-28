@@ -79,7 +79,7 @@ async function main() {
           savedEntries.push(saved);
           console.log(`       ✓ Saved to database (ID: ${saved.id.slice(0, 8)}...)`);
         } else {
-          console.log(`       ✗ Failed to generate summary`);
+          console.log(`       → No log generated (skipped or failed)`);
         }
 
         // Rate limiting: OpenAI / NVIDIA friendly

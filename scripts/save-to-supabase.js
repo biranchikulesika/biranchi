@@ -36,6 +36,9 @@ async function saveBuildLog(logEntry) {
   // Match your database column names (snake_case)
   const dbPayload = {
     title: logEntry.title,
+    category: logEntry.category,
+    short_summary: logEntry.short_summary,
+    long_summary: logEntry.long_summary,
     description: logEntry.description,
     date: logEntry.date,
     source: logEntry.source || 'automated',

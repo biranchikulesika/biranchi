@@ -6,6 +6,9 @@ export class BuildLogSupabaseRepository implements IRepository<BuildLog> {
   private mapToDB(data: Partial<BuildLog>): any {
     const dbObj: any = {};
     if (data.title !== undefined) dbObj.title = data.title;
+    if (data.category !== undefined) dbObj.category = data.category;
+    if (data.shortSummary !== undefined) dbObj.short_summary = data.shortSummary;
+    if (data.longSummary !== undefined) dbObj.long_summary = data.longSummary;
     if (data.description !== undefined) dbObj.description = data.description;
     if (data.date !== undefined) dbObj.date = data.date;
     if (data.source !== undefined) dbObj.source = data.source;
@@ -22,6 +25,9 @@ export class BuildLogSupabaseRepository implements IRepository<BuildLog> {
     return {
       id: dbData.id,
       title: dbData.title || '',
+      category: dbData.category || '',
+      shortSummary: dbData.short_summary || '',
+      longSummary: dbData.long_summary || '',
       description: dbData.description || '',
       date: dbData.date || dbData.created_at,
       source: dbData.source || 'manual',

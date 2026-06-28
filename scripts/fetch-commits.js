@@ -154,6 +154,16 @@ function isNoise(message) {
     /^revert/i,
     /^merge/i,
     /^conflict/i,
+    /^format/i,
+    /^prettier/i,
+    /^eslint/i,
+    /^lint/i,
+    /^clean/i,
+    /^bump/i,
+    /^deps/i,
+    /^dependency/i,
+    /^update readme/i,
+    /^minor/i,
   ];
 
   const firstLine = message.split('\n')[0].toLowerCase();

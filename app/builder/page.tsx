@@ -83,13 +83,78 @@ export interface LogEntry {
   id: string;
   date: string;
   category?: string;
-source?: string;
+  source?: string;
   title: string;
-  summary?: string;
-description?: string;
-  why?: string;
-  affectedAreas: string[];
+  shortSummary?: string;
+  longSummary?: string;
 }
+
+const getCategoryColor = (category: string) => {
+  const cat = (category || '').toLowerCase();
+  if (cat.includes('typography') || cat.includes('design') || cat.includes('ui')) return 'text-purple-600 dark:text-purple-400 border-purple-500/20 bg-purple-500/10';
+  if (cat.includes('database') || cat.includes('infra')) return 'text-blue-600 dark:text-blue-400 border-blue-500/20 bg-blue-500/10';
+  if (cat.includes('api') || cat.includes('system') || cat.includes('backend')) return 'text-orange-600 dark:text-orange-400 border-orange-500/20 bg-orange-500/10';
+  if (cat.includes('content') || cat.includes('writing')) return 'text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-500/10';
+  return 'text-neutral-600 dark:text-neutral-400 border-neutral-500/20 bg-neutral-500/10';
+};
+
+const BuildLogFeedItem = ({ log }: { log: LogEntry }) => {
+  const [expanded, setExpanded] = useState(false);
+  const hasLongSummary = !!log.longSummary && log.longSummary.trim().length > 0;
+
+  return (
+    <div className="flex flex-col md:flex-row gap-4 md:gap-8 group">
+      {/* Left: Category Tag */}
+      <div className="md:w-32 shrink-0 pt-1">
+        <span className={`inline-block text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 border rounded-[3px] font-bold ${getCategoryColor(log.category || 'System')}`}>
+          {log.category || 'System'}
+        </span>
+      </div>
+
+      {/* Right: Content */}
+      <div className="flex-1 pb-10 border-b border-border/50 group-last:border-0 relative">
+        {/* Timeline line connecting items (hidden on mobile) */}
+        <div className="hidden md:block absolute -left-10 top-8 bottom-0 w-px bg-border/40 group-last:bg-transparent" />
+        
+        <div className="flex justify-between items-start gap-4 mb-2">
+          <h4 className="text-lg text-foreground font-semibold leading-tight">{log.title}</h4>
+          <span className="text-[10px] font-mono text-primary/60 shrink-0 mt-1">{log.date}</span>
+        </div>
+
+        <p className="text-[13px] md:text-sm text-primary/80 leading-relaxed mb-3">
+          {log.shortSummary}
+        </p>
+
+        {hasLongSummary && (
+          <div className="mt-2">
+            <AnimatePresence initial={false}>
+              {expanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-2 pb-4 text-sm text-foreground/90 leading-relaxed border-l-2 border-primary/20 pl-4 mt-2 mb-2 font-serif">
+                    {log.longSummary}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="text-[11px] font-mono text-primary/60 hover:text-primary transition-colors flex items-center gap-1.5"
+            >
+              {expanded ? '[-]' : '[+]'} {expanded ? 'Collapse details' : 'Read full log'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const renderStatusBadge = (status: SystemStatus | string) => {
   const normStatus = (status || 'active').toLowerCase() as SystemStatus;
@@ -236,12 +301,14 @@ export default function BuilderPage() {
         if (logsData) {
           const enrichedLogs = logsData.map((l:any, i:number) => ({
             ...l,
-            category: l.catagory || l.title || 'System',
-            summary: l.description || '',
+            category: l.category || l.title || 'System',
+            shortSummary: l.shortSummary || l.description || '',
+            longSummary: l.longSummary || '',
             id: l.id || `log-${i}`
           }));
+          // Ensure they are sorted by date descending
+          enrichedLogs.sort((a:any, b:any) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setBuildLogsData(enrichedLogs);
-          if (enrichedLogs.length > 0) setActiveLogId(enrichedLogs[0].id);
         }
 
         if (allPosts) {
@@ -394,143 +461,27 @@ export default function BuilderPage() {
 
       {/* SECTION 3 — BUILD LOGS (Calm structural arrival, tight timeline rhythm) */}
       <section id="build-logs" className="w-full min-h-svh flex flex-col justify-center py-16">
-        <div className="max-w-5xl mx-auto px-6 md:px-12 w-full">
+        <div className="max-w-4xl mx-auto px-6 md:px-10 w-full">
 
-          <div className="mb-4 pb-1.5 border-b border-border">
+          <div className="mb-10 pb-1.5 border-b border-border flex justify-between items-end">
             <h2 className="text-[11px] text-primary/70 uppercase tracking-[0.25em] font-bold">
               [ BUILD LOGS ]
             </h2>
+            <span className="text-[9px] text-primary/50 font-mono">CHRONOLOGICAL</span>
           </div>
 
-          <div className="relative space-y-8 md:space-y-0 md:grid md:grid-cols-12 md:gap-x-12">
-
-            {/* LEFT COLUMN: NAVIGATION */}
-            <div className="col-span-12 md:col-span-4 lg:col-span-4 flex flex-col md:border-r border-neutral-200/50 dark:border-neutral-900/30 md:pr-8 pb-8 md:pb-0 border-b md:border-b-0 space-y-4 md:space-y-0">
-
-              {/* MOBILE HORIZONTAL SELECTOR */}
-              <div className="flex md:hidden items-center gap-1 w-full bg-neutral-100/70 dark:bg-neutral-900/40 p-1 rounded-md border border-neutral-200/50 dark:border-neutral-800/50 overflow-hidden">
-                {buildLogsData.length === 0 ? (
-                  <div className="text-center w-full py-2 text-[10px] text-primary/70 font-mono">No logs</div>
-                ) : buildLogsData.slice(0, 3).map((log) => {
-                  const isActive = activeLogId === log.id;
-                  return (
-                    <button
-                      key={log.id}
-                      onClick={() => setActiveLogId(log.id)}
-                      className={`flex-1 flex items-center justify-center gap-1.5 min-w-0 px-1 py-1.5 transition-all rounded-sm truncate ${isActive ? 'bg-muted shadow-sm text-foreground' : 'text-primary/70 hover:bg-muted/50'}`}
-                    >
-                      <span className={`text-[8px] shrink-0 ${isActive ? 'text-primary' : 'opacity-50'}`}>
-                        {isActive ? '●' : '○'}
-                      </span>
-                      <span className={`text-[10px] sm:text-[11px] font-mono tracking-tight truncate ${isActive ? 'font-bold' : 'font-medium'}`}>
-                        {log.category}
-                      </span>
-                    </button>
-                  );
-                })}
+          <div className="relative max-h-[800px] overflow-y-auto scrollbar-hide pr-2">
+            {buildLogsData.length === 0 ? (
+              <div className="flex items-center justify-center py-20 border border-dashed border-border rounded-sm">
+                <span className="text-primary/70 font-sans font-light italic text-sm">No build logs recorded yet.</span>
               </div>
-
-              {/* DESKTOP VERTICAL RAIL */}
-              <div className="hidden md:flex flex-col w-full relative">
-                {buildLogsData.length === 0 ? (
-                  <div className="text-[12px] text-primary/70 font-mono">No logs</div>
-                ) : buildLogsData.slice(0, 6).map((log, index) => {
-                  const isActive = activeLogId === log.id;
-
-                  return (
-                    <div key={log.id} className="flex flex-col">
-                      <button
-                        onClick={() => setActiveLogId(log.id)}
-                        className={`text-left group flex items-start gap-4 py-1 transition-all duration-300 ${isActive ? 'opacity-100 text-foreground' : 'opacity-60 hover:opacity-100 text-primary/80'}`}
-                      >
-                        <span className={`text-[12px] mt-px leading-none transition-colors ${isActive ? 'text-primary scale-110' : 'text-primary/70'}`}>
-                          {isActive ? '●' : '○'}
-                        </span>
-                        <span className={`text-[13px] truncate transition-colors ${isActive ? 'text-foreground font-semibold tracking-wide' : 'text-primary/70 font-medium tracking-wide group-hover:text-foreground'}`}>
-                          {log.category}
-                        </span>
-                      </button>
-
-                      {/* Vertical line connecting entries */}
-                      {index < Math.min(buildLogsData.length, 6) - 1 && (
-                        <div className="w-px h-6 ml-1.25 my-1 border-l border-border" />
-                      )}
-                    </div>
-                  );
-                })}
+            ) : (
+              <div className="flex flex-col">
+                {buildLogsData.map((log) => (
+                  <BuildLogFeedItem key={log.id} log={log} />
+                ))}
               </div>
-
-            </div>
-
-            {/* RIGHT COLUMN: REVISION VIEWER */}
-            <div className="col-span-12 md:col-span-8 lg:col-span-8 md:pl-4 relative min-h-90">
-              {buildLogsData.length === 0 ? (
-                <div className="flex items-center justify-center h-full pt-10">
-                  <span className="text-primary/70 font-sans font-light italic">No build logs yet.</span>
-                </div>
-              ) : (() => {
-                const activeLog = buildLogsData.find(l => l.id === activeLogId) || buildLogsData[0];
-                return (
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeLog.id}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5, transition: { duration: 0.15 } }}
-                      transition={{ duration: 0.3, ease: 'easeOut' }}
-                      className="space-y-6"
-                    >
-                      <div className="flex items-center gap-3 mb-2 font-mono">
-                        <div className="flex items-center gap-1.5 text-primary">
-                          <span className="text-[8px] opacity-80">■</span>
-                          <span className="text-[10px] uppercase font-bold tracking-widest">
-                            {activeLog.category}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-primary/70">
-                          {activeLog.date}
-                        </span>
-                      </div>
-
-                      <h4 className="text-lg md:text-xl text-foreground font-semibold leading-snug">
-                        {activeLog.title}
-                      </h4>
-
-                      <div className="space-y-6 pt-6 border-t border-border">
-                        <div>
-                          <h5 className="text-[10px] font-mono uppercase tracking-widest text-primary/70 mb-2">Summary</h5>
-                          <p className="text-sm md:text-[15px] text-foreground leading-relaxed max-w-2xl">
-                            {activeLog.summary}
-                          </p>
-                        </div>
-
-                        {activeLog.why && (
-                          <div>
-                            <h5 className="text-[10px] font-mono uppercase tracking-widest text-primary/70 mb-2">Why</h5>
-                            <p className="text-sm md:text-[15px] text-primary/90 leading-relaxed max-w-2xl">
-                              {activeLog.why}
-                            </p>
-                          </div>
-                        )}
-
-                        {activeLog.affectedAreas && activeLog.affectedAreas.length > 0 && (
-                          <div>
-                            <h5 className="text-[10px] font-mono uppercase tracking-widest text-primary/70 mb-3">Affected Areas</h5>
-                            <div className="flex flex-wrap gap-3 mt-2">
-                              {activeLog.affectedAreas.map((area, i) => (
-                                <span key={i} className="text-[11px] font-mono border border-border bg-muted/20 px-2.5 py-1 rounded-[3px] text-primary/90">
-                                  [ {area} ]
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
-                );
-              })()}
-            </div>
+            )}
           </div>
         </div>
       </section>

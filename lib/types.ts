@@ -120,6 +120,9 @@ export interface ActiveSystem {
 export interface BuildLog {
   id: string;
   title: string;
+  category?: string;
+  shortSummary?: string;
+  longSummary?: string;
   description?: string;
   date: string;
   source: 'manual' | 'automated';

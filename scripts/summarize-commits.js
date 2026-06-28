@@ -1,7 +1,8 @@
 /**
- * Summarize Commits with NVIDIA NIM API
+ * Summarize Commits with AI API
  * * Takes a group of related commits and generates a structured
  * build log entry matching the Builder persona voice.
+ * Now supports switching AI models via environment variables.
  */
 
 async function generateLogEntry(commits, feature) {
@@ -10,7 +11,20 @@ async function generateLogEntry(commits, feature) {
     .map(c => `- ${c.message.split('\n')[0].trim()}`)
     .join('\n');
 
-  // Craft the system prompt to enforce Builder persona
+  // Provider configuration based on Environment Variables
+  // Supported providers: 'nvidia', 'openai', or custom 'base_url'
+  const provider = process.env.AI_PROVIDER?.toLowerCase() || 'nvidia';
+  const apiKey = process.env.AI_API_KEY || process.env.NVIDIA_API_KEY || process.env.OPENAI_API_KEY;
+  const model = process.env.AI_MODEL || 'deepseek-ai/deepseek-v4-flash';
+  
+  let baseUrl = 'https://integrate.api.nvidia.com/v1/chat/completions';
+  if (provider === 'openai') {
+    baseUrl = 'https://api.openai.com/v1/chat/completions';
+  } else if (process.env.AI_BASE_URL) {
+    baseUrl = process.env.AI_BASE_URL;
+  }
+
+  // Craft the system prompt to enforce Builder persona and filtering
   const systemPrompt = `You are a technical writer generating build logs for a Builder persona.
 
 The Builder is:
@@ -21,62 +35,64 @@ The Builder is:
 - Quiet confidence and understated tone
 - Focused on clarity and long-term usefulness
 
+CRITICAL INSTRUCTION:
+Review the provided commits. If the commits represent ONLY minor changes such as typo fixes, code formatting, trivial refactors, or automated dependency bumps, you MUST reject them by returning exactly:
+{ "skip": true }
+
+If the work is substantial enough to log, return a valid JSON object matching this schema exactly:
+{
+  "skip": false,
+  "tag": "One or two word category (e.g. TYPOGRAPHY, DATABASE, INFRA, UI SYSTEM)",
+  "title": "One-line summary (max 60 characters, be specific)",
+  "short_summary": "1-2 sentences summarizing what was done and the immediate outcome.",
+  "long_summary": "A longer, detailed explanation of the problem, what was changed/built technically, and the concrete results. Format as a reflective, technical narrative. (3-5 sentences)"
+}
+
 You ONLY respond with valid JSON. No markdown, no preamble, no code blocks.`;
 
-  const userPrompt = `Generate a build log entry for this work:
+  const userPrompt = `Generate a build log entry for this work.
 
 Feature Area: ${feature}
 
 Related Commits:
 ${commitList}
 
-Return ONLY a JSON object (no markdown, no explanation):
-{
-  "title": "One-line summary (max 60 characters, be specific)",
-  "summary": "2-3 sentences explaining what was done and why it matters",
-  "problem": "The specific problem this addresses (1 sentence, optional)",
-  "action": "What was actually changed/built (1-2 sentences, technical)",
-  "result": "The concrete outcome or improvement (1 sentence)",
-  "tag": "Feature area: TYPOGRAPHY|SPACING|NAVIGATION|INFRA|DESIGN|CONTENT|SYSTEM|DATABASE|API"
-}
-
-Requirements:
-- Title should be specific, not generic ("Reduced homepage density" not "Improved UI")
-- Summary should explain the WHY, not just the WHAT
-- Avoid corporate language or buzzwords
-- Sound reflective and thoughtful
-- Be technically precise
-- Focus on systems and patterns, not individual fixes`;
+Remember: Return ONLY a valid JSON object. Evaluate if these commits are worth logging.`;
 
   try {
-    // NVIDIA NIM API handles requests using the standard OpenAI payload layout
-    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+    const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.NVIDIA_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        // Pick an available, high-performance chat/reasoning model from your dashboard
-        model: 'deepseek-ai/deepseek-v4-flash',
+        model: model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
-        max_tokens: 400,
+        max_tokens: 600,
         top_p: 0.9
       })
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error(`       ✗ NVIDIA API error (${response.status}):`, error.error?.message || error);
+      const error = await response.json().catch(() => ({}));
+      console.error(`       ✗ API error (${response.status}):`, error.error?.message || error);
       return null;
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content.trim();
+    let content = data.choices[0].message.content.trim();
+    
+    // Clean up potential markdown formatting from AI if it disobeys instructions
+    if (content.startsWith('\`\`\`json')) {
+      content = content.replace(/^\`\`\`json/, '').replace(/\`\`\`$/, '').trim();
+    } else if (content.startsWith('\`\`\`')) {
+      content = content.replace(/^\`\`\`/, '').replace(/\`\`\`$/, '').trim();
+    }
 
     // Parse the JSON response
     let parsed;
@@ -88,22 +104,25 @@ Requirements:
       return null;
     }
 
-    // Build the complete log entry
+    if (parsed.skip === true) {
+      console.log(`       → AI determined commits are minor/noise. Skipping log generation.`);
+      return null;
+    }
+
+    // Build the complete log entry matching the updated schema
     const logEntry = {
-      // UI fields (for builder page)
+      // UI fields
       title: parsed.title || 'Build work completed',
-      description: parsed.summary || '',
-      date: new Date().toISOString().split('T')[0],
       category: parsed.tag || feature,
-      summary: parsed.summary || '',
-      why: parsed.problem || '',
-      affectedAreas: [parsed.tag || feature],
+      short_summary: parsed.short_summary || '',
+      long_summary: parsed.long_summary || '',
+      date: new Date().toISOString().split('T')[0],
 
       // Database fields
       source: 'automated',
       aiGenerated: true,
       generatedAt: new Date().toISOString(),
-      generationModel: 'deepseek-v4-flash',
+      generationModel: model,
       relatedCommits: commits.map(c => c.sha),
       relatedRepositories: [...new Set(commits.map(c => c.repo))],
       hidden: false,
@@ -115,7 +134,7 @@ Requirements:
     return logEntry;
 
   } catch (error) {
-    console.error(`       ✗ NVIDIA request failed:`, error.message);
+    console.error(`       ✗ Request failed:`, error.message);
     return null;
   }
 }
@@ -129,12 +148,10 @@ function generateLogEntryLocal(commits, feature) {
 
   return {
     title: firstCommit.substring(0, 60),
-    description: `Completed ${commits.length} commits in ${feature}`,
-    date: new Date().toISOString().split('T')[0],
     category: feature,
-    summary: `Updated ${feature} systems with ${commits.length} changes.`,
-    why: '',
-    affectedAreas: [feature],
+    short_summary: `Completed ${commits.length} commits in ${feature}`,
+    long_summary: `Updated ${feature} systems with ${commits.length} changes. Local fallback generation used.`,
+    date: new Date().toISOString().split('T')[0],
     source: 'automated',
     aiGenerated: false,
     relatedCommits: commits.map(c => c.sha),
