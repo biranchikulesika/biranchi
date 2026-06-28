@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono, Playfair_Display, Cormorant_Garamond, Spectral }
 import './globals.css'; // Global styles
 import { ThemeProvider } from '@/components/theme-provider';
 import { Analytics } from '@vercel/analytics/next';
+import { SITE_URL, SITE_NAME, AUTHOR } from '@/lib/config/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -33,17 +34,39 @@ const spectral = Spectral({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Biranchi",
-    template: "%s | Biranchi"
+    default: 'Biranchi',
+    template: '%s | Biranchi',
   },
-  description: "Personal digital garden and portfolio of Biranchi Kulesika, featuring the Builder, Operator, Thinker, and Wanderer personas.",
+  description: 'Personal digital garden and portfolio of Biranchi Kulesika, featuring the Builder, Operator, Thinker, and Wanderer personas.',
+  authors: [{ name: AUTHOR.name, url: AUTHOR.url }],
+  creator: AUTHOR.name,
+  publisher: AUTHOR.name,
   openGraph: {
     type: 'website',
+    siteName: SITE_NAME,
+    locale: 'en_US',
+    url: SITE_URL,
     images: ['/images/og-main.png'],
   },
   twitter: {
     card: 'summary_large_image',
+    creator: AUTHOR.twitter,
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: [

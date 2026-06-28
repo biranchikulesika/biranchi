@@ -1,10 +1,17 @@
 'use client';
 
 import { motion } from 'motion/react';
+import { ProfilePageJsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/config/seo';
 
 export default function ThinkerAboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-20 md:pt-10 md:pb-32 relative flex flex-col font-sans">
+      <ProfilePageJsonLd
+        description="Thoughts, essays, and intellectual explorations — reflection, philosophy, and ideas that stay long enough to be written down."
+        url={`${SITE_URL}/thinker/about`}
+        image={`${SITE_URL}/images/og-fallback-thinker.png`}
+      />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

@@ -2,10 +2,17 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { ProfilePageJsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/config/seo';
 
 export default function WandererAboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-20 md:pt-10 md:pb-32 relative flex flex-col font-spectral">
+      <ProfilePageJsonLd
+        description="Journeys, stories, memory, travel, lived moments, observations, and fragments collected along the way."
+        url={`${SITE_URL}/wanderer/about`}
+        image={`${SITE_URL}/images/og-fallback-wanderer.png`}
+      />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

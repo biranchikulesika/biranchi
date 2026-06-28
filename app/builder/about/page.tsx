@@ -1,10 +1,17 @@
 'use client';
 
 import { motion } from 'motion/react';
+import { ProfilePageJsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/config/seo';
 
 export default function BuilderAboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-20 md:pt-10 md:pb-32 relative flex flex-col">
+      <ProfilePageJsonLd
+        description="Systems, code, workflows, experimentation, and the process of building things carefully over time."
+        url={`${SITE_URL}/builder/about`}
+        image={`${SITE_URL}/images/og-fallback-builder.png`}
+      />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

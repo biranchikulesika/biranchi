@@ -4,19 +4,26 @@ import { PersonaSwitcher } from '@/components/persona-switcher';
 import { PersonaSearch } from '@/components/persona-search';
 import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterOperator } from '@/components/footer-operator';
+import { SITE_NAME, AUTHOR, getCanonicalUrl } from '@/lib/config/seo';
 
 export const metadata: Metadata = {
   title: {
     default: "Operator Workspace",
     template: "%s | Operator Workspace"
   },
-  description: "Cybersecurity, Ethical Hacking, OSINT",
+  description: "Cybersecurity, Ethical Hacking, OSINT — the Operator persona of Biranchi Kulesika.",
   openGraph: {
-    images: ['/images/og-fallback-operator.png']
+    siteName: SITE_NAME,
+    description: "Cybersecurity, Ethical Hacking, OSINT — the Operator persona of Biranchi Kulesika.",
+    images: ['/images/og-fallback-operator.png'],
   },
   twitter: {
-    card: 'summary_large_image'
-  }
+    card: 'summary_large_image',
+    creator: AUTHOR.twitter,
+  },
+  alternates: {
+    canonical: getCanonicalUrl('/operator'),
+  },
 };
 
 import { Space_Grotesk } from 'next/font/google';

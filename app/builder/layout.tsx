@@ -4,19 +4,26 @@ import { PersonaSwitcher } from '@/components/persona-switcher';
 import { PersonaSearch } from '@/components/persona-search';
 import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterBuilder } from '@/components/footer-builder';
+import { SITE_NAME, AUTHOR, getCanonicalUrl } from '@/lib/config/seo';
 
 export const metadata: Metadata = {
   title: {
     default: "Forge Workspace",
     template: "%s | Forge Workspace"
   },
-  description: "Systems, Code, Open Source",
+  description: "Systems, Code, Open Source — the Builder persona of Biranchi Kulesika.",
   openGraph: {
-    images: ['/images/og-fallback-builder.png']
+    siteName: SITE_NAME,
+    description: "Systems, Code, Open Source — the Builder persona of Biranchi Kulesika.",
+    images: ['/images/og-fallback-builder.png'],
   },
   twitter: {
-    card: 'summary_large_image'
-  }
+    card: 'summary_large_image',
+    creator: AUTHOR.twitter,
+  },
+  alternates: {
+    canonical: getCanonicalUrl('/builder'),
+  },
 };
 
 import { JetBrains_Mono } from 'next/font/google';

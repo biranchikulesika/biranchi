@@ -8,6 +8,8 @@ import { PersonaSearch } from '@/components/persona-search';
 import { getPersonaUrl } from '@/lib/utils';
 import { ArrowUpRight } from 'lucide-react';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
+import { ProfilePageJsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/config/seo';
 
 function CornerCard({ title, subtitle, desc, href, type }: { title: string, subtitle: string, desc: string, href: string, type: 'builder' | 'operator' | 'thinker' | 'wanderer' }) {
   const hoverStyles = {
@@ -45,6 +47,10 @@ export default function AboutPage() {
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
       className="w-full dark:bg-[#050505] bg-[#F5F5F2] dark:text-[#e5e5e5] text-[#2B2B28] flex flex-col font-sans overflow-x-hidden relative dark:selection:bg-stone-800 selection:bg-stone-300 dark:selection:text-white selection:text-black"
     >
+      <ProfilePageJsonLd
+        description="A personal ecosystem shaped by curiosity, systems, stories, and reflection."
+        url={`${SITE_URL}/about`}
+      />
       {/* Global Header */}
       <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 dark:bg-[#050505]/80 bg-[#F5F5F2]/80 backdrop-blur-md border-b dark:border-stone-900/50 border-[#ECEBE6]">
         <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">

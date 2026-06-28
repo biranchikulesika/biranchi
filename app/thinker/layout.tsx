@@ -4,19 +4,26 @@ import { PersonaSwitcher } from '@/components/persona-switcher';
 import { PersonaSearch } from '@/components/persona-search';
 import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterThinker } from '@/components/footer-thinker';
+import { SITE_NAME, AUTHOR, getCanonicalUrl } from '@/lib/config/seo';
 
 export const metadata: Metadata = {
   title: {
     default: "Inside The Head",
     template: "%s | Inside The Head"
   },
-  description: "Thoughts, essays, and intellectual explorations.",
+  description: "Thoughts, essays, and intellectual explorations by Biranchi Kulesika.",
   openGraph: {
-    images: ['/images/og-fallback-thinker.png']
+    siteName: SITE_NAME,
+    description: "Thoughts, essays, and intellectual explorations by Biranchi Kulesika.",
+    images: ['/images/og-fallback-thinker.png'],
   },
   twitter: {
-    card: 'summary_large_image'
-  }
+    card: 'summary_large_image',
+    creator: AUTHOR.twitter,
+  },
+  alternates: {
+    canonical: getCanonicalUrl('/thinker'),
+  },
 };
 
 import { Lora } from 'next/font/google';

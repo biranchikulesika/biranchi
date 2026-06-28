@@ -4,19 +4,26 @@ import { PersonaSwitcher } from '@/components/persona-switcher';
 import { PersonaSearch } from '@/components/persona-search';
 import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { FooterWanderer } from '@/components/footer-wanderer';
+import { SITE_NAME, AUTHOR, getCanonicalUrl } from '@/lib/config/seo';
 
 export const metadata: Metadata = {
   title: {
     default: "Scribble Explorer",
     template: "%s | Scribble Explorer"
   },
-  description: "Journeys, stories, and wanderings.",
+  description: "Journeys, stories, and wanderings by Biranchi Kulesika.",
   openGraph: {
-    images: ['/images/og-fallback-wanderer.png']
+    siteName: SITE_NAME,
+    description: "Journeys, stories, and wanderings by Biranchi Kulesika.",
+    images: ['/images/og-fallback-wanderer.png'],
   },
   twitter: {
-    card: 'summary_large_image'
-  }
+    card: 'summary_large_image',
+    creator: AUTHOR.twitter,
+  },
+  alternates: {
+    canonical: getCanonicalUrl('/wanderer'),
+  },
 };
 
 import { Quicksand } from 'next/font/google';

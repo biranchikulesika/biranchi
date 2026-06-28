@@ -535,7 +535,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
 
     if (typeof parsedContent === 'string') {
       return (
-        <div
+        <article
           className={`leading-[1.8] outline-none max-w-none ${
             p === 'builder' ? 'prose prose-invert prose-neutral text-foreground font-sans' :
             p === 'operator' ? 'prose-emerald text-foreground font-mono' :
@@ -544,7 +544,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
           }`}
         >
           <MarkdownRenderer content={parsedContent} />
-        </div>
+        </article>
       );
     }
 
@@ -1057,13 +1057,13 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
           ) : (
             <>
               <div className="hidden lg:grid grid-cols-10 gap-16 w-full items-start">
-                <div className="col-span-6 flex flex-col w-full">
+                <article className="col-span-6 flex flex-col w-full">
                   {renderArticleHeader()}
                   {renderArticleBody()}
                   {renderContextMarker()}
                   {renderShareSection()}
                   {renderDiscoveryDesktop()}
-                </div>
+                </article>
 
                 <div className="col-span-4 pl-4 sticky top-24 h-[calc(100vh-6rem)] flex flex-col justify-center self-start">
                   <div className="space-y-12 w-full">
@@ -1073,7 +1073,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                 </div>
               </div>
 
-              <div className="flex lg:hidden w-full max-w-162.5 mx-auto flex-col">
+              <article className="flex lg:hidden w-full max-w-162.5 mx-auto flex-col">
                 {renderArticleHeader()}
                 {renderArticleBody()}
                 {renderContextMarker()}
@@ -1088,7 +1088,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                 </div>
 
                 {renderDiscoveryMobile()}
-              </div>
+              </article>
             </>
           )}
 

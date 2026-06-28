@@ -11,6 +11,8 @@ import PHRASES from './phrases.json';
 import QUOTES from './quotes.json';
 import { getPersonaUrl } from '@/lib/utils';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
+import { WebSiteJsonLd, ProfilePageJsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/config/seo';
 
 // Components
 function Typewriter() {
@@ -193,6 +195,8 @@ export default function Home() {
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
       className="w-full bg-background text-foreground flex flex-col font-sans overflow-x-hidden relative selection:bg-primary/20"
     >
+      <WebSiteJsonLd />
+      <ProfilePageJsonLd url={SITE_URL} />
       {/* Global Header */}
       <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">

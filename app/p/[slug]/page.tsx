@@ -3,6 +3,8 @@ import { getPostsMeta, getPostBySlug } from '@/lib/queries';
 import PostPageClient from './PostPageClient';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
+import { AUTHOR, getCanonicalUrl, getPostOgImage } from '@/lib/config/seo';
+import { ArticleJsonLd } from '@/components/seo/JsonLd';
 
 export async function generateStaticParams() {
   const posts = await getPostsMeta();
@@ -31,29 +33,32 @@ export async function generateMetadata({
     };
   }
 
-  const personaMap: Record<string, string> = {
-    builder: '/images/og-fallback-builder.png',
-    operator: '/images/og-fallback-operator.png',
-    thinker: '/images/og-fallback-thinker.png',
-    wanderer: '/images/og-fallback-wanderer.png',
-  };
-
-  const ogImage = post.coverImageUrl || personaMap[post.persona] || '/images/og-main.png';
+  const ogImage = getPostOgImage(post);
+  const canonicalUrl = getCanonicalUrl(`/p/${resolvedParams.slug}`);
 
   return {
     title: post.title,
     description: post.excerpt || post.title,
+    authors: [{ name: AUTHOR.name, url: AUTHOR.url }],
     openGraph: {
       title: post.title,
       description: post.excerpt || post.title,
       type: 'article',
+      url: canonicalUrl,
       images: [ogImage],
+      publishedTime: post.publishedAt || post.createdAt,
+      modifiedTime: post.updatedAt || post.publishedAt || post.createdAt,
+      authors: [AUTHOR.name],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt || post.title,
       images: [ogImage],
+      creator: AUTHOR.twitter,
+    },
+    alternates: {
+      canonical: canonicalUrl,
     },
   };
 }
@@ -93,5 +98,13 @@ export default async function Page({
   const posts = await getPostsMeta();
   const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
   
-  return <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} fallbackPersona={detectedPersona} />;
+  const canonicalUrl = getCanonicalUrl(`/p/${resolvedParams.slug}`);
+
+  return (
+    <>
+      {finalPost && <ArticleJsonLd post={finalPost} url={canonicalUrl} />}
+      <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} fallbackPersona={detectedPersona} />
+    </>
+  );
 }
+
