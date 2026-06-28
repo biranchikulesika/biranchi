@@ -248,8 +248,30 @@ export interface Database {
           createdAt: string;
           updatedAt: string;
         };
-        Insert: Partial<Omit<Database['public']['Tables']['donations']['Row'], 'createdAt' | 'updatedAt'>>;
-        Update: Partial<Database['public']['Tables']['donations']['Insert']>;
+        Insert: {
+          id?: string;
+          amount: number;
+          donorName?: string | null;
+          donorEmail?: string | null;
+          donorPhone?: string | null;
+          razorpayOrderId?: string | null;
+          razorpayPaymentId?: string | null;
+          status?: string;
+          createdAt?: string;
+          updatedAt?: string;
+        };
+        Update: {
+          id?: string;
+          amount?: number;
+          donorName?: string | null;
+          donorEmail?: string | null;
+          donorPhone?: string | null;
+          razorpayOrderId?: string | null;
+          razorpayPaymentId?: string | null;
+          status?: string;
+          createdAt?: string;
+          updatedAt?: string;
+        };
       };
     };
   };
