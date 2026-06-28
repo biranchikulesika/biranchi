@@ -187,7 +187,7 @@ export default function ThinkerPage() {
                     >
                       <div className="flex items-baseline gap-3 mb-2">
                         <span className="text-[10px] font-mono text-[#7E7A73]/70">0{index + 2}</span>
-                        <span className="text-[10px] tracking-[0.1em] text-[#7E7A73] font-mono uppercase opacity-60">
+                        <span className="text-[10px] tracking-widest text-[#7E7A73] font-mono uppercase opacity-60">
                           {essay.category} &bull; {essay.readingTime}
                         </span>
                       </div>
@@ -385,7 +385,7 @@ export default function ThinkerPage() {
                 >
                   <div className="flex items-baseline gap-3 mb-2">
                     <span className="text-[10px] font-mono text-[#7E7A73]">01</span>
-                    <span className="text-[10.5px] tracking-[0.05em] text-[#7E7A73] font-mono uppercase opacity-70">
+                    <span className="text-[10.5px] tracking-wider text-[#7E7A73] font-mono uppercase opacity-70">
                       {essay.category} &bull; {essay.readingTime}
                     </span>
                   </div>
@@ -412,7 +412,7 @@ export default function ThinkerPage() {
                 >
                   <div className="flex items-baseline gap-3 mb-2">
                     <span className="text-[10px] font-mono text-[#7E7A73]">0{index + 2}</span>
-                    <span className="text-[10.5px] tracking-[0.05em] text-[#7E7A73] font-mono uppercase opacity-70">
+                    <span className="text-[10.5px] tracking-wider text-[#7E7A73] font-mono uppercase opacity-70">
                       {essay.category} &bull; {essay.readingTime}
                     </span>
                   </div>

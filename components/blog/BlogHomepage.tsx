@@ -54,7 +54,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
     setTimeout(() => {
       setPosts(dbPosts);
     }, 0);
-  }, [persona]);
+  }, [persona, databasePosts]);
 
   // Sort posts chronologically by Date
   const sortedPosts = [...posts].sort((a, b) => {
@@ -62,7 +62,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
   });
 
   const featured = sortedPosts.find(p => p.featured) || sortedPosts[0];
-  
+
   // Exclude featured from other flows
   const remainingPosts = sortedPosts.filter(p => p.slug !== featured?.slug);
 
@@ -82,7 +82,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
         p.category.toLowerCase().includes(q)
       );
     }
-    
+
     // Main Site consolidated persona tabs or individual Latest/Popular tabs
     if (persona === 'main') {
       if (activeTab === 'all') return true;
@@ -109,8 +109,8 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
   return (
     <div className={`w-full min-h-screen ${theme.containerClass}`}>
       {/* Dynamic Substack Navigation and Masthead Space */}
-      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-12">
-        
+      <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-12">
+
         {/* 1. HERO BANNER */}
         {featured && (
           <section id="substack-hero-section">
@@ -139,8 +139,8 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                   {popularPosts.map((post) => {
                     const postImage = post.heroImage || post.coverImageUrl || post.coverImage;
                     return (
-                      <div 
-                        key={post.slug} 
+                      <div
+                        key={post.slug}
                         className={`flex gap-4 items-start justify-between border-b sm:border-b-0 pb-4 sm:pb-0 sm:border-r last:border-0 pr-0 sm:pr-4 lg:pr-6 ${theme.borderColor}`}
                       >
                         <div className="space-y-2">
@@ -154,12 +154,12 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                           </div>
                         </div>
                         {postImage && (
-                          <div className={`w-14 h-14 relative rounded-md overflow-hidden flex-shrink-0 bg-neutral-900 border shadow-inner ${theme.borderColor}`}>
-                            <Image 
-                              src={postImage} 
-                              fill 
-                              className="object-cover saturate-[85%] filter" 
-                              alt={post.title} 
+                          <div className={`w-14 h-14 relative rounded-md overflow-hidden shrink-0 bg-neutral-900 border shadow-inner ${theme.borderColor}`}>
+                            <Image
+                              src={postImage}
+                              fill
+                              className="object-cover saturate-85 filter"
+                              alt={post.title}
                               referrerPolicy="no-referrer"
                               sizes="60px"
                             />
@@ -219,10 +219,10 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                       <button
                         onClick={() => setActiveTab('latest')}
                         className={`pb-2 transition-colors relative ${
-                          activeTab === 'latest' 
+                          activeTab === 'latest'
                             ? `text-zinc-900 dark:text-white border-b-2 ${
                                 persona === 'builder' ? 'border-primary' : persona === 'operator' ? 'border-primary' : persona === 'thinker' ? 'border-primary' : 'border-primary'
-                              }` 
+                              }`
                             : 'hover:text-zinc-700 dark:hover:text-zinc-300'
                         }`}
                       >
@@ -231,7 +231,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                       <button
                         onClick={() => setActiveTab('top')}
                         className={`pb-2 transition-colors relative ${
-                          activeTab === 'top' 
+                          activeTab === 'top'
                             ? `text-zinc-900 dark:text-white border-b-2 ${
                                 persona === 'builder' ? 'border-primary' : persona === 'operator' ? 'border-primary' : persona === 'thinker' ? 'border-primary' : 'border-primary'
                               }`
@@ -245,7 +245,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                 </div>
 
                 {/* Desktop & Tablet Search Box aligning perfectly on the right side */}
-                <div className="hidden sm:block sm:min-w-[280px] lg:min-w-[320px]">
+                <div className="hidden sm:block sm:min-w-70 lg:min-w-[320px]">
                   <Search value={searchQuery} onChange={setSearchQuery} persona={persona === 'main' ? 'wanderer' : persona} />
                 </div>
 
@@ -254,7 +254,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                   onClick={() => {
                     setMobileSearchOpen(true);
                     if (persona === 'main') setActiveTab('all');
-                    else setActiveTab('latest'); 
+                    else setActiveTab('latest');
                   }}
                   className="sm:hidden p-2 text-zinc-500 hover:text-white transition-colors"
                   aria-label="Search dispatches"
@@ -288,7 +288,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
 
           {/* 4. MAIN BODY COLUMN & SIDEBAR SPLIT */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 pt-4">
-            
+
             {/* PRIMARY PUBLICATIONS FEED STREAM (Cols 1 to 9 on big screens) */}
             <div className="lg:col-span-9 space-y-12">
               {feedPosts.length > 0 ? (
@@ -307,12 +307,12 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                           {/* Card Thumbnail */}
                           {postCardImage && (
                             <Link href={`/p/${post.slug}`} className={`block relative aspect-[1.5] w-full overflow-hidden bg-zinc-950 border rounded-lg ${theme.borderColor}`}>
-                              <Image 
-                                src={postCardImage} 
-                                alt={post.title} 
-                                fill 
+                              <Image
+                                src={postCardImage}
+                                alt={post.title}
+                                fill
                                 referrerPolicy="no-referrer"
-                                className="object-cover saturate-[85%]"
+                                className="object-cover saturate-85"
                                 sizes="(max-w-768px) 100vw, 360px"
                               />
                             </Link>
@@ -377,7 +377,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
             {/* SECONDARY SIDEBAR COLUMN: PROFILE & EMAIL FORM (Cols 10 to 12) */}
             <div className={`lg:col-span-3 space-y-8 select-none lg:border-l lg:pl-10 ${theme.borderColor}`}>
               <div className="sticky top-28 space-y-8">
-                
+
                 {/* Substack Styled Email Signup Box */}
                 <div className="space-y-4 pt-2">
                   <span className={`text-[10px] uppercase font-mono tracking-wider font-bold block ${theme.accentColor}`}>
@@ -386,7 +386,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                   <h5 className={`text-base font-bold leading-tight ${theme.titleFont} ${theme.primaryColor}`}>
                     Receive dispatches directly into your inbox.
                   </h5>
-                  
+
                   <form onSubmit={handleSubscribe} className="space-y-3 pt-1">
                     <input
                       type="email"
@@ -395,8 +395,8 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       className={`w-full border rounded-md px-3 py-2.5 text-xs text-foreground font-sans ${
-                        persona === 'operator' 
-                          ? 'font-mono border-dashed bg-muted placeholder:text-primary/50 focus:border-primary border-border focus:border-solid rounded-none' 
+                        persona === 'operator'
+                          ? 'font-mono border-dashed bg-muted placeholder:text-primary/50 focus:border-primary border-border focus:border-solid rounded-none'
                           : persona === 'builder'
                           ? 'font-mono bg-muted/50 placeholder:text-primary/50 focus:border-primary border-border focus:ring-1 focus:ring-primary/10'
                           : persona === 'thinker'
@@ -421,7 +421,7 @@ export function BlogHomepage({ persona, databasePosts }: BlogHomepageProps) {
                   </form>
 
                   {subscribed && (
-                    <motion.p 
+                    <motion.p
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="text-[11px] font-sans text-emerald-500 font-medium leading-normal"

@@ -56,14 +56,14 @@ export default function BlockList({
             onClick={(e) => { e.stopPropagation(); setSelectedBlockId(block.id); }}
           >
             {/* Drag Handle left of content */}
-            <div className="absolute -left-7 top-[15px] flex flex-col opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute -left-7 top-3.75 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="p-1 text-neutral-700 hover:text-neutral-400 cursor-grab">
                 <GripVertical className="w-3.5 h-3.5" />
               </div>
             </div>
 
             {/* Quick Trash */}
-            <div className="absolute -right-7 top-[12px] flex items-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            <div className="absolute -right-7 top-3 flex items-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <button 
                 type="button"
                 onClick={(e) => { e.stopPropagation(); handleDeleteBlock(block.id); }}
@@ -84,6 +84,7 @@ export default function BlockList({
                   </div>
                 ) : block.src ? (
                   <div className="relative aspect-video rounded overflow-hidden group/img-preview">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={block.src} alt={block.alt} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/img-preview:opacity-100 transition-opacity flex items-center justify-center gap-2">
                       <button onClick={() => handleTriggerFilePicker(idx)} className="bg-white hover:bg-neutral-100 text-black text-xs font-mono px-3 py-1.5 rounded font-bold">Change image</button>
@@ -157,7 +158,7 @@ export default function BlockList({
               </div>
             ) : block.type === 'divider' ? (
               <div className="py-6 flex items-center justify-center">
-                <div className="w-32 h-[1px] bg-neutral-800 rounded" />
+                <div className="w-32 h-px bg-neutral-800 rounded" />
               </div>
             ) : block.type === 'code' ? (
               <div className="font-mono text-sm bg-neutral-950/80 border border-[#222] p-4 rounded-lg">

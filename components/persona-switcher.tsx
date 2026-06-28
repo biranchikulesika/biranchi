@@ -34,7 +34,7 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
       <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
         BIRANCHI
       </Link>
-      
+
       <div className="mx-2 flex items-center justify-center">
         <span className={`w-1.5 h-1.5 rotate-45 ${activePersona?.highlight || 'bg-current'} opacity-90 transition-all duration-500`}></span>
       </div>
@@ -46,7 +46,7 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
         >
           {currentPersona}
         </Link>
-        
+
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.1 }}
@@ -56,7 +56,7 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
         >
           <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
         </motion.button>
-        
+
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -64,7 +64,7 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="absolute top-full left-0 mt-4 bg-background backdrop-blur-xl border border-border rounded-lg p-2 shadow-2xl min-w-[180px] flex flex-col gap-1 overflow-hidden"
+              className="absolute top-full left-0 mt-4 bg-background backdrop-blur-xl border border-border rounded-lg p-2 shadow-2xl min-w-45 flex flex-col gap-1 overflow-hidden"
             >
               {PERSONAS.filter(p => p.name !== currentPersona).map(p => (
                 <Link

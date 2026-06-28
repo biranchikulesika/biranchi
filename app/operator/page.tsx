@@ -64,7 +64,7 @@ export default function OperatorPage() {
       className="w-full min-h-screen font-mono overflow-x-hidden"
     >
       {/* SECTION 1 — HERO / OPERATIONAL ENTRY FRAME (Standalone Slide) */}
-      <section className="w-full min-h-[100svh] flex flex-col justify-center pt-16 md:pt-20 pb-32 md:pb-40 relative">
+      <section className="w-full min-h-svh flex flex-col justify-center pt-16 md:pt-20 pb-32 md:pb-40 relative">
         <div className="max-w-5xl mx-auto px-6 md:px-12 w-full">
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-0 lg:items-start">
             
@@ -101,7 +101,7 @@ export default function OperatorPage() {
 
             {/* DESCRIPTION & LINKS */}
             <div className="lg:col-span-7 flex flex-col items-start space-y-6 lg:space-y-5 order-3 lg:row-start-2 lg:mt-5 pt-2 lg:pt-0">
-              <p className="hidden md:block text-[13px] md:text-sm text-primary/80 leading-relaxed max-w-[280px] sm:max-w-md lg:max-w-lg">
+              <p className="hidden md:block text-[13px] md:text-sm text-primary/80 leading-relaxed max-w-70 sm:max-w-md lg:max-w-lg">
                 Studying how systems behave under pressure, how failures emerge, and how people adapt around them.
               </p>
 
@@ -160,10 +160,10 @@ export default function OperatorPage() {
                         <span className="text-[10px] text-primary/40">&middot;</span>
                         <span className="text-[11px] text-primary/70 font-mono tracking-widest uppercase">{n.date || 'Unknown'}</span>
                       </div>
-                      <h3 className={`${isFirst ? 'text-xl sm:text-[22px]' : 'text-[15px] sm:text-base'} font-bold text-foreground leading-snug group-hover:text-primary transition-colors mb-3 md:max-w-[540px]`}>
+                      <h3 className={`${isFirst ? 'text-xl sm:text-[22px]' : 'text-[15px] sm:text-base'} font-bold text-foreground leading-snug group-hover:text-primary transition-colors mb-3 md:max-w-135`}>
                         {n.title}
                       </h3>
-                      <p className={`${isFirst ? 'text-[15px] sm:text-base' : 'text-sm'} text-primary/80 leading-relaxed font-sans md:max-w-[540px]`}>
+                      <p className={`${isFirst ? 'text-[15px] sm:text-base' : 'text-sm'} text-primary/80 leading-relaxed font-sans md:max-w-135`}>
                         {n.content}
                       </p>
                     </Link>
@@ -172,7 +172,7 @@ export default function OperatorPage() {
                 {notes.length === 0 && <div className="text-[15px] text-primary/70 py-8 italic font-sans font-light">No observations published yet.</div>}
 </div>
 
-              <div className="pt-8 max-w-[600px]">
+              <div className="pt-8 max-w-150">
                  <Link href={getPersonaUrl('operator', '/blogs/archive')} className="text-xs font-mono tracking-wide text-primary/80 hover:text-foreground transition-colors duration-200 cursor-pointer flex items-center gap-1.5 focus:outline-none">
                     View Observation Archive <span className="opacity-50">&rarr;</span>
                  </Link>

@@ -105,7 +105,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   ];
 
   return (
-    <div className="flex h-[100dvh] theme-admin bg-background text-foreground font-sans font-light selection:bg-primary/20">
+    <div className="flex h-dvh theme-admin bg-background text-foreground font-sans font-light selection:bg-primary/20">
       
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
@@ -119,11 +119,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
       <aside 
         className={`fixed md:relative z-50 h-full flex flex-col bg-background border-r border-border transition-all duration-300 ease-in-out
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} 
-          ${isCollapsed ? 'md:w-[72px]' : 'md:w-[260px] lg:w-[280px]'} w-[280px]
+          ${isCollapsed ? 'md:w-18' : 'md:w-65 lg:w-70'} w-70
         `}
       >
         {/* Header */}
-        <div className={`h-16 flex items-center border-b border-border flex-shrink-0 ${isCollapsed ? 'justify-center px-2' : 'justify-end px-5'}`}>
+        <div className={`h-16 flex items-center border-b border-border shrink-0 ${isCollapsed ? 'justify-center px-2' : 'justify-end px-5'}`}>
           {/* Collapse Panel Button on the Right */}
           <button 
             onClick={toggleCollapse}
@@ -163,7 +163,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                       `}
                       title={isCollapsed ? item.label : undefined}
                     >
-                      <div className={`flex-shrink-0 ${isActivePath ? 'text-foreground' : 'text-primary group-hover:text-foreground'}`}>
+                      <div className={`shrink-0 ${isActivePath ? 'text-foreground' : 'text-primary group-hover:text-foreground'}`}>
                         {item.icon}
                       </div>
                       <span className={`whitespace-nowrap text-xs font-normal ${isCollapsed ? 'md:hidden' : 'block'}`}>
@@ -178,7 +178,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                       `}
                       title={isCollapsed ? `${item.label} (Coming Soon)` : undefined}
                     >
-                      <div className="flex-shrink-0 opacity-50">
+                      <div className="shrink-0 opacity-50">
                         {item.icon}
                       </div>
                       <div className={`flex items-center justify-between w-full ${isCollapsed ? 'md:hidden' : 'block'}`}>
@@ -200,7 +200,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
             className={`flex items-center gap-2 px-2.5 py-1.5 w-full rounded transition-all text-primary hover:bg-muted hover:text-foreground border border-transparent ${isCollapsed ? 'justify-center' : ''}`}
             title={isCollapsed ? "Sign Out" : undefined}
           >
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <LogOut className="w-4 h-4" />
             </div>
             {!isCollapsed && <span className="whitespace-nowrap text-xs">Sign Out</span>}
@@ -211,12 +211,12 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Mobile Header */}
-        <header className="h-14 md:hidden flex items-center px-4 border-b border-border bg-background flex-shrink-0 gap-4">
+        <header className="h-14 md:hidden flex items-center px-4 border-b border-border bg-background shrink-0 gap-4">
           <button 
             onClick={() => setMobileOpen(true)}
             className="text-primary hover:text-foreground transition-colors"
           >
-            <Menu className="w-[18px] h-[18px]" />
+            <Menu className="w-4.5 h-4.5" />
           </button>
           <div className="font-medium text-sm">Workspace</div>
         </header>
@@ -229,7 +229,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
       {/* Command Palette */}
       {commandPaletteOpen && (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] sm:pt-[20vh] px-4 backdrop-blur-sm bg-black/40">
+        <div className="fixed inset-0 z-100 flex items-start justify-center pt-[15vh] sm:pt-[20vh] px-4 backdrop-blur-sm bg-black/40">
           <div 
             className="fixed inset-0" 
             onClick={() => setCommandPaletteOpen(false)}
@@ -249,7 +249,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                 ESC
               </div>
             </div>
-            <div className="max-h-[300px] overflow-y-auto p-2 scrollbar-hide space-y-1">
+            <div className="max-h-75 overflow-y-auto p-2 scrollbar-hide space-y-1">
               <div className="px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary font-mono font-semibold">Create</div>
               
               <Link href="/admin/compose?new=true&persona=forge" onClick={() => setCommandPaletteOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-muted group cursor-pointer">

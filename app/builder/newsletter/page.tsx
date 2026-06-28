@@ -69,7 +69,7 @@ export default function ForgeNewsletterPage() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-5 rounded-[4px] border border-neutral-300 dark:border-neutral-900 bg-neutral-200/10 dark:bg-neutral-900/5"
+              className="p-5 rounded-sm border border-neutral-300 dark:border-neutral-900 bg-neutral-200/10 dark:bg-neutral-900/5"
             >
               <div className="flex justify-between items-center text-[10px] dark:text-neutral-500 text-[#8B867C] tracking-wide font-medium mb-2 uppercase">
                 <span>SUBSCRIBED</span>
@@ -106,7 +106,7 @@ export default function ForgeNewsletterPage() {
                   {isSubmitting ? (
                     <div className="w-4 h-4 border-2 border-t-transparent dark:border-neutral-400 border-neutral-700 rounded-full animate-spin" />
                   ) : (
-                    <ArrowRight className="w-4 h-4 stroke-[2]" />
+                    <ArrowRight className="w-4 h-4 stroke-2" />
                   )}
                 </button>
               </div>

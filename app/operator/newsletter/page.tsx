@@ -42,7 +42,7 @@ export default function SignalNewsletterPage() {
       className="w-full font-mono bg-transparent min-h-[70vh] flex flex-col justify-start py-10 md:py-16 relative z-10"
     >
       <div className="max-w-4xl mx-auto px-6 md:px-12 w-full flex-1 flex flex-col justify-center">
-        
+
         {/* HERO SECTION */}
         <section className={`transition-all duration-500 ease-out ${isInputFocused ? 'max-md:scale-[0.98] pb-4' : 'pb-8 md:pb-12'}`}>
           <div className="border-l-2 dark:border-[#1e2722] border-[#D6DED5] pl-4 py-1 mb-4">
@@ -66,10 +66,10 @@ export default function SignalNewsletterPage() {
         {/* EMAIL FORM */}
         <section className="mb-10 w-full max-w-xl">
           {isSubmitted ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-5 rounded-[2px] border dark:border-[#1e2722] border-[#D6DED5] dark:bg-[#111612] bg-[#EDF1EC]"
+              className="p-5 rounded-xs border dark:border-[#1e2722] border-[#D6DED5] dark:bg-[#111612] bg-[#EDF1EC]"
             >
               <div className="flex justify-between items-center text-[10px] text-primary/70 tracking-wide font-medium mb-2 uppercase">
                 <span>SUBSCRIBED</span>
@@ -87,17 +87,17 @@ export default function SignalNewsletterPage() {
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col w-full relative">
               <div className="relative group w-full mb-4">
-                <input 
+                <input
                   type="email"
                   required
                   value={emailValue}
                   onChange={(e) => setEmailValue(e.target.value)}
                   onFocus={() => setIsInputFocused(true)}
                   onBlur={() => setIsInputFocused(false)}
-                  placeholder="Enter your email address" 
+                  placeholder="Enter your email address"
                   className="w-full bg-transparent border-b border-border px-1 py-3 text-foreground focus:outline-none focus:border-primary transition-colors duration-500 font-mono text-sm placeholder:text-primary/50 rounded-none shadow-none"
                 />
-                <button 
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-primary/70 hover:text-foreground transition-colors duration-300"
@@ -106,7 +106,7 @@ export default function SignalNewsletterPage() {
                   {isSubmitting ? (
                     <div className="w-4 h-4 border-2 border-t-transparent border-primary rounded-full animate-spin" />
                   ) : (
-                    <ArrowRight className="w-4 h-4 stroke-[2]" />
+                    <ArrowRight className="w-4 h-4 stroke-2" />
                   )}
                 </button>
               </div>

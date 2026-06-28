@@ -113,7 +113,7 @@ export default function PublishDrawer({
 
             {/* Manual Cover Upload for Display Only (if desired over smart extract) */}
             <div>
-              <label className="block text-[10px] uppercase font-mono tracking-widest font-semibold text-neutral-500 mb-1.5 flex items-center justify-between w-full">
+              <label className="text-[10px] uppercase font-mono tracking-widest font-semibold text-neutral-500 mb-1.5 flex items-center justify-between w-full">
                 <span>Display Cover Graphic</span>
                 <div className="flex items-center gap-1.5 select-none text-[9px] lowercase bg-[#0d0d0d] px-1.5 py-0.5 rounded border border-[#1c1c1c]">
                   <input 
@@ -130,6 +130,7 @@ export default function PublishDrawer({
               {!formData.autoCoverImage && (
                 formData.coverImageUrl ? (
                   <div className="relative rounded overflow-hidden group">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={formData.coverImageUrl} 
                       alt="Cover Preview" 

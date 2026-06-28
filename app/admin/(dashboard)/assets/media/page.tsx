@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  getRecentUploads, uploadImage, deleteImage, StorageBucket 
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  getRecentUploads, uploadImage, deleteImage, StorageBucket
 } from '@/lib/supabase/storage';
-import { 
-  UploadCloud, Trash2, Copy, FileIcon, ImageIcon, CheckCircle, 
+import {
+  UploadCloud, Trash2, Copy, FileIcon, ImageIcon, CheckCircle,
   ExternalLink, Layers, RefreshCw, ZoomIn
 } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export default function MediaAssetsPage() {
   const [uploadError, setUploadError] = useState('');
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
-  const loadMedia = async () => {
+  const loadMedia = useCallback(async () => {
     setLoading(true);
     setUploadError('');
     try {
@@ -28,11 +28,11 @@ export default function MediaAssetsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeBucket]);
 
   useEffect(() => {
     loadMedia();
-  }, [activeBucket]);
+  }, [activeBucket, loadMedia]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -69,8 +69,8 @@ export default function MediaAssetsPage() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12 text-neutral-300">
-      
+    <div className="w-full max-w-350 mx-auto p-5 md:p-8 lg:p-12 text-neutral-300">
+
       {/* Title ribbon */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
@@ -86,12 +86,12 @@ export default function MediaAssetsPage() {
           <label className={`bg-neutral-100 hover:bg-white text-black px-4 py-2.5 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer w-fit ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
             <UploadCloud className="w-4 h-4" />
             {isUploading ? 'Uploading...' : 'Upload File'}
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleFileUpload} 
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
               disabled={isUploading}
-              className="absolute inset-0 opacity-0 cursor-pointer hidden" 
+              className="absolute inset-0 opacity-0 cursor-pointer hidden"
             />
           </label>
         </div>
@@ -128,16 +128,17 @@ export default function MediaAssetsPage() {
           {files.map((file, idx) => {
             const isCopied = copiedPath === file.publicUrl;
             return (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="bg-[#111] border border-[#1a1a1a] hover:border-neutral-700 rounded-lg p-3 flex flex-col justify-between group transition-all relative aspect-square overflow-hidden"
               >
                 {/* Visual Graphics Background Preview */}
                 <div className="w-full h-[65%] rounded overflow-hidden bg-[#0d0d0d] border border-[#161616] relative flex items-center justify-center">
-                  <img 
-                    src={file.publicUrl} 
-                    alt={file.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={file.publicUrl}
+                    alt={file.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     onError={(e) => {
                       // Fallback if image fails or format is file type
                       (e.target as HTMLImageElement).style.display = 'none';
@@ -158,7 +159,7 @@ export default function MediaAssetsPage() {
 
                 {/* Floating controls */}
                 <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
-                  <button 
+                  <button
                     onClick={() => handleCopyUrl(file.publicUrl)}
                     className="p-2 bg-[#ff7700] hover:bg-[#ff7700]/95 text-white rounded-md"
                     title="Copy URL parameter"
@@ -166,9 +167,9 @@ export default function MediaAssetsPage() {
                     {isCopied ? <CheckCircle className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
 
-                  <a 
-                    href={file.publicUrl} 
-                    target="_blank" 
+                  <a
+                    href={file.publicUrl}
+                    target="_blank"
                     rel="noreferrer"
                     className="p-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-md"
                     title="View original"
@@ -176,7 +177,7 @@ export default function MediaAssetsPage() {
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
 
-                  <button 
+                  <button
                     onClick={() => handleDeleteFile(file.path)}
                     className="p-2 bg-red-950/80 hover:bg-red-900/90 text-red-400 border border-red-900/25 rounded-md"
                     title="delete file"

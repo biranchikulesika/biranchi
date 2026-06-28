@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown, 
-  Image as ImageIcon, LayoutTemplate, GripVertical, AlignLeft, AlignCenter, 
-  AlignRight, Maximize2, Check, RefreshCw, Loader2, Sparkles, FileText, 
+import {
+  Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Star, ArrowUp, ArrowDown,
+  Image as ImageIcon, LayoutTemplate, GripVertical, AlignLeft, AlignCenter,
+  AlignRight, Maximize2, Check, RefreshCw, Loader2, Sparkles, FileText,
   Trash, ArrowUpCircle, ArrowDownCircle, Settings
 } from 'lucide-react';
 import { MarkdownRenderer } from '@/components/mdx/MarkdownRenderer';
@@ -32,11 +32,11 @@ export default function PostPage() {
   const [dbError, setDbError] = useState<string | null>(null);
   const [showValidation, setShowValidation] = useState(false);
   const [formData, setFormData] = useState<any>({"persona":"","title":"","subtitle":"","slug":"","excerpt":"","coverImageUrl":"","coverImageAlt":"","coverImageCaption":"","coverImageLocation":"","coverImageCredit":"","autoCoverImage":true,"content":"","tags":[],"publishedAt":"","featured":false,"hidden":false,"draft":false});
-  
+
   const contentTextareaRef = React.useRef<HTMLTextAreaElement>(null);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageModalData, setImageModalData] = useState({ src: '', alt: '', caption: '', location: '', credit: '', latitude: '', longitude: '' });
-  
+
   // Custom navigation layout tabs
   const [activeTab, setActiveTab] = useState<'composer' | 'preview'>('composer');
   const previewMode = activeTab === 'preview';
@@ -56,7 +56,7 @@ export default function PostPage() {
     const regex = /(<ImageBlock[\s\S]*?\/>)/g;
     const parts = text.split(regex);
     const result: any[] = [];
-    
+
     parts.forEach((part, index) => {
       if (!part) return;
       const trimmed = part.trim();
@@ -67,12 +67,12 @@ export default function PostPage() {
         const locationMatch = part.match(/location="([^"]*)"/);
         const creditMatch = part.match(/credit="([^"]*)"/);
         const alignMatch = part.match(/align="([^"]*)"/) || part.match(/alignment="([^"]*)"/);
-        
+
         const srcVal = srcMatch ? srcMatch[1] : '';
         const isUploading = srcVal === 'uploading';
         const uploadIdMatch = part.match(/uploadId="([^"]*)"/);
         const progressMatch = part.match(/progress="([^"]*)"/);
-        
+
         result.push({
           id: uploadIdMatch ? uploadIdMatch[1] : `img_${index}_${Math.random().toString(36).substring(2, 6)}`,
           type: 'image',
@@ -94,7 +94,7 @@ export default function PostPage() {
           const subTrim = sub.trim();
           if (!subTrim) return;
           const id = `blk_${index}_${subIdx}_${Math.random().toString(36).substring(2, 6)}`;
-          
+
           if (subTrim.startsWith('#')) {
             const hMatch = subTrim.match(/^(#{1,6})\s+([\s\S]*)$/);
             const level = hMatch ? hMatch[1].length : 2;
@@ -216,13 +216,13 @@ export default function PostPage() {
       const fullText = match[0];
       const index = match.index;
       const propsStr = match[1];
-      
+
       const srcMatch = propsStr.match(/src="([^"]+)"/);
       const altMatch = propsStr.match(/alt="([^"]+)"/);
       const captionMatch = propsStr.match(/caption="([^"]+)"/);
       const locationMatch = propsStr.match(/location="([^"]+)"/);
       const alignMatch = propsStr.match(/align="([^"]+)"/);
-      
+
       const src = srcMatch ? srcMatch[1] : '';
       const isUploading = src === 'uploading';
       const uploadIdMatch = propsStr.match(/uploadId="([^"]+)"/);
@@ -282,7 +282,7 @@ export default function PostPage() {
     const currentContent = formData.content || '';
     const blocks = parseImageBlocks(currentContent);
     if (idx < 0 || idx >= blocks.length) return;
-    
+
     const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
     if (targetIdx < 0 || targetIdx >= blocks.length) return;
 
@@ -308,10 +308,10 @@ export default function PostPage() {
   const handleContentFilesUpload = async (files: FileList | File[], index?: number) => {
     const file = files[0];
     if (!file || !file.type.startsWith('image/')) return;
-    
+
     // Create random target block ID
     const uploadId = 'upload_' + Math.random().toString(36).substr(2, 9);
-    
+
     const newBlock = {
       id: uploadId,
       type: 'image',
@@ -341,8 +341,8 @@ export default function PostPage() {
         currentProgress = 94;
         clearInterval(progressInterval);
       }
-      
-      setComposerBlocks(prev => 
+
+      setComposerBlocks(prev =>
         prev.map(b => (b.id === uploadId ? { ...b, progress: currentProgress } : b))
       );
     }, 250);
@@ -350,7 +350,7 @@ export default function PostPage() {
     try {
       const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
       clearInterval(progressInterval);
-      
+
       setComposerBlocks(prev => {
         const next = prev.map(b => {
           if (b.id === uploadId) {
@@ -369,7 +369,7 @@ export default function PostPage() {
     } catch (err: any) {
       clearInterval(progressInterval);
       setUploadError(err.message || String(err));
-      
+
       setComposerBlocks(prev => {
         const next = prev.map(b => {
           if (b.id === uploadId) {
@@ -443,7 +443,7 @@ export default function PostPage() {
     if (imageModalData.latitude) text += '\\n  latitude="' + imageModalData.latitude + '"';
     if (imageModalData.longitude) text += '\\n  longitude="' + imageModalData.longitude + '"';
     text += '\\n/>\\n';
-    
+
     if (contentTextareaRef.current) {
       const startPos = contentTextareaRef.current.selectionStart || 0;
       const endPos = contentTextareaRef.current.selectionEnd || 0;
@@ -563,7 +563,7 @@ export default function PostPage() {
         const caption = propsStr.match(/caption="([^"]+)"/);
         const location = propsStr.match(/location="([^"]+)"/);
         const credit = propsStr.match(/credit="([^"]+)"/);
-        
+
         if (src && !payload.coverImageUrl) payload.coverImageUrl = src[1];
         if (alt && !payload.coverImageAlt) payload.coverImageAlt = alt[1];
         if (caption && !payload.coverImageCaption) payload.coverImageCaption = caption[1];
@@ -576,26 +576,26 @@ export default function PostPage() {
 
   useEffect(() => {
     if (!isEditing) return;
-    
+
     // Check if form changed
     const currentDataStr = JSON.stringify(formData);
     const lastSavedDataStr = JSON.stringify(lastSavedData.current);
-    
+
     if (currentDataStr === lastSavedDataStr || !lastSavedData.current) return;
-    
+
     setSaveState('unsaved');
     setDbError(null);
-    
+
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    
+
     autoSaveTimer.current = setTimeout(async () => {
-      // Don't auto-save if completely empty to avoid junk records, 
+      // Don't auto-save if completely empty to avoid junk records,
       // but do if there's at least a title or some content
       if (!formData.title?.trim() && !formData.content?.trim()) return;
 
       setSaveState('saving');
       try {
-        let payload = extractCoverImage({ ...formData, draft: true }); 
+        let payload = extractCoverImage({ ...formData, draft: true });
 
         if (!payload.slug && payload.title) {
             payload.slug = payload.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
@@ -701,7 +701,7 @@ export default function PostPage() {
   const handleSaveDraftManual = async () => {
     setDbError(null);
     let payload = extractCoverImage({ ...formData, draft: true });
-    
+
     if (!payload.slug && payload.title) {
         payload.slug = payload.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
@@ -766,13 +766,13 @@ export default function PostPage() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12">
+    <div className="w-full max-w-350 mx-auto p-5 md:p-8 lg:p-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
           <h1 className="text-3xl font-medium tracking-tight text-neutral-100 mb-2">Posts</h1>
           <p className="text-neutral-500 text-sm">Manage publications and articles for the site.</p>
         </div>
-        <button 
+        <button
           onClick={handleCreateNew}
           className="bg-neutral-100 text-black px-4 py-2.5 rounded-md text-sm font-medium hover:bg-white transition-colors flex items-center justify-center gap-2 w-fit"
         >
@@ -783,7 +783,7 @@ export default function PostPage() {
 
       <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className="w-full text-left border-collapse min-w-200">
             <thead>
               <tr className="border-b border-[#1a1a1a] bg-[#0A0A0A]">
                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-neutral-500 font-semibold font-mono w-[80%]">Details</th>
@@ -794,15 +794,15 @@ export default function PostPage() {
               {items.map((item, idx) => (
                 <tr key={item.id || idx} className="hover:bg-[#161616] group transition-colors">
                   <td className="px-6 py-4">
-                    
+
                     <div className="flex flex-col gap-1.5">
                       <p className="font-medium text-neutral-200 text-sm pr-4 line-clamp-1">{String(item['title'] || item['persona'] || 'Unnamed Item')}</p>
                       <div className="flex flex-wrap gap-1">
-                        {(item.hidden === true) && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-[#ff7700]/10 text-[#ff7700]">Hidden</span>}
-                        {(item.hidden === false) && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-emerald-500/10 text-emerald-500">Visible</span>}
-                        {item.featured && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-amber-400/10 text-amber-400">Featured</span>}
-                        {item.status === 'draft' && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-neutral-500/10 text-neutral-400">Draft</span>}
-                        {item.status === 'published' && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-blue-500/10 text-blue-400">Published</span>}
+                        {(item.hidden === true) && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-[#ff7700]/10 text-[#ff7700]">Hidden</span>}
+                        {(item.hidden === false) && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-emerald-500/10 text-emerald-500">Visible</span>}
+                        {item.featured && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-amber-400/10 text-amber-400">Featured</span>}
+                        {item.status === 'draft' && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-neutral-500/10 text-neutral-400">Draft</span>}
+                        {item.status === 'published' && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-blue-500/10 text-blue-400">Published</span>}
                       </div>
                     </div>
 
@@ -833,7 +833,7 @@ export default function PostPage() {
           </table>
         </div>
       </div>
-      
+
       {isEditing && (
         <div className="mt-12 border-t border-[#1a1a1a] pt-12">
           {showValidation && Object.keys(errors).length > 0 && isEditing && (
@@ -859,7 +859,7 @@ export default function PostPage() {
               )}
             </h2>
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={() => setIsEditing(false)}
                 className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-[#111111] text-neutral-300 hover:bg-[#1a1a1a] border border-[#222]"
               >
@@ -867,13 +867,13 @@ export default function PostPage() {
               </button>
               <div className="flex flex-col items-end gap-1">
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={handleSaveDraftManual}
                     className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-[#222] text-white hover:bg-[#333] cursor-pointer"
                   >
                     Save Draft
                   </button>
-                  <button 
+                  <button
                     onClick={handlePublish}
                     className="px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 bg-[#FF8E53] text-black hover:bg-[#FF8E53]/90 cursor-pointer"
                   >
@@ -887,31 +887,31 @@ export default function PostPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#111111] p-6 rounded-lg border border-[#1a1a1a]">
-            
+
               <div>
                 <FormLabel label="Persona" required />
-                <input 
-                  type="text" 
-                  value={formData.persona || ''} 
-                  onChange={(e) => setFormData({...formData, persona: e.target.value})} 
+                <input
+                  type="text"
+                  value={formData.persona || ''}
+                  onChange={(e) => setFormData({...formData, persona: e.target.value})}
                   placeholder="e.g. wanderer, builder, operator"
                   className={`w-full bg-[#161616] border rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 ${
                     showValidation && !formData.persona?.trim() ? 'border-rose-500/60 focus:border-rose-500' : 'border-[#222]'
-                  }`} 
+                  }`}
                 />
                 <InlineError message={showValidation && !formData.persona?.trim() ? 'Persona context is required.' : undefined} />
               </div>
               <div>
                 <FormLabel label="Title" required />
-                <input 
-                  type="text" 
-                  value={formData.title || ''} 
-                  onChange={(e) => setFormData({...formData, title: e.target.value})} 
+                <input
+                  type="text"
+                  value={formData.title || ''}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
                   className={`w-full bg-[#161616] border rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 ${
                     showValidation && !formData.title?.trim() ? 'border-rose-500/60 focus:border-rose-500' : 'border-[#222]'
-                  }`} 
+                  }`}
                 />
                 <InlineError message={showValidation && !formData.title?.trim() ? 'Post Title is required.' : undefined} />
               </div>
@@ -921,14 +921,14 @@ export default function PostPage() {
               </div>
               <div>
                 <FormLabel label="Slug" required />
-                <input 
-                  type="text" 
-                  value={formData.slug || ''} 
-                  onChange={(e) => setFormData({...formData, slug: e.target.value})} 
+                <input
+                  type="text"
+                  value={formData.slug || ''}
+                  onChange={(e) => setFormData({...formData, slug: e.target.value})}
                   placeholder="e.g. my-first-entry"
                   className={`w-full bg-[#161616] border rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 ${
                     showValidation && !formData.slug?.trim() ? 'border-rose-500/60 focus:border-rose-500' : 'border-[#222]'
-                  }`} 
+                  }`}
                 />
                 <InlineError message={showValidation && !formData.slug?.trim() ? 'Post Slug is required.' : undefined} />
               </div>
@@ -973,8 +973,8 @@ export default function PostPage() {
   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-5 pt-4 border-t border-[#1d1d1d]">
     <FormLabel label="Post Content" required className="mb-0 text-neutral-300 font-medium" />
     <div className="flex items-center bg-[#111111] p-1 rounded-lg border border-[#222] self-stretch sm:self-auto gap-0.5">
-      <button 
-        type="button" 
+      <button
+        type="button"
         onClick={() => setActiveTab('composer')}
         className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
           activeTab === 'composer' ? 'bg-[#FF8E53]/10 text-[#FF8E53] border border-[#A66039]/35' : 'text-neutral-400 hover:text-white'
@@ -983,8 +983,8 @@ export default function PostPage() {
         <Sparkles className="w-3.5 h-3.5" />
         Editor
       </button>
-      <button 
-        type="button" 
+      <button
+        type="button"
         onClick={() => setActiveTab('preview')}
         className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
           activeTab === 'preview' ? 'bg-[#1e1e1e] text-white border border-[#333]' : 'text-neutral-400 hover:text-white'
@@ -999,7 +999,7 @@ export default function PostPage() {
   <div className="grid grid-cols-1 gap-6">
     {/* Visual composer body */}
     {activeTab === 'composer' && (
-      <div 
+      <div
         onDragOver={(e) => {
           e.preventDefault();
         }}
@@ -1009,16 +1009,16 @@ export default function PostPage() {
             await handleContentFilesUpload(e.dataTransfer.files, composerBlocks.length - 1);
           }
         }}
-        className="w-full min-h-[600px] bg-[#0c0c0c] border border-[#222] rounded-lg p-6 sm:p-8 space-y-6 overflow-y-auto"
+        className="w-full min-h-150[#0c0c0c] border border-[#222] rounded-lg p-6 sm:p-8 space-y-6 overflow-y-auto"
       >
         <div className="flex items-center justify-between pb-4 border-b border-[#181818] mb-4">
           <div>
             <h4 className="text-xs uppercase tracking-wider font-mono text-[#FF8E53] font-bold">Post Editor</h4>
             <p className="text-[10px] text-neutral-500 mt-1">Structure your story with paragraphs, headings, blockquotes, lists, and drag-and-drop media.</p>
           </div>
-          <button 
-            type="button" 
-            onClick={handleDirectImageUploadClick} 
+          <button
+            type="button"
+            onClick={handleDirectImageUploadClick}
             className="text-[11px] bg-[#FF8E53]/10 hover:bg-[#FF8E53]/20 text-[#FF8E53] px-3 py-2 rounded border border-[#A66039]/30 flex items-center gap-1.5 transition-all cursor-pointer font-medium"
           >
             <ImageIcon className="w-3.5 h-3.5" /> Upload Image
@@ -1026,7 +1026,7 @@ export default function PostPage() {
         </div>
 
         {composerBlocks.length === 0 && (
-          <div className="h-[300px] border border-dashed border-[#222] rounded-lg flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
+          <div className="h-75er border-dashed border-[#222] rounded-lg flex flex-col items-center justify-center text-center p-6 bg-[#0a0a0a]">
             <Sparkles className="w-8 h-8 text-neutral-700 animate-pulse mb-3" />
             <h5 className="text-xs font-semibold text-neutral-400">Post body is empty</h5>
             <p className="text-[11px] text-neutral-500 mt-1 max-w-xs">Click one of the buttons below to begin formatting your article.</p>
@@ -1040,14 +1040,14 @@ export default function PostPage() {
             // Heading block
             if (block.type === 'heading') {
               return (
-                <div 
+                <div
                   key={block.id}
                   className="relative group/block border border-transparent hover:border-neutral-800 rounded-lg p-4 pl-10 transition-colors bg-[#111] bg-opacity-40"
                 >
                   <div className="absolute left-3 top-4 opacity-0 group-hover/block:opacity-100 transition-opacity flex flex-col gap-1">
                     <GripVertical className="w-4 h-4 text-neutral-500" />
                   </div>
-                  
+
                   <div className="flex items-center justify-between gap-3 mb-2 opacity-0 group-hover/block:opacity-100 transition-opacity">
                     <div className="flex items-center gap-2">
                       <span className="text-[9px] font-mono uppercase font-bold text-[#FF8E53] bg-[#FF8E53]/10 px-1.5 py-0.5 rounded">
@@ -1130,14 +1130,14 @@ export default function PostPage() {
             // Quote block
             if (block.type === 'quote') {
               return (
-                <div 
+                <div
                   key={block.id}
                   className="relative group/block border border-transparent hover:border-neutral-800 rounded-lg p-4 pl-10 transition-colors bg-[#111] bg-opacity-40"
                 >
                   <div className="absolute left-3 top-4 opacity-0 group-hover/block:opacity-100 transition-opacity flex flex-col gap-1">
                     <GripVertical className="w-4 h-4 text-neutral-500" />
                   </div>
-                  
+
                   <div className="flex items-center justify-between gap-3 mb-2 opacity-0 group-hover/block:opacity-100 transition-opacity">
                     <span className="text-[9px] font-mono uppercase font-bold text-[#FF8E53] bg-[#FF8E53]/10 px-1.5 py-0.5 rounded">
                       Blockquote
@@ -1200,14 +1200,14 @@ export default function PostPage() {
             // List block
             if (block.type === 'list') {
               return (
-                <div 
+                <div
                   key={block.id}
                   className="relative group/block border border-transparent hover:border-neutral-800 rounded-lg p-4 pl-10 transition-colors bg-[#111] bg-opacity-40"
                 >
                   <div className="absolute left-3 top-4 opacity-0 group-hover/block:opacity-100 transition-opacity flex flex-col gap-1">
                     <GripVertical className="w-4 h-4 text-neutral-500" />
                   </div>
-                  
+
                   <div className="flex items-center justify-between gap-3 mb-2 opacity-0 group-hover/block:opacity-100 transition-opacity">
                     <span className="text-[9px] font-mono uppercase font-bold text-[#FF8E53] bg-[#FF8E53]/10 px-1.5 py-0.5 rounded">
                       List Block
@@ -1272,10 +1272,10 @@ export default function PostPage() {
                   key={block.id}
                   onClick={() => setSelectedBlockId(isSelected ? null : block.id)}
                   className={`group/img relative border rounded-lg p-4 transition-all duration-200 select-none ${
-                    isSelected 
-                      ? 'border-[#FF8E53] bg-[#1a1411]' 
-                      : dragOverBlockIdx === idx 
-                        ? 'border-[#FF8E53] bg-[#FF8E53]/5 scale-[1.01]' 
+                    isSelected
+                      ? 'border-[#FF8E53] bg-[#1a1411]'
+                      : dragOverBlockIdx === idx
+                        ? 'border-[#FF8E53] bg-[#FF8E53]/5 scale-[1.01]'
                         : 'border-neutral-800 bg-[#0e0e0e] hover:border-neutral-700'
                   } ${
                     block.align === 'left' ? 'max-w-md mr-auto' :
@@ -1322,7 +1322,7 @@ export default function PostPage() {
                   </div>
 
                   {isSelected && (
-                    <div 
+                    <div
                       className="absolute -top-5 left-1/2 -track-x-1/2 -translate-x-1/2 flex items-center gap-1 p-1 bg-[#161616] border border-[#2d2d2d] rounded-full shadow-2xl z-30 transition-all duration-150"
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -1375,46 +1375,49 @@ export default function PostPage() {
                       <div className="flex flex-col items-center justify-center p-4 w-full h-full bg-[#0d0d0d]">
                         <Loader2 className="w-6 h-6 text-[#FF8E53] animate-spin mb-3" />
                         <div className="w-40 bg-[#161616] h-1 rounded-full overflow-hidden mb-2">
-                          <div 
-                            className="bg-gradient-to-r from-[#A66039] to-[#FF8E53] h-full transition-all duration-300"
+                          <div
+                            className="bg-linear-to-r from-[#A66039] to-[#FF8E53] h-full transition-all duration-300"
                             style={{ width: `${block.progress}%` }}
                           />
                         </div>
                         <span className="text-[10px] font-mono text-neutral-400 animate-pulse">Uploading... {block.progress}%</span>
                       </div>
                     ) : (
-                      <img 
-                        src={block.src || 'https://picsum.photos/seed/placeholder/800/450'} 
-                        alt={block.alt} 
-                        className="w-full h-full object-cover pointer-events-none"
-                        referrerPolicy="no-referrer"
-                      />
+                      <React.Fragment>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={block.src || 'https://picsum.photos/seed/placeholder/800/450'}
+                          alt={block.alt}
+                          className="w-full h-full object-cover pointer-events-none"
+                          referrerPolicy="no-referrer"
+                        />
+                      </React.Fragment>
                     )}
                   </div>
 
                   {!block.isUploading && (
                     <div className="mt-3 space-y-2">
-                      <input 
-                        type="text" 
-                        placeholder="Add caption..." 
-                        value={block.caption || ''} 
+                      <input
+                        type="text"
+                        placeholder="Add caption..."
+                        value={block.caption || ''}
                         onChange={(e) => handleUpdateBlockCaption(block.id, e.target.value)}
                         onClick={(e) => e.stopPropagation()}
                         className="w-full text-center bg-transparent border-none font-serif text-xs italic text-neutral-300 focus:outline-none focus:text-white py-0.5"
                       />
                       <div className="flex justify-center gap-3">
-                        <input 
-                          type="text" 
-                          placeholder="📍 Add Location..." 
-                          value={block.location || ''} 
+                        <input
+                          type="text"
+                          placeholder="📍 Add Location..."
+                          value={block.location || ''}
                           onChange={(e) => handleUpdateBlockLocation(block.id, e.target.value)}
                           onClick={(e) => e.stopPropagation()}
                           className="bg-transparent border-none text-[10px] text-center text-neutral-500 focus:text-neutral-400 focus:outline-none w-24"
                         />
-                        <input 
-                          type="text" 
-                          placeholder="📷 Add Credit..." 
-                          value={block.credit || ''} 
+                        <input
+                          type="text"
+                          placeholder="📷 Add Credit..."
+                          value={block.credit || ''}
                           onChange={(e) => handleUpdateBlockCredit(block.id, e.target.value)}
                           onClick={(e) => e.stopPropagation()}
                           className="bg-transparent border-none text-[10px] text-center text-neutral-500 focus:text-neutral-400 focus:outline-none w-24"
@@ -1428,7 +1431,7 @@ export default function PostPage() {
 
             // Paragraph block default
             return (
-              <div 
+              <div
                 key={block.id}
                 className="relative group/block border border-transparent hover:border-neutral-800 rounded-lg p-4 pl-10 transition-colors bg-[#111] bg-opacity-40"
               >
@@ -1535,7 +1538,7 @@ export default function PostPage() {
 
     {/* Live preview */}
     {activeTab === 'preview' && (
-      <div className="w-full min-h-[550px] bg-[#0a0a0a] border border-[#222] rounded-lg p-6 sm:p-8 overflow-y-auto">
+      <div className="w-full min-h-137.5 bg-[#0a0a0a] border border-[#222] rounded-lg p-6 sm:p-8 overflow-y-auto">
         <MarkdownRenderer content={compileFromBlocks(composerBlocks)} />
       </div>
     )}

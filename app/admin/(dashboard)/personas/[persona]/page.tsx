@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   Zap, Component, Terminal, ShieldAlert, Sparkles, Brain, BookOpen, Map, Mail, Settings,
-  Activity, ArrowUp, ArrowDown, Plus, Trash2, Edit, Save, X, RefreshCw, Layers, HelpCircle, 
+  Activity, ArrowUp, ArrowDown, Plus, Trash2, Edit, Save, X, RefreshCw, Layers, HelpCircle,
   BookOpen as BookOpenIcon, ExternalLink, Play, ArrowLeft, Star, Eye, EyeOff
 } from 'lucide-react';
 import { getPosts, deletePost } from '@/app/admin/actions/posts.actions';
@@ -20,7 +20,7 @@ import { getJournalMoments, createJournalMoment, updateJournalMoment, deleteJour
 
 export default function PersonaDashboardPage({ params }: { params: any }) {
   const router = useRouter();
-  
+
   // Safe param extraction for all versions of Next.js
   const unwrappedParams = typeof params?.then === 'function' ? React.use(params) : params;
   const personaSlug = unwrappedParams?.persona || 'forge';
@@ -55,7 +55,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
   const personaDisplayName = isForge ? 'Forge' : isSignal ? 'Signal' : isHead ? 'Inside the Head' : 'Scribble';
   const personaIdentitySystem = isForge ? 'BUILDER' : isSignal ? 'OPERATOR' : isHead ? 'SYNAPSE' : 'WANDERERText';
 
-  const loadPersonaData = async () => {
+  const loadPersonaData = useCallback(async () => {
     setLoading(true);
     try {
       // 1. Load active Posts and filter by targeted persona
@@ -95,12 +95,12 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dbPersonaName, isForge, isSignal, isHead, isScribble]);
 
   useEffect(() => {
     loadPersonaData();
     setActiveTab('overview');
-  }, [personaSlug]);
+  }, [personaSlug, loadPersonaData]);
 
   // Secondary Entity Actions
   const handleOpenNewEntityForm = (type: string) => {
@@ -171,7 +171,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
     }
   };
 
-  // Reorder Actions 
+  // Reorder Actions
   const handleReorder = async (type: string, id: string, direction: 'up' | 'down') => {
     try {
       if (type === 'system') {
@@ -197,9 +197,9 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
   };
 
   // Persona visuals config mapping
-  const colorScheme = isForge 
-    ? { primary: '#ff7700', text: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20', hover: 'hover:bg-orange-500/5' } 
-    : isSignal 
+  const colorScheme = isForge
+    ? { primary: '#ff7700', text: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20', hover: 'hover:bg-orange-500/5' }
+    : isSignal
     ? { primary: '#10b981', text: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', hover: 'hover:bg-emerald-500/5' }
     : isHead
     ? { primary: '#a855f7', text: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/25', hover: 'hover:bg-purple-500/5' }
@@ -218,8 +218,8 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
   const drafts = personaPosts.filter(p => p.status === 'draft' || p.status === 'draft');
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12 text-neutral-300">
-      
+    <div className="w-full max-w-350 mx-auto p-5 md:p-8 lg:p-12 text-neutral-300">
+
       {/* Persona Dashboard Header (Aesthetics & Clean Negative space) */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
         <div className="space-y-4">
@@ -239,7 +239,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
         </div>
 
         {/* Quick Writing Link targeting selector */}
-        <Link 
+        <Link
           href={`/admin/compose?persona=${dbPersonaName}`}
           className="bg-neutral-100 text-black px-4 py-2.5 rounded-md text-sm font-medium hover:bg-white transition-colors flex items-center justify-center gap-2 select-none"
         >
@@ -251,85 +251,85 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
       {/* Primary Tab Navigation */}
       <div className="border-b border-[#222] mb-8">
         <nav className="flex gap-6">
-          <button 
+          <button
             onClick={() => setActiveTab('overview')}
             className={`pb-4 text-xs font-mono uppercase tracking-wider transition-colors relative font-semibold ${activeTab === 'overview' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
           >
             Overview
-            {activeTab === 'overview' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+            {activeTab === 'overview' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
           </button>
-          
-          <button 
+
+          <button
             onClick={() => setActiveTab('articles')}
             className={`pb-4 text-xs font-mono uppercase tracking-wider transition-colors relative font-semibold ${activeTab === 'articles' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
           >
             Articles & Drafts ({personaPosts.length})
-            {activeTab === 'articles' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+            {activeTab === 'articles' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
           </button>
 
           {/* Dynamic tabs based on Persona profile */}
           {isForge && (
             <>
-              <button 
+              <button
                 onClick={() => setActiveTab('build-logs')}
                 className={`pb-4 text-xs font-mono uppercase tracking-wider relative transition-colors font-semibold ${activeTab === 'build-logs' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
               >
                 Build Logs ({buildLogs.length})
-                {activeTab === 'build-logs' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+                {activeTab === 'build-logs' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab('systems')}
                 className={`pb-4 text-xs font-mono uppercase tracking-wider relative transition-colors font-semibold ${activeTab === 'systems' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
               >
                 Active Systems ({activeSystems.length})
-                {activeTab === 'systems' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+                {activeTab === 'systems' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab('statuses')}
                 className={`pb-4 text-xs font-mono uppercase tracking-wider relative transition-colors font-semibold ${activeTab === 'statuses' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
               >
                 Status Updates ({builderStatus.length})
-                {activeTab === 'statuses' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+                {activeTab === 'statuses' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
               </button>
             </>
           )}
 
           {isSignal && (
-            <button 
+            <button
               onClick={() => setActiveTab('focus')}
               className={`pb-4 text-xs font-mono uppercase tracking-wider relative transition-colors font-semibold ${activeTab === 'focus' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
             >
               Operator Focus ({operatorFocus.length})
-              {activeTab === 'focus' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+              {activeTab === 'focus' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
             </button>
           )}
 
           {isHead && (
             <>
-              <button 
+              <button
                 onClick={() => setActiveTab('questions')}
                 className={`pb-4 text-xs font-mono uppercase tracking-wider relative transition-colors font-semibold ${activeTab === 'questions' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
               >
                 Questions ({questions.length})
-                {activeTab === 'questions' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+                {activeTab === 'questions' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab('thoughts')}
                 className={`pb-4 text-xs font-mono uppercase tracking-wider relative transition-colors font-semibold ${activeTab === 'thoughts' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
               >
                 Thoughts & Fragments ({thoughtFragments.length + generalFragments.length})
-                {activeTab === 'thoughts' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+                {activeTab === 'thoughts' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
               </button>
             </>
           )}
 
           {isScribble && (
-            <button 
+            <button
               onClick={() => setActiveTab('journal')}
               className={`pb-4 text-xs font-mono uppercase tracking-wider relative transition-colors font-semibold ${activeTab === 'journal' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
             >
               Journal moments ({journalMoments.length})
-              {activeTab === 'journal' && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ backgroundColor: colorScheme.primary }} />}
+              {activeTab === 'journal' && <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colorScheme.primary }} />}
             </button>
           )}
         </nav>
@@ -337,13 +337,13 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
 
       {/* Tab Panels */}
       <div className="space-y-10">
-        
+
         {/* PANEL A: OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="space-y-10">
             {/* Quick KPI grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
+
               <div className="bg-[#111] border border-[#1a1a1a] p-6 rounded-lg">
                 <span className="text-[10px] font-mono uppercase text-neutral-500 tracking-widest font-semibold block mb-2">Live Publications</span>
                 <div className="text-3xl font-light text-neutral-100 font-mono">{publications.length}</div>
@@ -368,7 +368,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
 
             {/* Combined Section Previews */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              
+
               {/* Drafts Summary Module */}
               <div className="border border-[#1a1a1a] rounded-lg p-5 bg-[#111111]">
                 <div className="flex justify-between items-center mb-4 pb-2 border-b border-[#1f1f1f]">
@@ -379,7 +379,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                   {drafts.slice(0, 4).map((d, index) => (
                     <div key={index} className="py-2.5 flex justify-between items-center group">
                       <div className="truncate max-w-[80%]">
-                        <Link 
+                        <Link
                           href={`/admin/compose?id=${d.id || d.slug}`}
                           className="text-sm font-medium hover:underline text-neutral-200 block truncate"
                         >
@@ -387,7 +387,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                         </Link>
                         <span className="text-[10px] font-mono text-neutral-500">Edited {d.publishedAt || d.date || 'Recently'}</span>
                       </div>
-                      <Link 
+                      <Link
                         href={`/admin/compose?id=${d.id || d.slug}`}
                         className="opacity-0 group-hover:opacity-100 p-1 bg-[#1a1a1a] rounded transition-opacity"
                       >
@@ -414,7 +414,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                     {isScribble && "Maintain travel memories, monologue snippets, and geographic timeline milestones."}
                   </p>
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     if (isForge) setActiveTab('build-logs');
                     else if (isSignal) setActiveTab('focus');
@@ -448,7 +448,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                   <tr key={idx} className="hover:bg-[#161616] group transition-colors">
                     <td className="px-6 py-4 align-top">
                       <div className="space-y-1">
-                        <Link 
+                        <Link
                           href={`/admin/compose?id=${post.id || post.slug}`}
                           className="font-medium text-neutral-200 text-sm hover:underline block"
                         >
@@ -477,20 +477,20 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                     </td>
                     <td className="px-6 py-4 align-top text-right">
                       <div className="flex justify-end gap-1">
-                        <Link 
+                        <Link
                           href={`/p/${post.slug}?preview=true`}
                           target="_blank"
                           className="p-1 px-2.5 bg-[#171717] border border-[#222] hover:bg-[#222] hover:text-white rounded text-xs text-neutral-400 font-mono transition-colors"
                         >
                           VIEW
                         </Link>
-                        <Link 
+                        <Link
                           href={`/admin/compose?id=${post.id || post.slug}`}
                           className="p-1 px-2.5 bg-[#171717] border border-[#222] hover:bg-[#222] hover:text-white rounded text-xs text-neutral-400 font-mono transition-colors"
                         >
                           EDIT
                         </Link>
-                        <button 
+                        <button
                           onClick={() => handleDeleteEntity('article', post.id || post.slug)}
                           className="p-1 px-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded text-xs font-mono"
                         >
@@ -519,7 +519,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <Plus className="w-3.5 h-3.5" /> Add Log Entry
               </button>
             </div>
-            
+
             <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -532,12 +532,12 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <tbody className="divide-y divide-[#1a1a1a]">
                   {buildLogs.map((log, idx) => (
                     <tr key={idx} className="hover:bg-[#161616] group transition-colors">
-                      <td className="px-6 py-4 align-top max-w-[300px]">
+                      <td className="px-6 py-4 align-top max-w-75">
                         <div className="font-semibold text-neutral-200 text-sm">{log.title}</div>
                         <div className="text-[10px] text-neutral-500 font-mono mt-1">{log.date || 'Today'}</div>
                       </td>
                       <td className="px-6 py-4 align-top text-xs leading-relaxed font-mono">
-                        <p className="text-neutral-400 line-clamp-2 md:max-w-[400px]">{log.excerpt || log.content || ''}</p>
+                        <p className="text-neutral-400 line-clamp-2 md:max-w-100">{log.excerpt || log.content || ''}</p>
                       </td>
                       <td className="px-6 py-4 align-top text-right">
                         <div className="flex justify-end gap-2">
@@ -566,7 +566,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <Plus className="w-3.5 h-3.5" /> Add System
               </button>
             </div>
-            
+
             <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -579,7 +579,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <tbody className="divide-y divide-[#1a1a1a]">
                   {activeSystems.map((sys, idx) => (
                     <tr key={idx} className="hover:bg-[#161616] group transition-colors">
-                      <td className="px-6 py-4 align-top max-w-[400px]">
+                      <td className="px-6 py-4 align-top max-w-100">
                         <div className="font-semibold text-neutral-200 text-sm">{sys.name}</div>
                         <p className="text-neutral-500 text-xs mt-1 leading-relaxed font-light">{sys.description || ''}</p>
                       </td>
@@ -617,7 +617,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <Plus className="w-3.5 h-3.5" /> Add Status
               </button>
             </div>
-            
+
             <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -630,7 +630,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <tbody className="divide-y divide-[#1a1a1a]">
                   {builderStatus.map((stat, idx) => (
                     <tr key={idx} className="hover:bg-[#161616] group transition-colors">
-                      <td className="px-6 py-4 align-top max-w-[300px]">
+                      <td className="px-6 py-4 align-top max-w-75">
                         <div className="font-semibold text-neutral-200 text-sm">{stat.label}</div>
                       </td>
                       <td className="px-6 py-4 align-top font-mono text-xs">
@@ -664,7 +664,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <Plus className="w-3.5 h-3.5" /> Add Focus Spec
               </button>
             </div>
-            
+
             <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -677,7 +677,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <tbody className="divide-y divide-[#1a1a1a]">
                   {operatorFocus.map((f, idx) => (
                     <tr key={idx} className="hover:bg-[#161616] group transition-colors">
-                      <td className="px-6 py-4 align-top max-w-[450px]">
+                      <td className="px-6 py-4 align-top max-w-112.5">
                         <div className="font-semibold text-neutral-200 text-sm">{f.area}</div>
                         <p className="text-neutral-500 text-xs mt-1 leading-relaxed font-light">{f.description || ''}</p>
                       </td>
@@ -716,7 +716,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <Plus className="w-3.5 h-3.5" /> Add Question
               </button>
             </div>
-            
+
             <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -732,7 +732,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                     return (
                       <tr key={idx} className="hover:bg-[#161616] group transition-colors">
                         <td className="px-6 py-4 align-top">
-                          <div className="font-serif italic text-neutral-250 text-sm leading-relaxed max-w-[500px]">&ldquo;{qText}&rdquo;</div>
+                          <div className="font-serif italic text-neutral-250 text-sm leading-relaxed max-w-125">&ldquo;{qText}&rdquo;</div>
                         </td>
                         <td className="px-6 py-4 align-top text-xs text-neutral-500 font-mono">
                           {q.context || 'Theoretical Frame'}
@@ -771,7 +771,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                   <Plus className="w-3.5 h-3.5" /> Add Thought
                 </button>
               </div>
-              
+
               <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
                 <table className="w-full text-left border-collapse">
                   <thead>
@@ -816,7 +816,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                   <Plus className="w-3.5 h-3.5" /> Add Snippet
                 </button>
               </div>
-              
+
               <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
                 <table className="w-full text-left border-collapse">
                   <thead>
@@ -864,7 +864,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                 <Plus className="w-3.5 h-3.5" /> Log Journal Passage
               </button>
             </div>
-            
+
             <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -882,7 +882,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                         <div className="text-[10px] text-sky-400 font-mono mt-1.5 tracking-wider">{jm.timeLabel || 'Recent'}</div>
                       </td>
                       <td className="px-6 py-4 align-top text-xs leading-relaxed font-serif text-neutral-400 italic">
-                        <p className="line-clamp-3 max-w-[500px]">{jm.body}</p>
+                        <p className="line-clamp-3 max-w-125">{jm.body}</p>
                       </td>
                       <td className="px-6 py-4 align-top text-right">
                         <div className="flex justify-end gap-2">
@@ -910,7 +910,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="bg-[#0e0e0e] border border-[#1d1d1d] rounded-lg w-full max-w-xl p-6 shadow-2xl relative">
             <button onClick={() => setIsEditingEntity(false)} className="absolute top-4 right-4 text-neutral-500 hover:text-white font-mono text-xs">esc Close</button>
-            
+
             <div className="mb-6">
               <span className="text-[9px] font-mono uppercase tracking-widest text-[#ff7700] block mb-1">Database item editor</span>
               <h4 className="text-md font-semibold text-neutral-150">
@@ -920,7 +920,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
 
             {/* Dialog forms mapping by model type */}
             <div className="space-y-4 max-h-[60vh] overflow-y-auto mb-6 pr-1">
-              
+
               {entityType === 'buildLog' && (
                 <>
                   <div>
@@ -933,7 +933,7 @@ export default function PersonaDashboardPage({ params }: { params: any }) {
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono mb-2">Log snippet / content</label>
-                    <textarea value={entityFormData.excerpt || ''} onChange={(e) => setEntityFormData({ ...entityFormData, excerpt: e.target.value })} className="w-full h-32 bg-[#131313] border border-[#222] rounded px-3 py-2 text-sm text-neutral-300 resize-none font-mono text-xs" />
+                    <textarea value={entityFormData.excerpt || ''} onChange={(e) => setEntityFormData({ ...entityFormData, excerpt: e.target.value })} className="w-full h-32 bg-[#131313] border border-[#222] rounded px-3 py-2 text-neutral-300 resize-none font-mono text-xs" />
                   </div>
                 </>
               )}

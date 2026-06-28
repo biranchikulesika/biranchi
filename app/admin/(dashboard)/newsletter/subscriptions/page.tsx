@@ -88,12 +88,12 @@ export default function SubscriptionsPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <select value={filterActive} onChange={(e) => setFilterActive(e.target.value)} className="p-2 border rounded-md min-w-[180px]">
+        <select value={filterActive} onChange={(e) => setFilterActive(e.target.value)} className="p-2 border rounded-md min-w-45">
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <select value={filterPersona} onChange={(e) => setFilterPersona(e.target.value)} className="p-2 border rounded-md min-w-[180px]">
+        <select value={filterPersona} onChange={(e) => setFilterPersona(e.target.value)} className="p-2 border rounded-md min-w-45">
           <option value="all">All Personas</option>
           {personas.map(p => (
             <option key={p} value={p}>{p}</option>

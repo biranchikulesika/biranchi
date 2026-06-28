@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { 
-  Search, Filter, SlidersHorizontal, ArrowUpDown, Edit2, Trash2, Plus, ExternalLink, 
+import {
+  Search, Filter, SlidersHorizontal, ArrowUpDown, Edit2, Trash2, Plus, ExternalLink,
   HelpCircle, Check, Play, BookOpen, AlertCircle, RefreshCw, Layers, Sparkles, Brain, CheckCircle, Loader2
 } from 'lucide-react';
 import { getPosts, deletePost } from '@/app/admin/actions/posts.actions';
@@ -41,18 +41,18 @@ export default function ContentLibraryPage() {
 
   const [searchQuery, setSearchQuery] = useState(searchParams?.get('q') || '');
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
-  
+
   // Filters
   const [selectedPersona, setSelectedPersona] = useState<string>('all');
   const [selectedContentType, setSelectedContentType] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('updated'); // updated, published, created
-  
+
   // Edit Modal State (for non-article items)
   const [editingItem, setEditingItem] = useState<UnifiedItem | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
   const [savingEdit, setSavingEdit] = useState(false);
-  
+
   // Load All content, join them into standard schema feed
   const loadLibrary = async (query: string = '') => {
     setLoading(true);
@@ -205,7 +205,7 @@ export default function ContentLibraryPage() {
       const params = new URLSearchParams(searchParams?.toString() || '');
       if (debouncedSearchQuery) params.set('q', debouncedSearchQuery);
       else params.delete('q');
-      
+
       startTransition(() => {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
       });
@@ -216,9 +216,9 @@ export default function ContentLibraryPage() {
   const filteredItems = items.filter(item => {
     // 1. Search Query Match (still done client-side for non-post types, and as fallback)
     const q = searchQuery.toLowerCase();
-    const matchesSearch = q === '' || 
-      item.title.toLowerCase().includes(q) || 
-      (item.subtitle && item.subtitle.toLowerCase().includes(q)) || 
+    const matchesSearch = q === '' ||
+      item.title.toLowerCase().includes(q) ||
+      (item.subtitle && item.subtitle.toLowerCase().includes(q)) ||
       item.content.toLowerCase().includes(q) ||
       item.contentType.toLowerCase().includes(q);
 
@@ -322,8 +322,8 @@ export default function ContentLibraryPage() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12 text-neutral-300">
-      
+    <div className="w-full max-w-350 mx-auto p-5 md:p-8 lg:p-12 text-neutral-300">
+
       {/* Header and Quick Navigation */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
@@ -335,8 +335,8 @@ export default function ContentLibraryPage() {
             A comprehensive, unified view of all published and draft articles, notes, questions, and journal streams across your persona matrix.
           </p>
         </div>
-        
-        <Link 
+
+        <Link
           href="/admin/compose?new=true"
           className="bg-neutral-100 text-black px-4 py-2.5 rounded-md text-sm font-medium hover:bg-white transition-colors flex items-center justify-center gap-2 w-fit select-none font-sans"
         >
@@ -348,12 +348,12 @@ export default function ContentLibraryPage() {
       {/* Control Bar (Search & Filter Matrices) */}
       <div className="bg-[#111111] border border-[#1a1a1a] p-5 rounded-lg mb-8">
         <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
-          
+
           {/* Search Box */}
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search content by title, subtitle, or raw snippets..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -363,11 +363,11 @@ export default function ContentLibraryPage() {
 
           {/* Filtering Matrix Options */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:w-auto">
-            
+
             {/* Persona filter */}
-            <div className="flex flex-col gap-1.5 min-w-[130px]">
+            <div className="flex flex-col gap-1.5 min-w-32.5">
               <label className="text-[9px] font-mono uppercase tracking-widest text-neutral-500 font-semibold mb-0.5">Persona</label>
-              <select 
+              <select
                 value={selectedPersona}
                 onChange={(e) => setSelectedPersona(e.target.value)}
                 className="bg-[#161616] border border-[#222] hover:border-neutral-700 rounded px-3 py-1.5 text-xs text-neutral-300 outline-none cursor-pointer transition-colors"
@@ -381,9 +381,9 @@ export default function ContentLibraryPage() {
             </div>
 
             {/* Content Type filter */}
-            <div className="flex flex-col gap-1.5 min-w-[130px]">
+            <div className="flex flex-col gap-1.5 min-w-32.5">
               <label className="text-[9px] font-mono uppercase tracking-widest text-neutral-500 font-semibold mb-0.5">Type</label>
-              <select 
+              <select
                 value={selectedContentType}
                 onChange={(e) => setSelectedContentType(e.target.value)}
                 className="bg-[#161616] border border-[#222] hover:border-neutral-700 rounded px-3 py-1.5 text-xs text-neutral-300 outline-none cursor-pointer transition-colors"
@@ -398,9 +398,9 @@ export default function ContentLibraryPage() {
             </div>
 
             {/* Status Filter */}
-            <div className="flex flex-col gap-1.5 min-w-[100px]">
+            <div className="flex flex-col gap-1.5 min-w-25">
               <label className="text-[9px] font-mono uppercase tracking-widest text-neutral-500 font-semibold mb-0.5">Status</label>
-              <select 
+              <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="bg-[#161616] border border-[#222] hover:border-neutral-700 rounded px-3 py-1.5 text-xs text-neutral-300 outline-none cursor-pointer transition-colors"
@@ -413,9 +413,9 @@ export default function ContentLibraryPage() {
             </div>
 
             {/* Sort Filter */}
-            <div className="flex flex-col gap-1.5 min-w-[125px]">
+            <div className="flex flex-col gap-1.5 min-w-31.25">
               <label className="text-[9px] font-mono uppercase tracking-widest text-neutral-500 font-semibold mb-0.5">Sort by</label>
-              <select 
+              <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-[#161616] border border-[#222] hover:border-neutral-700 rounded px-3 py-1.5 text-xs text-neutral-300 outline-none cursor-pointer transition-colors"
@@ -439,7 +439,7 @@ export default function ContentLibraryPage() {
       ) : (
         <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[900px]">
+            <table className="w-full text-left border-collapse min-w-225">
               <thead>
                 <tr className="border-b border-[#1a1a1a] bg-[#0A0A0A]">
                   <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-neutral-500 font-semibold font-mono w-[40%]">Content Title</th>
@@ -452,7 +452,7 @@ export default function ContentLibraryPage() {
               <tbody className="divide-y divide-[#1a1a1a]">
                 {filteredItems.map((item, idx) => {
                   const safeId = item.id || `idx_${idx}`;
-                  
+
                   // Color codes for different personas
                   const colorMap = {
                     'Forge': 'text-orange-500 bg-orange-500/10 border-orange-500/20',
@@ -471,11 +471,11 @@ export default function ContentLibraryPage() {
 
                   return (
                     <tr key={safeId} className="hover:bg-[#161616] group transition-all duration-150">
-                      
+
                       {/* Name / Subtitle */}
                       <td className="px-6 py-4.5 align-top">
-                        <div className="flex flex-col gap-1.5 max-w-[400px]">
-                          <button 
+                        <div className="flex flex-col gap-1.5 max-w-100">
+                          <button
                             onClick={() => handleEditItem(item)}
                             className="font-medium text-neutral-200 text-sm text-left hover:text-white hover:underline transition-colors leading-snug line-clamp-2"
                           >
@@ -486,12 +486,12 @@ export default function ContentLibraryPage() {
                           )}
                           <div className="flex flex-wrap gap-1.5 mt-0.5">
                             {item.featured && (
-                              <span className="text-[9px] border bg-[#ff7700]/5 border-[#ff7700]/20 text-[#ff7700] uppercase font-mono px-1.5 py-[1px] rounded">
+                              <span className="text-[9px] border bg-[#ff7700]/5 border-[#ff7700]/20 text-[#ff7700] uppercase font-mono px-1.5 py-px rounded">
                                 Featured
                               </span>
                             )}
                             {item.hidden && (
-                              <span className="text-[9px] border bg-neutral-800 border-neutral-700 text-neutral-400 uppercase font-mono px-1.5 py-[1px] rounded">
+                              <span className="text-[9px] border bg-neutral-800 border-neutral-700 text-neutral-400 uppercase font-mono px-1.5 py-px rounded">
                                 Hidden
                               </span>
                             )}
@@ -542,15 +542,15 @@ export default function ContentLibraryPage() {
                       {/* Actions */}
                       <td className="px-6 py-4.5 align-top text-right">
                         <div className="flex items-center justify-end gap-1 px-1">
-                          <button 
+                          <button
                             onClick={() => handleEditItem(item)}
                             className="p-2 text-neutral-500 hover:text-white hover:bg-[#1f1f1f] rounded-md transition-all duration-150"
                             title={`Edit ${item.contentType}`}
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
-                          
-                          <button 
+
+                          <button
                             onClick={() => handleDeleteItem(item)}
                             className="p-2 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-all duration-150"
                             title={`Delete ${item.contentType}`}
@@ -587,14 +587,14 @@ export default function ContentLibraryPage() {
       {editingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-2xl h-full bg-[#0d0d0d] border-l border-[#1a1a1a] flex flex-col shadow-2xl p-6 overflow-y-auto">
-            
+
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[#161616] pb-4 mb-6">
               <div className="space-y-1">
                 <span className="text-[10px] font-mono tracking-widest text-[#ff7700] uppercase font-bold">{editingItem.contentType} Studio</span>
                 <h3 className="text-lg font-medium text-neutral-150">Quick Edit record</h3>
               </div>
-              <button 
+              <button
                 onClick={() => setEditingItem(null)}
                 className="p-1 px-2 hover:bg-[#1a1a1a] text-neutral-400 hover:text-white rounded text-sm font-mono"
               >
@@ -604,51 +604,51 @@ export default function ContentLibraryPage() {
 
             {/* Modal Form inputs based on type */}
             <div className="flex-1 space-y-6">
-              
+
               {/* Common Title/Text Field */}
               {editingItem.contentType === 'Field Note' && (
                 <>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Note Title</label>
-                    <input 
-                      type="text" 
-                      value={editFormData.title || ''} 
+                    <input
+                      type="text"
+                      value={editFormData.title || ''}
                       onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                      className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-neutral-500" 
+                      className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-neutral-500"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Excerpt</label>
-                    <textarea 
-                      value={editFormData.excerpt || ''} 
+                    <textarea
+                      value={editFormData.excerpt || ''}
                       onChange={(e) => setEditFormData({ ...editFormData, excerpt: e.target.value })}
-                      className="w-full h-20 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 resize-none font-light" 
+                      className="w-full h-20 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 resize-none font-light"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Note Prose / Body</label>
-                    <textarea 
-                      value={editFormData.content || ''} 
+                    <textarea
+                      value={editFormData.content || ''}
                       onChange={(e) => setEditFormData({ ...editFormData, content: e.target.value })}
-                      className="w-full h-64 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 font-mono text-xs leading-relaxed" 
+                      className="w-full h-64 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-neutral-300 outline-none focus:border-neutral-500 font-mono text-xs leading-relaxed"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Category tag</label>
-                      <input 
-                        type="text" 
-                        value={editFormData.category || ''} 
+                      <input
+                        type="text"
+                        value={editFormData.category || ''}
                         onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
-                        className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none" 
+                        className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none"
                       />
                     </div>
                     <div>
                       <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Release Slug</label>
-                      <input 
-                        type="text" 
-                        value={editFormData.slug || ''} 
-                        className="w-full bg-[#141414]/50 border border-[#222]/50 rounded-md px-4 py-2 text-sm text-neutral-500 outline-none cursor-not-allowed" 
+                      <input
+                        type="text"
+                        value={editFormData.slug || ''}
+                        className="w-full bg-[#141414]/50 border border-[#222]/50 rounded-md px-4 py-2 text-sm text-neutral-500 outline-none cursor-not-allowed"
                         disabled
                       />
                     </div>
@@ -661,18 +661,18 @@ export default function ContentLibraryPage() {
                   {editFormData.title !== undefined && (
                     <div>
                       <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Fragment Label</label>
-                      <input 
-                        type="text" 
-                        value={editFormData.title || ''} 
+                      <input
+                        type="text"
+                        value={editFormData.title || ''}
                         onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                        className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-neutral-500" 
+                        className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-neutral-500"
                       />
                     </div>
                   )}
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Scribbled Fragment</label>
-                    <textarea 
-                      value={editFormData.content !== undefined ? editFormData.content : (editFormData.body || '')} 
+                    <textarea
+                      value={editFormData.content !== undefined ? editFormData.content : (editFormData.body || '')}
                       onChange={(e) => {
                         if (editFormData.content !== undefined) {
                           setEditFormData({ ...editFormData, content: e.target.value });
@@ -680,7 +680,7 @@ export default function ContentLibraryPage() {
                           setEditFormData({ ...editFormData, body: e.target.value });
                         }
                       }}
-                      className="w-full h-48 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 resize-none font-mono text-xs leading-relaxed" 
+                      className="w-full h-48 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-neutral-300 outline-none focus:border-neutral-500 resize-none font-mono text-xs leading-relaxed"
                     />
                   </div>
                 </>
@@ -690,8 +690,8 @@ export default function ContentLibraryPage() {
                 <>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Inquiry / Question Text</label>
-                    <textarea 
-                      value={editFormData.text !== undefined ? editFormData.text : (editFormData.question || '')} 
+                    <textarea
+                      value={editFormData.text !== undefined ? editFormData.text : (editFormData.question || '')}
                       onChange={(e) => {
                         if (editFormData.text !== undefined) {
                           setEditFormData({ ...editFormData, text: e.target.value });
@@ -699,15 +699,15 @@ export default function ContentLibraryPage() {
                           setEditFormData({ ...editFormData, question: e.target.value });
                         }
                       }}
-                      className="w-full h-32 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 font-mono text-xs" 
+                      className="w-full h-32 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-neutral-300 outline-none focus:border-neutral-500 font-mono text-xs"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Cognitive Context</label>
-                    <textarea 
-                      value={editFormData.context || ''} 
+                    <textarea
+                      value={editFormData.context || ''}
                       onChange={(e) => setEditFormData({ ...editFormData, context: e.target.value })}
-                      className="w-full h-24 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 font-serif italic text-xs" 
+                      className="w-full h-24 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-neutral-300 outline-none focus:border-neutral-500 font-serif italic text-xs"
                     />
                   </div>
                 </>
@@ -717,28 +717,28 @@ export default function ContentLibraryPage() {
                 <>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Moment Header</label>
-                    <input 
-                      type="text" 
-                      value={editFormData.title || ''} 
+                    <input
+                      type="text"
+                      value={editFormData.title || ''}
                       onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                      className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-neutral-500" 
+                      className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-neutral-500"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Chronology Timestamp Label</label>
-                    <input 
-                      type="text" 
-                      value={editFormData.timeLabel || ''} 
+                    <input
+                      type="text"
+                      value={editFormData.timeLabel || ''}
                       onChange={(e) => setEditFormData({ ...editFormData, timeLabel: e.target.value })}
-                      className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 font-mono" 
+                      className="w-full bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 font-mono"
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-500 font-mono font-bold mb-2">Passage prose</label>
-                    <textarea 
-                      value={editFormData.body || ''} 
+                    <textarea
+                      value={editFormData.body || ''}
                       onChange={(e) => setEditFormData({ ...editFormData, body: e.target.value })}
-                      className="w-full h-64 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 font-serif italic" 
+                      className="w-full h-64 bg-[#141414] border border-[#222] rounded-md px-4 py-2 text-sm text-neutral-300 outline-none focus:border-neutral-500 font-serif italic"
                     />
                   </div>
                 </>
@@ -748,8 +748,8 @@ export default function ContentLibraryPage() {
               <div className="flex items-center gap-6 border-t border-[#161616] pt-6">
                 {editFormData.featured !== undefined && (
                   <label className="flex items-center gap-2 cursor-pointer text-xs uppercase font-mono tracking-wider text-neutral-400 select-none">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={editFormData.featured === true}
                       onChange={(e) => setEditFormData({ ...editFormData, featured: e.target.checked })}
                       className="form-checkbox bg-[#161616] border-[#222] rounded text-[#ff7700] focus:ring-0 cursor-pointer"
@@ -759,8 +759,8 @@ export default function ContentLibraryPage() {
                 )}
                 {editFormData.hidden !== undefined && (
                   <label className="flex items-center gap-2 cursor-pointer text-xs uppercase font-mono tracking-wider text-neutral-400 select-none">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={editFormData.hidden === true}
                       onChange={(e) => setEditFormData({ ...editFormData, hidden: e.target.checked })}
                       className="form-checkbox bg-[#161616] border-[#222] rounded text-[#ff7700] focus:ring-0 cursor-pointer"
@@ -774,13 +774,13 @@ export default function ContentLibraryPage() {
 
             {/* Modal Action Controls */}
             <div className="border-t border-[#161616] pt-4 mt-8 flex justify-end gap-3">
-              <button 
+              <button
                 onClick={() => setEditingItem(null)}
                 className="px-4 py-2 rounded text-xs uppercase font-mono bg-neutral-900 text-neutral-400 hover:text-white transition-colors"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleSaveEdit}
                 disabled={savingEdit}
                 className="px-5 py-2 rounded text-xs uppercase font-mono bg-white text-black hover:bg-neutral-200 transition-colors font-semibold flex items-center gap-2"

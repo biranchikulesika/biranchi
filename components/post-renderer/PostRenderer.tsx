@@ -51,9 +51,9 @@ const renderTextWithInlineFormatting = (text: string) => {
         if (match) {
           const [, linkText, url] = match;
           return (
-            <a 
-              key={`${index}-${subIndex}`} 
-              href={url} 
+            <a
+              key={`${index}-${subIndex}`}
+              href={url}
               target={url.startsWith('http') ? '_blank' : undefined}
               rel={url.startsWith('http') ? 'noopener noreferrer' : undefined}
               className="underline underline-offset-4 decoration-primary/30 hover:decoration-primary/80 text-primary transition-colors"
@@ -401,9 +401,9 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
   otherPosts.forEach((postItem: any) => {
     if (!uniqueRelatedTitles.has(postItem.title) && postItem.title !== post?.title) {
       uniqueRelatedTitles.add(postItem.title);
-      relatedPostsList.push({ 
-        title: postItem.title, 
-        slug: postItem.slug, 
+      relatedPostsList.push({
+        title: postItem.title,
+        slug: postItem.slug,
         date: postItem.publishedAt ? new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', year:'numeric'}).format(new Date(postItem.publishedAt)) : postItem.date || 'Unknown Date'
       });
     }
@@ -445,7 +445,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
       <p className={"leading-relaxed " + theme.newsletterDesc}>
         {theme.wordingLettersDesc}
       </p>
-      
+
       {isSubscribed ? (
         <div className={"py-2 " + theme.newsletterMsg}>
           {theme.wordingLettersReg}
@@ -494,12 +494,13 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
       )}
 
       {post?.heroImage && (
-        <div className="my-[2.5rem] block w-full relative">
+        <div className="my-10 block w-full relative">
           <div className={`relative overflow-hidden w-full border ${theme.heroBg} ${theme.heroBorder}`}>
-            <img 
-              src={post?.heroImage} 
-              alt={post?.title} 
-              className={`w-full h-auto aspect-[16/10] object-cover ${theme.heroFilter}`}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post?.heroImage}
+              alt={post?.title}
+              className={`w-full h-auto aspect-16/10 object-cover ${theme.heroFilter}`}
               referrerPolicy="no-referrer"
             />
             {post?.location && (
@@ -534,7 +535,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
 
     if (typeof parsedContent === 'string') {
       return (
-        <div 
+        <div
           className={`leading-[1.8] outline-none max-w-none ${
             p === 'builder' ? 'prose prose-invert prose-neutral text-foreground font-sans' :
             p === 'operator' ? 'prose-emerald text-foreground font-mono' :
@@ -552,12 +553,12 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
         {(parsedContent as any[]).map((block, idx) => {
           // Normalize composerBlocks format to expected rendering format
           const textContent = block.text || block.content || '';
-          
+
           if (block.type === 'paragraph' || block.type === 'text') {
             return (
-              <p 
-                key={idx} 
-                className={`mb-[1.5rem] last:mb-0 [&_a]:underline [&_a]:underline-offset-4 [&_a]:transition-colors ${theme.paragraph} ${theme.linkHover}`}
+              <p
+                key={idx}
+                className={`mb-6 last:mb-0 [&_a]:underline [&_a]:underline-offset-4 [&_a]:transition-colors ${theme.paragraph} ${theme.linkHover}`}
               >
                 {renderTextWithInlineFormatting(textContent)}
               </p>
@@ -566,9 +567,9 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
 
           if (block.type === 'blockquote' || block.type === 'quote') {
             return (
-              <blockquote 
-                key={idx} 
-                className={`border-l-[2px] pl-8 mt-[2.5rem] mb-[2.5rem] py-1 leading-relaxed ${theme.quoteBorder} ${theme.quoteText}`}
+              <blockquote
+                key={idx}
+                className={`border-l-2 pl-8 mt-10 mb-10 py-1 leading-relaxed ${theme.quoteBorder} ${theme.quoteText}`}
               >
                 &quot;{renderTextWithInlineFormatting(textContent)}&quot;
               </blockquote>
@@ -600,7 +601,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
 
           if (block.type === 'sidenote' || block.type === 'callout') {
             return (
-              <div key={idx} className="my-[2.0rem] space-y-3">
+              <div key={idx} className="my-8 space-y-3">
                 <p className={`[&_a]:underline [&_a]:underline-offset-4 [&_a]:transition-colors ${theme.paragraph} ${theme.linkHover}`}>
                   {renderTextWithInlineFormatting(textContent)}
                 </p>
@@ -613,7 +614,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
 
           if (block.type === 'code') {
             return (
-              <div key={idx} className={`my-[2.0rem] ${p === 'operator'?'rounded-none':'rounded-lg'} font-mono overflow-hidden ${theme.codeWrapper}`}>
+              <div key={idx} className={`my-8 ${p === 'operator'?'rounded-none':'rounded-lg'} font-mono overflow-hidden ${theme.codeWrapper}`}>
                 <div className={`flex justify-between items-center px-6 py-2.5 border-b font-mono text-[10px] uppercase tracking-wider ${theme.codeHeader}`}>
                   <span>{block.codeLang || 'source'}</span>
                 </div>
@@ -626,11 +627,12 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
 
           if (block.type === 'image') {
             return (
-              <div key={idx} className="my-[2.5rem] block w-full relative">
+              <div key={idx} className="my-10 block w-full relative">
                 <div className={`relative overflow-hidden w-full border ${theme.heroBg} ${theme.heroBorder}`}>
-                  <img 
-                    src={block.url || block.src} 
-                    alt={block.alt || 'Image'} 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={block.url || block.src}
+                    alt={block.alt || 'Image'}
                     className={`w-full h-auto object-cover ${theme.heroFilter}`}
                     referrerPolicy="no-referrer"
                   />
@@ -661,7 +663,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
           if (block.type === 'list' || block.type === 'ul') {
             const listItems = block.items || [block.text];
             return (
-              <ul key={idx} className={`list-disc pl-6 space-y-[0.8rem] mb-[1.5rem] ${theme.paragraph}`}>
+              <ul key={idx} className={`list-disc pl-6 space-y-[0.8rem] mb-6 ${theme.paragraph}`}>
                 {listItems.map((itemValue, i) => (
                   <li key={i}>{renderTextWithInlineFormatting(itemValue)}</li>
                 ))}
@@ -806,7 +808,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
           className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all duration-300 cursor-pointer ${theme.shareIcon}`}
           title={copied ? "Copied!" : "Copy Link"}
         >
-          {copied ? <Check className={`w-[18px] h-[18px] ${theme.shareCheck}`} /> : <Copy className="w-[18px] h-[18px]" />}
+          {copied ? <Check className={`w-4.5 h-4.5 ${theme.shareCheck}`} /> : <Copy className="w-4.5 h-4.5" />}
         </button>
       </div>
     </div>
@@ -815,7 +817,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
   const renderDiscoveryDesktop = () => (
     <div className="mt-16 w-full flex flex-col">
       <div className="flex mb-8">
-        <div className={"inline-flex p-[3px] bg-transparent " + (p === 'operator' ? '' : 'rounded-full border ') + theme.tabBorder}>
+        <div className={"inline-flex p-0.75 bg-transparent " + (p === 'operator' ? '' : 'rounded-full border ') + theme.tabBorder}>
           <button
             onClick={() => setActiveTab('top')}
             className={`px-4 py-1.5 cursor-pointer transition-all ${p === 'operator' ? '' : 'rounded-full '} ${
@@ -855,10 +857,11 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                 </span>
               </div>
               {item.heroImage && (
-                <div className={"w-24 sm:w-28 aspect-[4/3] flex-shrink-0 overflow-hidden select-none border " + theme.heroBg + " " + theme.heroBorder + (p==='operator'?' rounded-none':'')}>
-                  <img 
-                    src={item.heroImage} 
-                    alt={item.title} 
+                <div className={"w-24 sm:w-28 aspect-4/3 shrink-0 overflow-hidden select-none border " + theme.heroBg + " " + theme.heroBorder + (p==='operator'?' rounded-none':'')}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.heroImage}
+                    alt={item.title}
                     className={`w-full h-full object-cover ${theme.heroFilter} group-hover:scale-105 transition-transform duration-500`}
                     referrerPolicy="no-referrer"
                   />
@@ -883,7 +886,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
   const renderDiscoveryMobile = () => (
     <>
       <div className="flex mb-6">
-        <div className={"inline-flex p-[3px] bg-transparent " + (p === 'operator' ? '' : 'rounded-full border ') + theme.tabBorder}>
+        <div className={"inline-flex p-0.75 bg-transparent " + (p === 'operator' ? '' : 'rounded-full border ') + theme.tabBorder}>
           <button
             onClick={() => setActiveTab('top')}
             className={`px-4 py-1.5 cursor-pointer transition-all ${p === 'operator' ? '' : 'rounded-full '} ${
@@ -923,10 +926,11 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                 </span>
               </div>
               {item.heroImage && (
-                <div className={"w-20 aspect-[4/3] flex-shrink-0 overflow-hidden select-none border " + theme.heroBg + " " + theme.heroBorder + (p==='operator'?' rounded-none':'')}>
-                  <img 
-                    src={item.heroImage} 
-                    alt={item.title} 
+                <div className={"w-20 aspect-4/3 shrink-0 overflow-hidden select-none border " + theme.heroBg + " " + theme.heroBorder + (p==='operator'?' rounded-none':'')}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.heroImage}
+                    alt={item.title}
                     className={`w-full h-full object-cover ${theme.heroFilter} group-hover:scale-105 transition-transform duration-500`}
                     referrerPolicy="no-referrer"
                   />
@@ -953,7 +957,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
   const mobileNavBg = "bg-background";
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -970,8 +974,8 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
       </header>
 
       <main className="flex-1 w-full px-5 sm:px-8 md:px-12 lg:px-16 pt-8 md:pt-10 pb-20 relative z-10">
-        <div className="max-w-[1050px] mx-auto w-full">
-          
+        <div className="max-w-262.5 mx-auto w-full">
+
           {!post ? (
             <div className="py-24 md:py-32 flex items-center justify-center">
               <div className="w-full max-w-2xl text-center space-y-6">
@@ -1001,7 +1005,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                   {p === 'wanderer' && (
                     <>
                       <p>You have stepped past the edge of the map.</p>
-                      <p>This story hasn't been written yet, a sudden fork in the road.</p>
+                      <p>This story hasn&apos;t been written yet, a sudden fork in the road.</p>
                       <p>Take a breath and find your bearings.</p>
                     </>
                   )}
@@ -1017,7 +1021,7 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                 <div className="pt-6 max-w-md mx-auto">
                   <form onSubmit={handleNotFoundSearch} className="flex flex-col gap-3 relative">
                     <div className={`relative flex items-center border-b ${theme.heroBorder}`}>
-                      <input 
+                      <input
                         type="text"
                         value={notFoundSearchQuery}
                         onChange={(e) => setNotFoundSearchQuery(e.target.value)}
@@ -1069,12 +1073,12 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
                 </div>
               </div>
 
-              <div className="block lg:hidden w-full max-w-[650px] mx-auto flex flex-col">
+              <div className="flex lg:hidden w-full max-w-162.5 mx-auto flex-col">
                 {renderArticleHeader()}
                 {renderArticleBody()}
                 {renderContextMarker()}
                 {renderShareSection()}
-                
+
                 <div className={`mb-6 pb-6 border-b ${theme.relatedSectionBorder}`}>
                   {renderRelatedReflections()}
                 </div>

@@ -122,7 +122,7 @@ export default function MainNewsletterPage() {
       <main className="flex-1 flex flex-col w-full relative pt-24 md:pt-32">
         
         {/* HERO + FORM SECTION (Section 1 & Section 2) */}
-        <section className="px-6 md:px-16 lg:px-24 py-8 sm:py-12 md:py-16 relative z-10 w-full max-w-[1240px] mx-auto">
+        <section className="px-6 md:px-16 lg:px-24 py-8 sm:py-12 md:py-16 relative z-10 w-full max-w-310 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
             
             {/* HERO CONTENT: Left Side */}
@@ -163,7 +163,7 @@ export default function MainNewsletterPage() {
                       onClick={() => toggleTopic(nl.id)}
                       className={`flex flex-col text-left p-5 rounded-2xl border transition-all duration-300 relative group cursor-pointer ${
                         isSelected 
-                          ? 'dark:border-stone-400 border-stone-700 dark:bg-stone-900/50 bg-[#E3E0D8] translate-y-[-2px]' 
+                          ? 'dark:border-stone-400 border-stone-700 dark:bg-stone-900/50 bg-[#E3E0D8] -translate-y-0.5' 
                           : 'dark:border-stone-900/40 border-stone-200 dark:bg-stone-950/20 bg-stone-100/30 hover:dark:border-stone-800 hover:border-stone-350'
                       }`}
                     >
@@ -174,7 +174,7 @@ export default function MainNewsletterPage() {
                             ? 'dark:bg-stone-200 bg-stone-900 dark:border-stone-200 border-stone-900 text-[#050505] dark:text-stone-950' 
                             : 'dark:border-stone-850 border-stone-300 group-hover:border-stone-550'
                         }`}>
-                          {isSelected && <Check className="w-3 h-3 stroke-[3] text-stone-100 dark:text-stone-950" />}
+                          {isSelected && <Check className="w-3 h-3 stroke-3 text-stone-100 dark:text-stone-950" />}
                         </div>
                       </div>
 
@@ -204,7 +204,7 @@ export default function MainNewsletterPage() {
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-5 p-6 rounded-2xl border dark:border-stone-800/80 border-stone-300 dark:bg-[#070707] bg-[#E8E6DF]/30 text-left"
+                    className="p-6 rounded-2xl border dark:border-stone-800/80 border-stone-300 dark:bg-[#070707] bg-[#E8E6DF]/30 text-left"
                   >
                     <span className="font-mono text-[10px] tracking-[0.2em] dark:text-[#8c8273] text-[#7A746B] uppercase block mb-1">
                       SUBSCRIPTION SECURED
@@ -290,7 +290,7 @@ export default function MainNewsletterPage() {
         }`}>
 
           {/* SECTION 3 — WHY SUBSCRIBE */}
-          <section className="px-6 md:px-16 lg:px-24 py-12 md:py-16 relative z-10 w-full max-w-[1240px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+          <section className="px-6 md:px-16 lg:px-24 py-12 md:py-16 relative z-10 w-full max-w-310 mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
             <span className="font-mono text-[9px] tracking-[0.25em] dark:text-[#8c8273] text-[#7A746B] uppercase mb-6 md:mb-8 block opacity-80">
               EXPECTED SHIPMENT
             </span>
@@ -336,8 +336,8 @@ export default function MainNewsletterPage() {
           </section>
 
           {/* SECTION 5 (REWORKED TO POSITION HERE) — NEWSLETTER PHILOSOPHY */}
-          <section className="px-6 md:px-16 lg:px-24 py-16 md:py-24 relative z-10 w-full max-w-[1240px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
-            <div className="max-w-[620px] text-left mx-auto lg:mx-0">
+          <section className="px-6 md:px-16 lg:px-24 py-16 md:py-24 relative z-10 w-full max-w-310 mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+            <div className="max-w-155 text-left mx-auto lg:mx-0">
               <span className="font-mono text-[9px] tracking-[0.25em] dark:text-[#8c8273] text-[#7A746B] uppercase mb-4 block opacity-80 font-bold">
                 PHILOSOPHY
               </span>
@@ -356,8 +356,8 @@ export default function MainNewsletterPage() {
           </section>
 
           {/* SECTION 4 (REWORKED TO POSITION HERE) — RECENT LETTERS */}
-          <section className="px-6 md:px-16 lg:px-24 py-16 md:py-24 relative z-10 w-full max-w-[1240px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
-            <div className="max-w-[900px]">
+          <section className="px-6 md:px-16 lg:px-24 py-16 md:py-24 relative z-10 w-full max-w-310 mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6]">
+            <div className="max-w-225">
               <span className="font-mono text-[9px] tracking-[0.25em] dark:text-[#8c8273] text-[#7A746B] uppercase mb-10 block opacity-80">
                 RECENT LETTERS
               </span>
@@ -393,7 +393,7 @@ export default function MainNewsletterPage() {
           </section>
 
           {/* SECTION 6 — CLOSING NOTE */}
-          <section className="px-6 md:px-16 lg:px-24 py-16 md:py-24 relative z-10 w-full max-w-[1240px] mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6] text-center">
+          <section className="px-6 md:px-16 lg:px-24 py-16 md:py-24 relative z-10 w-full max-w-310 mx-auto border-t dark:border-stone-900/50 border-[#ECEBE6] text-center">
             <div className="max-w-xl mx-auto flex flex-col gap-2">
               <p className="font-serif text-xl md:text-2xl italic dark:text-stone-300 text-[#242422] tracking-tight">
                 &quot;Most thoughts disappear.&quot;

@@ -56,7 +56,7 @@ export function ArchivePage({ persona, databasePosts, initialSearchQuery = '' }:
   return (
     <div className={`w-full min-h-screen ${theme.containerClass}`}>
       <div className="mx-auto px-6 sm:px-10 lg:px-14 pt-6 pb-12 lg:pt-8 lg:pb-16 space-y-6 lg:max-w-5xl sm:max-w-6xl">
-        
+
         {/* Minimal Timeline Archive Header */}
         <header className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 select-none border-b w-full ${theme.borderColor}`}>
           <div className="space-y-1">
@@ -67,7 +67,7 @@ export function ArchivePage({ persona, databasePosts, initialSearchQuery = '' }:
               {theme.archiveSubtitle}
             </p>
           </div>
-          <div className="w-full sm:w-auto sm:min-w-[280px] lg:min-w-[320px]">
+          <div className="w-full sm:w-auto sm:min-w-70 lg:min-w-[320px]">
             <Search value={searchQuery} onChange={setSearchQuery} persona={persona === 'main' ? 'wanderer' : persona} />
           </div>
         </header>

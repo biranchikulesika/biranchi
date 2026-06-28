@@ -33,13 +33,13 @@ function CornerCard({ title, subtitle, desc, href, type }: { title: string, subt
 
 export default function AboutPage() {
   const details = [
-    "Linux", "Late nights", "Curiosity", "Journaling", "Writing things down", 
-    "Pop music", "Observing people", "Landscapes", "Storytelling", "Integrity", 
+    "Linux", "Late nights", "Curiosity", "Journaling", "Writing things down",
+    "Pop music", "Observing people", "Landscapes", "Storytelling", "Integrity",
     "Authenticity", "Long walks", "Systems thinking", "Slow internet", "Thoughtful conversations"
   ];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
@@ -60,10 +60,10 @@ export default function AboutPage() {
 
       <main className="flex-1 flex flex-col w-full relative pt-24 md:pt-32">
         {/* Subtle Background Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[400px] bg-amber-900/5 blur-[120px] rounded-full pointer-events-none" />
-        
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-100 bg-amber-900/5 blur-[120px] rounded-full pointer-events-none" />
+
         {/* SECTION 1 — HERO */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-225 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -75,17 +75,17 @@ export default function AboutPage() {
             <h1 className="font-serif text-[1.75rem] sm:text-4xl md:text-5xl lg:text-[4rem] leading-[1.1] text-foreground tracking-tight mb-6 md:mb-10">
               A personal ecosystem shaped by curiosity, systems, stories, and reflection.
             </h1>
-            <p className="font-sans font-light text-primary/90 text-lg md:text-xl leading-[1.8] max-w-[650px] mb-6">
+            <p className="font-sans font-light text-primary/90 text-lg md:text-xl leading-[1.8] max-w-162.5 mb-6">
               I built this space to separate the different things that continue to occupy my attention. Some corners are focused on systems and technology. Others hold stories, observations, unfinished thoughts, and quieter reflections.
             </p>
-            <p className="font-sans font-light text-primary/70 text-[15px] md:text-[16px] max-w-[650px]">
+            <p className="font-sans font-light text-primary/70 text-[15px] md:text-[16px] max-w-162.5">
               The internet rewards compressed identities. This space exists to resist that.
             </p>
           </motion.div>
         </section>
 
         {/* SECTION 2 — WHO I AM */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-225 mx-auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -109,7 +109,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 3 — WHY THIS EXISTS */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-225auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -133,7 +133,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 4 — THE FOUR CORNERS */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[1100px] mx-auto border-t border-border">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-275uto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -142,34 +142,34 @@ export default function AboutPage() {
             className="flex flex-col"
           >
             <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-8 md:mb-10 text-center md:text-left">The four corners</h2>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-              <CornerCard 
-                title="Builder" 
-                subtitle="Forge" 
-                desc="Systems, code, workflows, experimentation, and the process of building things carefully over time." 
-                href={getPersonaUrl('builder', '/')} 
+              <CornerCard
+                title="Builder"
+                subtitle="Forge"
+                desc="Systems, code, workflows, experimentation, and the process of building things carefully over time."
+                href={getPersonaUrl('builder', '/')}
                 type="builder"
               />
-              <CornerCard 
-                title="Operator" 
-                subtitle="Signal" 
-                desc="Cybersecurity, infrastructure, digital systems, operational thinking, and understanding what exists beneath interfaces." 
-                href={getPersonaUrl('operator', '/')} 
+              <CornerCard
+                title="Operator"
+                subtitle="Signal"
+                desc="Cybersecurity, infrastructure, digital systems, operational thinking, and understanding what exists beneath interfaces."
+                href={getPersonaUrl('operator', '/')}
                 type="operator"
               />
-              <CornerCard 
-                title="Thinker" 
-                subtitle="Inside the Head" 
-                desc="Reflection, psychology, philosophy, overthinking, internal dialogue, and ideas that stay long enough to be written down." 
-                href={getPersonaUrl('thinker', '/')} 
+              <CornerCard
+                title="Thinker"
+                subtitle="Inside the Head"
+                desc="Reflection, psychology, philosophy, overthinking, internal dialogue, and ideas that stay long enough to be written down."
+                href={getPersonaUrl('thinker', '/')}
                 type="thinker"
               />
-              <CornerCard 
-                title="Wanderer" 
-                subtitle="Scribble" 
-                desc="Stories, memory, travel, lived moments, observations, and fragments collected along the way." 
-                href={getPersonaUrl('wanderer', '/')} 
+              <CornerCard
+                title="Wanderer"
+                subtitle="Scribble"
+                desc="Stories, memory, travel, lived moments, observations, and fragments collected along the way."
+                href={getPersonaUrl('wanderer', '/')}
                 type="wanderer"
               />
             </div>
@@ -177,7 +177,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 5 — HOW I USE THE INTERNET */}
-        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
+        <section className="px-6 md:px-16 lg:px-24 py-10 sm:py-12 md:py-16 relative z-10 w-full max-w-225auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -198,7 +198,7 @@ export default function AboutPage() {
         </section>
 
         {/* SECTION 6 — SMALL HUMAN DETAILS */}
-        <section className="px-6 md:px-16 lg:px-24 py-8 sm:py-10 md:py-14 relative z-10 w-full max-w-[900px] mx-auto border-t border-border">
+        <section className="px-6 md:px-16 lg:px-24 py-8 sm:py-10 md:py-14 relative z-10 w-full max-w-225auto border-t border-border">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -207,9 +207,9 @@ export default function AboutPage() {
             className="flex flex-col items-center text-center"
           >
             <h2 className="font-mono text-[10px] tracking-[0.2em] text-primary/80 uppercase mb-6 md:mb-8">Small details</h2>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-3 md:gap-x-6 md:gap-y-4 max-w-[650px]">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-3 md:gap-x-6 md:gap-y-4 max-w-162.5">
               {details.map((detail, i) => (
-                <span key={i} className="font-serif italic text-[17px] md:text-[18px] text-primary/80 transform md:-rotate-1 hover:-translate-y-[1px] opacity-80 hover:opacity-100 transition-all duration-300">
+                <span key={i} className="font-serif italic text-[17px] md:text-[18px] text-primary/80 transform md:-rotate-1 hover:-translate-y-px opacity-80 hover:opacity-100 transition-all duration-300">
                   {detail}
                 </span>
               ))}
@@ -221,9 +221,9 @@ export default function AboutPage() {
 
       {/* Global Footer */}
       <footer className="w-full px-6 md:px-16 lg:px-24 py-6 md:py-14 flex flex-col md:flex-row justify-between items-center gap-5 md:gap-4 z-50 bg-transparent border-t border-border">
-        
+
         {/* Left */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -236,7 +236,7 @@ export default function AboutPage() {
         </motion.div>
 
         {/* Center */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -252,7 +252,7 @@ export default function AboutPage() {
         </motion.div>
 
         {/* Right */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}

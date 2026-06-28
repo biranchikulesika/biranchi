@@ -209,7 +209,7 @@ export default function AdminDashboardPage() {
                 
                 return (
                   <div key={idx} className="flex gap-4 items-start group">
-                    <div className={`mt-[2px] text-[10px] font-mono uppercase w-[70px] shrink-0 text-neutral-500`}>
+                    <div className={`mt-0.5 text-[10px] font-mono uppercase w-17.5 shrink-0 text-neutral-500`}>
                       {actionText}
                     </div>
                     <div className="min-w-0">

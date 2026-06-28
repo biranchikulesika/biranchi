@@ -28,10 +28,10 @@ export default function FundPage() {
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
 
   const [amount, setAmount] = useState('');
-  
+
   const [selectedRecipient, setSelectedRecipient] = useState<any>(null);
   const [isRecordsOpen, setIsRecordsOpen] = useState(false);
-  
+
   const [expandedYears, setExpandedYears] = useState<Record<string, boolean>>({
     '2026': true
   });
@@ -42,13 +42,13 @@ export default function FundPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 4;
-  
+
   const [records, setRecords] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [redirectedTotal, setRedirectedTotal] = useState(0);
 
   const [loading, setLoading] = useState(true);
-  
+
   const [localCurrency, setLocalCurrency] = useState<{code: string, rate: number} | null>(null);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function FundPage() {
         if (data) {
            // Sort by descending date
            const sorted = data.filter((r:any) => !r.hidden).sort((a:any, b:any) => new Date(b.donatedAt || 0).getTime() - new Date(a.donatedAt || 0).getTime());
-           
+
            let total = 0;
            const formattedRecords = sorted.map((r:any, idx:number) => {
               const amt = Number(r.amount) || 0;
@@ -75,7 +75,7 @@ export default function FundPage() {
            });
            setRecords(formattedRecords);
            setRedirectedTotal(total);
-           
+
            // dynamically calculate history
            const yearGroups: Record<string, any> = {};
            sorted.forEach((r:any) => {
@@ -88,7 +88,7 @@ export default function FundPage() {
               if (!yearGroups[year].months[month]) yearGroups[year].months[month] = 0;
               yearGroups[year].months[month] += amt;
            });
-           
+
            const newHistory = Object.keys(yearGroups).sort((a,b)=>Number(b)-Number(a)).map(year => {
               const yg = yearGroups[year];
               return {
@@ -120,7 +120,7 @@ export default function FundPage() {
         const ipRes = await fetch('https://ipapi.co/currency/');
         if (!ipRes.ok) return;
         const code = (await ipRes.text()).trim();
-        
+
         if (!code || code === 'INR' || code.length !== 3) return;
 
         const rateRes = await fetch('https://open.er-api.com/v6/latest/INR');
@@ -150,7 +150,7 @@ export default function FundPage() {
     e.preventDefault();
     if (identityOption === 'name' && !donorName) return;
     if (identityOption === 'name_email' && (!donorName || !donorEmail)) return;
-    
+
     setFlowStep('processing');
     setTimeout(() => {
       setMockReceiptId(`RG-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
@@ -258,13 +258,13 @@ This contribution will become part of a future redistribution cycle.`;
     }
     return null;
   };
-  
+
   const totalPages = Math.ceil(records.length / recordsPerPage);
   const paginatedRecords = records.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage);
 
   if (flowStep === 'success') {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
@@ -283,7 +283,7 @@ This contribution will become part of a future redistribution cycle.`;
           </div>
         </header>
 
-        <div className="flex-grow flex flex-col items-start justify-center px-6 pt-32 pb-16 max-w-2xl mx-auto w-full min-h-[70vh]">
+        <div className="grow flex flex-col items-start justify-center px-6 pt-32 pb-16 max-w-2xl mx-auto w-full min-h-[70vh]">
           <h1 className="font-serif text-3xl md:text-4xl italic dark:text-stone-200 text-stone-800 tracking-tight mb-2">
             Thank You
           </h1>
@@ -314,17 +314,17 @@ This contribution will become part of a future redistribution cycle.`;
         {/* SHARE MODAL (Contextual to Success page) */}
         <AnimatePresence>
           {isShareOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-              <motion.div 
+            <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+              <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-stone-950/40 dark:bg-black/80 backdrop-blur-md" 
-                onClick={() => setIsShareOpen(false)} 
+                className="absolute inset-0 bg-stone-950/40 dark:bg-black/80 backdrop-blur-md"
+                onClick={() => setIsShareOpen(false)}
               />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} 
-                animate={{ opacity: 1, scale: 1 }} 
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative z-10 w-full max-w-[400px] flex flex-col gap-6"
+                className="relative z-10 w-full max-w-100 flex flex-col gap-6"
               >
                 <div className="aspect-square w-full dark:bg-[#030303] bg-white border dark:border-stone-800 border-stone-300 p-8 md:p-10 flex flex-col justify-between text-left shadow-2xl relative">
                   <div>
@@ -334,7 +334,7 @@ This contribution will become part of a future redistribution cycle.`;
                        <span className="block font-mono text-[10px] uppercase tracking-widest dark:text-stone-500 text-stone-500 mt-2">Contributed</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col gap-4 border-t dark:border-stone-800/40 border-stone-200/80 pt-6">
                     <span className="font-sans font-light text-[13px] md:text-sm dark:text-stone-400 text-stone-500 leading-relaxed">
                       The contribution will become part of a future redistribution cycle.
@@ -345,8 +345,8 @@ This contribution will become part of a future redistribution cycle.`;
                   </div>
                 </div>
 
-                <button 
-                  onClick={() => setIsShareOpen(false)} 
+                <button
+                  onClick={() => setIsShareOpen(false)}
                   className="font-mono text-[10px] uppercase tracking-[0.2em] dark:text-stone-500 text-stone-400 hover:dark:text-stone-300 hover:text-stone-600 transition-colors"
                 >
                   Close
@@ -391,7 +391,7 @@ This contribution will become part of a future redistribution cycle.`;
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
@@ -410,8 +410,8 @@ This contribution will become part of a future redistribution cycle.`;
         </div>
       </header>
 
-      <main className="flex-grow pt-32 pb-4 md:pt-40 px-6 md:px-12 mx-auto w-full max-w-6xl flex flex-col">
-        
+      <main className="grow pt-32 pb-4 md:pt-40 px-6 md:px-12 mx-auto w-full max-w-6xl flex flex-col">
+
         {/* SCREEN 1: MESSAGE + ACTION */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start pb-16 md:pb-32">
           {/* LEFT SIDE */}
@@ -433,11 +433,11 @@ This contribution will become part of a future redistribution cycle.`;
           {/* RIGHT SIDE: PAYMENT BOX */}
           <div className="w-full max-w-md ml-auto flex flex-col gap-5 border dark:border-stone-800 border-stone-300 p-8 md:p-10 dark:bg-[#080808] bg-white">
             <h2 className="font-serif text-xl md:text-2xl italic dark:text-stone-200 text-stone-800 mb-2">Pass It Forward</h2>
-            
+
             <form onSubmit={handleInitialSubmit} className="flex flex-col gap-5">
               <div className="flex items-center border-b dark:border-stone-700 border-stone-300 py-3 transition-colors focus-within:dark:border-stone-400 focus-within:border-stone-600">
                 <span className="font-sans text-xl dark:text-stone-400 text-stone-600 mr-2">₹</span>
-                <input 
+                <input
                   type="number"
                   min="10"
                   value={amount}
@@ -446,15 +446,15 @@ This contribution will become part of a future redistribution cycle.`;
                   className="w-full bg-transparent font-sans text-lg outline-none placeholder:dark:text-stone-700 placeholder:text-stone-400 dark:text-stone-200 text-stone-800"
                 />
               </div>
-              <span className="font-mono text-[9px] uppercase tracking-wider dark:text-stone-500 text-stone-500 mt-[-0.5rem]">Minimum ₹10</span>
-              
+              <span className="font-mono text-[9px] uppercase tracking-wider dark:text-stone-500 text-stone-500 -mt-2">Minimum ₹10</span>
+
               <button type="submit" className="px-6 py-4 mt-2 border dark:border-stone-800 border-stone-300 dark:text-stone-200 text-stone-800 hover:bg-black/5 dark:hover:bg-white/5 transition-colors uppercase tracking-[0.2em] text-[10px] sm:text-[11px] font-medium w-full text-center">
                 Continue
               </button>
-              
+
               <div className="mt-4 text-center">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => {
                     const section = document.getElementById('generosity-redirected');
                     if (section) {
@@ -472,7 +472,7 @@ This contribution will become part of a future redistribution cycle.`;
 
         {/* SCREEN 2: TRANSPARENCY + PROOF */}
         <section id="generosity-redirected" className="flex flex-col gap-12 md:gap-16 pt-16 md:pt-24 border-t dark:border-stone-800/40 border-stone-200/80">
-          
+
           {/* HEADER */}
           <div className="flex flex-col gap-4">
             <h2 className="font-serif text-3xl md:text-4xl italic dark:text-stone-200 text-stone-800 tracking-tight">Generosity Redirected</h2>
@@ -501,19 +501,19 @@ This contribution will become part of a future redistribution cycle.`;
                 {/* Table Rows */}
                 {paginatedRecords.map((r) => (
                   <div key={r.id} className="flex items-center py-5 md:py-6 md:px-2 border-b dark:border-stone-800/40 border-stone-200/80 group hover:dark:bg-stone-900/20 hover:bg-stone-50 transition-colors">
-                    
+
                     <div className="flex w-full">
                       <div className="w-3/12 shrink-0 my-auto font-mono text-[10px] md:text-[13px] uppercase tracking-widest text-stone-500 md:font-sans md:normal-case md:tracking-normal md:dark:text-[#a09a8e] md:text-[#55514a]">
                         {r.date}
                       </div>
-                      
+
                       <div className="w-3/12 shrink-0 my-auto font-sans text-lg md:text-xl dark:text-stone-200 text-stone-800 tracking-tight">
                         {r.amount}
                       </div>
-                      
+
                       <div className="w-6/12 my-auto">
-                        <button 
-                          onClick={() => setSelectedRecipient(r)} 
+                        <button
+                          onClick={() => setSelectedRecipient(r)}
                           className="text-left font-sans text-[15px] md:text-base dark:text-stone-200 text-stone-800 tracking-tight underline decoration-stone-500/30 underline-offset-4 hover:decoration-stone-500 transition-colors"
                         >
                           {r.name}
@@ -522,11 +522,11 @@ This contribution will become part of a future redistribution cycle.`;
                     </div>
                   </div>
                 ))}
-                
+
                 {/* Pagination (Only show if > 4 records) */}
                 {records.length > 4 && (
                   <div className="flex items-center justify-between py-6 px-2">
-                    <button 
+                    <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
                       className="font-mono text-[10px] uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 disabled:opacity-30 transition-colors"
@@ -536,7 +536,7 @@ This contribution will become part of a future redistribution cycle.`;
                     <span className="font-mono text-[10px] uppercase tracking-widest text-stone-500">
                       Page {currentPage} of {totalPages}
                     </span>
-                    <button 
+                    <button
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
                       className="font-mono text-[10px] uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 disabled:opacity-30 transition-colors"
@@ -566,9 +566,9 @@ This contribution will become part of a future redistribution cycle.`;
                 </span>
               ) : null}
             </div>
-            
-            <button 
-              onClick={() => setIsRecordsOpen(!isRecordsOpen)} 
+
+            <button
+              onClick={() => setIsRecordsOpen(!isRecordsOpen)}
               className="mt-4 px-6 py-3 border dark:border-stone-800 border-stone-300 dark:text-stone-300 text-stone-700 hover:bg-black/5 dark:hover:bg-white/5 transition-colors uppercase tracking-[0.2em] text-[10px] sm:text-[11px] font-medium"
             >
               {isRecordsOpen ? 'Close Records' : 'View Full Records'}
@@ -576,14 +576,14 @@ This contribution will become part of a future redistribution cycle.`;
 
             <AnimatePresence>
               {isRecordsOpen && (
-                <motion.div 
-                  initial={{ height: 0, opacity: 0 }} 
-                  animate={{ height: 'auto', opacity: 1 }} 
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden w-full max-w-lg mx-auto"
                 >
                   <div className="flex flex-col font-mono text-xs md:text-sm mt-12 pt-8 border-t dark:border-stone-800/40 border-stone-200/80 text-left">
-                    
+
                     {/* Timestamp */}
                     <div className="font-mono text-[9px] uppercase tracking-wider dark:text-stone-500 text-stone-400 mb-8 leading-relaxed text-center flex flex-col gap-4">
                       <span>Last updated:<br/>1 June 2026, 9:42 PM IST</span>
@@ -602,8 +602,8 @@ This contribution will become part of a future redistribution cycle.`;
                         const isExpanded = expandedYears[yData.year];
                         return (
                           <div key={yData.year} className={`flex flex-col border-b dark:border-stone-800/40 border-stone-200/80 ${idx === 0 ? 'border-t' : ''}`}>
-                            <button 
-                              onClick={() => toggleYear(yData.year)} 
+                            <button
+                              onClick={() => toggleYear(yData.year)}
                               className="flex justify-between items-center py-6 text-left focus:outline-none hover:opacity-70 transition-opacity w-full"
                             >
                               <span className="font-sans font-medium text-base dark:text-stone-200 text-stone-800">
@@ -613,7 +613,7 @@ This contribution will become part of a future redistribution cycle.`;
                                 {yData.total}
                               </span>
                             </button>
-                            
+
                             {isExpanded && (
                               <div className="flex flex-col gap-4 pb-8 md:px-4 text-[11px] uppercase tracking-widest dark:text-stone-400 text-stone-600">
                                 {yData.months.map((m: any, mIdx: number) => (
@@ -641,7 +641,7 @@ This contribution will become part of a future redistribution cycle.`;
 
         {/* BOTTOM CTA */}
         <section className="flex justify-center pt-8 pb-12 md:pb-16">
-          <button 
+          <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="font-mono text-[10px] uppercase tracking-[0.2em] dark:text-stone-500 text-stone-500 hover:dark:text-stone-300 hover:text-stone-800 transition-colors flex items-center gap-2"
           >
@@ -692,38 +692,38 @@ This contribution will become part of a future redistribution cycle.`;
       {/* RECIPIENT MODAL */}
       <AnimatePresence>
         {selectedRecipient && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-stone-950/20 dark:bg-black/60 backdrop-blur-sm" 
-              onClick={() => setSelectedRecipient(null)} 
+              className="absolute inset-0 bg-stone-950/20 dark:bg-black/60 backdrop-blur-sm"
+              onClick={() => setSelectedRecipient(null)}
             />
-            <motion.div 
-              initial={{ opacity: 0, y: 15, scale: 0.98 }} 
-              animate={{ opacity: 1, y: 0, scale: 1 }} 
+            <motion.div
+              initial={{ opacity: 0, y: 15, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 15, scale: 0.98 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="relative w-full max-w-lg dark:bg-[#0a0a0a] bg-[#fafafa] border dark:border-stone-800 border-stone-200 p-8 md:p-12 flex flex-col gap-8 shadow-2xl z-10"
             >
-              <button 
-                className="absolute top-6 right-6 font-mono text-[10px] uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 transition-colors" 
+              <button
+                className="absolute top-6 right-6 font-mono text-[10px] uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 transition-colors"
                 onClick={() => setSelectedRecipient(null)}
               >
                 Close
               </button>
-              
+
               <h3 className="font-serif text-2xl md:text-3xl italic dark:text-stone-200 text-stone-800 pr-8">
                 {selectedRecipient.name}
               </h3>
-              
+
               <div className="flex flex-col gap-6 pt-6 border-t dark:border-stone-800/40 border-stone-200/80">
-                 
+
                  <div className="flex flex-col gap-2">
                    <span className="font-mono text-[10px] uppercase tracking-widest text-stone-500">Category</span>
                    <span className="font-sans text-[15px] dark:text-stone-300 text-stone-700 leading-none">{selectedRecipient.category}</span>
                  </div>
-                 
+
                  <div className="flex justify-between gap-4">
                    <div className="flex flex-col gap-2">
                      <span className="font-mono text-[10px] uppercase tracking-widest text-stone-500">Amount</span>
@@ -734,18 +734,18 @@ This contribution will become part of a future redistribution cycle.`;
                      <span className="font-sans text-[15px] dark:text-stone-300 text-stone-700 leading-none">{selectedRecipient.date}</span>
                    </div>
                  </div>
-                 
+
                  <div className="flex flex-col gap-2">
                    <span className="font-mono text-[10px] uppercase tracking-widest text-stone-500">Description</span>
                    <span className="font-sans font-light text-[15px] leading-relaxed dark:text-[#a09a8e] text-[#55514a]">{selectedRecipient.desc}</span>
                  </div>
-                 
+
                  <div className="mt-4 pt-2">
                    <a href={selectedRecipient.proof} target="_blank" rel="noreferrer" className="inline-block text-center font-mono text-[10px] uppercase tracking-[0.2em] px-6 py-3 border dark:border-stone-700 border-stone-300 dark:text-stone-300 text-stone-700 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                       View Document
                    </a>
                  </div>
-                 
+
               </div>
             </motion.div>
           </div>
@@ -755,19 +755,19 @@ This contribution will become part of a future redistribution cycle.`;
       {/* IDENTITY MODAL */}
       <AnimatePresence>
         {flowStep === 'identity' && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-stone-950/20 dark:bg-black/60 backdrop-blur-sm" 
-              onClick={() => setFlowStep('idle')} 
+              className="absolute inset-0 bg-stone-950/20 dark:bg-black/60 backdrop-blur-sm"
+              onClick={() => setFlowStep('idle')}
             />
-            <motion.div 
-              initial={{ opacity: 0, y: 15, scale: 0.98 }} 
-              animate={{ opacity: 1, y: 0, scale: 1 }} 
+            <motion.div
+              initial={{ opacity: 0, y: 15, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 15, scale: 0.98 }}
               className="relative w-full max-w-lg dark:bg-[#0a0a0a] bg-[#fafafa] border dark:border-stone-800 border-stone-200 p-8 md:p-12 flex flex-col gap-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
             >
-              <button 
+              <button
                 type="button"
                 className="absolute top-6 right-6 font-mono text-[10px] uppercase tracking-widest text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 transition-colors"
                 onClick={() => setFlowStep('idle')}
@@ -775,14 +775,14 @@ This contribution will become part of a future redistribution cycle.`;
                 Close
               </button>
               <h3 className="font-serif text-2xl italic dark:text-stone-200 text-stone-800 pr-8">How would you like to contribute?</h3>
-              
+
               <form onSubmit={handleIdentitySubmit} className="flex flex-col gap-6 pt-2">
                  <div className="flex flex-col gap-4">
-                   
+
                    {/* Option Anonymous */}
                    <label className={`flex flex-col gap-2 p-5 border cursor-pointer transition-colors ${identityOption === 'anonymous' ? 'dark:border-stone-500 border-stone-500 dark:bg-stone-900/30 bg-stone-100' : 'dark:border-stone-800 border-stone-200 hover:dark:border-stone-600 hover:border-stone-400'}`}>
                      <div className="flex items-center gap-3">
-                       <div className={`w-3.5 h-3.5 rounded-full border flex flex-shrink-0 items-center justify-center transition-colors ${identityOption === 'anonymous' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
+                       <div className={`w-3.5 h-3.5 rounded-full border flex shrink-0 items-center justify-center transition-colors ${identityOption === 'anonymous' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
                           {identityOption === 'anonymous' && <div className="w-1.5 h-1.5 rounded-full dark:bg-stone-300 bg-stone-700" />}
                        </div>
                        <input type="radio" className="hidden" checked={identityOption === 'anonymous'} onChange={() => setIdentityOption('anonymous')} />
@@ -798,7 +798,7 @@ This contribution will become part of a future redistribution cycle.`;
                    {/* Option Name */}
                    <label className={`flex flex-col gap-2 p-5 border cursor-pointer transition-colors ${identityOption === 'name' ? 'dark:border-stone-500 border-stone-500 dark:bg-stone-900/30 bg-stone-100' : 'dark:border-stone-800 border-stone-200 hover:dark:border-stone-600 hover:border-stone-400'}`}>
                      <div className="flex items-center gap-3">
-                       <div className={`w-3.5 h-3.5 rounded-full border flex flex-shrink-0 items-center justify-center transition-colors ${identityOption === 'name' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
+                       <div className={`w-3.5 h-3.5 rounded-full border flex shrink-0 items-center justify-center transition-colors ${identityOption === 'name' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
                           {identityOption === 'name' && <div className="w-1.5 h-1.5 rounded-full dark:bg-stone-300 bg-stone-700" />}
                        </div>
                        <input type="radio" className="hidden" checked={identityOption === 'name'} onChange={() => setIdentityOption('name')} />
@@ -817,7 +817,7 @@ This contribution will become part of a future redistribution cycle.`;
                    {/* Option Name & Email */}
                    <label className={`flex flex-col gap-2 p-5 border cursor-pointer transition-colors ${identityOption === 'name_email' ? 'dark:border-stone-500 border-stone-500 dark:bg-stone-900/30 bg-stone-100' : 'dark:border-stone-800 border-stone-200 hover:dark:border-stone-600 hover:border-stone-400'}`}>
                      <div className="flex items-center gap-3">
-                       <div className={`w-3.5 h-3.5 rounded-full border flex flex-shrink-0 items-center justify-center transition-colors ${identityOption === 'name_email' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
+                       <div className={`w-3.5 h-3.5 rounded-full border flex shrink-0 items-center justify-center transition-colors ${identityOption === 'name_email' ? 'dark:border-stone-300 border-stone-700' : 'dark:border-stone-700 border-stone-300'}`}>
                           {identityOption === 'name_email' && <div className="w-1.5 h-1.5 rounded-full dark:bg-stone-300 bg-stone-700" />}
                        </div>
                        <input type="radio" className="hidden" checked={identityOption === 'name_email'} onChange={() => setIdentityOption('name_email')} />
@@ -852,12 +852,12 @@ This contribution will become part of a future redistribution cycle.`;
       {/* PROCESSING MODAL */}
       <AnimatePresence>
         {flowStep === 'processing' && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-            <motion.div 
+          <div className="fixed inset-0 z-110lex items-center justify-center p-4">
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-stone-950/30 dark:bg-black/80 backdrop-blur-md" 
+              className="absolute inset-0 bg-stone-950/30 dark:bg-black/80 backdrop-blur-md"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
               className="relative z-10 flex flex-col items-center gap-6"

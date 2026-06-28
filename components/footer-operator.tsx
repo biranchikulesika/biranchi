@@ -17,9 +17,9 @@ export function FooterOperator() {
             <h3 className="font-normal text-primary/80 tracking-widest uppercase text-[10px] md:text-[11px]">[broadcast]</h3>
             <p className="text-primary/90 text-sm">Occasional thoughts on systems, infrastructure, technology, and the internet.</p>
             <form className="flex flex-col sm:flex-row gap-2 mt-2 w-full max-w-md" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="your@email.com" 
+              <input
+                type="email"
+                placeholder="your@email.com"
                 className="bg-muted border border-border text-foreground px-3 py-2 flex-1 min-w-0 focus:outline-none focus:border-primary transition-colors font-mono placeholder:text-primary/50"
                 required
               />
@@ -31,21 +31,21 @@ export function FooterOperator() {
         </div>
         <div className="grid grid-cols-3 gap-4 md:gap-8 w-full lg:w-1/2">
           <div className="flex flex-col gap-3 text-xs md:text-sm">
-            <h3 className="font-normal text-primary/80 mb-3 tracking-[0.1em] md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[directories]</h3>
+            <h3 className="font-normal text-primary/80 mb-3 tracking-widest md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[directories]</h3>
             <Link href={getPersonaUrl('builder')} className="hover:text-foreground transition-colors truncate">~/builder</Link>
             <Link href={getPersonaUrl('operator')} className="hover:text-foreground transition-colors truncate">~/operator</Link>
             <Link href={getPersonaUrl('thinker')} className="hover:text-foreground transition-colors truncate">~/thinker</Link>
             <Link href={getPersonaUrl('wanderer')} className="hover:text-foreground transition-colors truncate">~/wanderer</Link>
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
-            <h3 className="font-normal text-primary/80 mb-3 tracking-[0.1em] md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[connections]</h3>
+            <h3 className="font-normal text-primary/80 mb-3 tracking-widest md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[connections]</h3>
             <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors truncate">GitHub</a>
             <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors truncate">LinkedIn</a>
             <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors truncate">Twitter</a>
             <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors truncate">Instagram</a>
           </div>
           <div className="flex flex-col gap-3 text-xs md:text-sm">
-            <h3 className="font-normal text-primary/80 mb-3 tracking-[0.1em] md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[resources]</h3>
+            <h3 className="font-normal text-primary/80 mb-3 tracking-widest md:tracking-widest uppercase text-[10px] md:text-[11px] truncate">[resources]</h3>
             <Link href={getPersonaUrl('operator', '/about')} className="hover:text-foreground transition-colors truncate">About</Link>
             <Link href="#" className="hover:text-foreground transition-colors truncate">Logs</Link>
             <Link href="#" className="hover:text-foreground transition-colors truncate">Feedback</Link>

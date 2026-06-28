@@ -7,7 +7,7 @@ export default function WandererNotFound() {
         <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight text-foreground">page not found</h1>
         <div className="space-y-2 opacity-80 font-serif text-lg md:text-xl text-foreground/80 leading-relaxed font-light">
           <p>You have stepped past the edge of the map.</p>
-          <p>This is a path that hasn't been traveled yet, a sudden fork in the road.</p>
+          <p>This is a path that hasn&apos;t been traveled yet, a sudden fork in the road.</p>
           <p>Take a breath and find your bearings.</p>
         </div>
         <div className="pt-8">

@@ -22,11 +22,11 @@ export default function WandererPage() {
   const [fragmentIndex, setFragmentIndex] = useState(0);
   const [subscribed, setSubscribed] = useState(false);
   const [email, setEmail] = useState('');
-  
+
   const [fragmentsData, setFragmentsData] = useState<string[]>([]);
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [archiveEntries, setArchiveEntries] = useState<any[]>([]);
-  
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,13 +37,13 @@ export default function WandererPage() {
           getJournalMoments(),
           getPostsMeta()
         ]);
-        
+
         let frags = [];
         if (fData && fData.length > 0) {
           frags = fData.filter((f:any) => !f.hidden).sort((a:any, b:any) => (a.order || 0) - (b.order || 0)).map((f:any) => f.text || f.content);
         }
         setFragmentsData(frags);
-        
+
         if (pData) {
           let visiblePosts = pData.filter((p:any) => !p.hidden && p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.persona?.toLowerCase() === 'wanderer');
 
@@ -52,7 +52,7 @@ export default function WandererPage() {
              if (!a.featured && b.featured) return 1;
              return new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime();
           });
-          
+
           const latest = allPosts.slice(0, 3).map((p:any) => ({
              slug: p.slug || p.id,
              date: p.publishedAt || 'Unknown',
@@ -62,7 +62,7 @@ export default function WandererPage() {
              thumbnailAlt: p.title || 'Thumbnail'
           }));
           setLatestPosts(latest);
-          
+
           const archive = allPosts.slice(3).map((p:any) => ({
              title: p.title,
              date: p.publishedAt || 'Unknown',
@@ -70,7 +70,7 @@ export default function WandererPage() {
           }));
           setArchiveEntries(archive);
         }
-        
+
       } catch (e) {
         console.error("Error loading wanderer data", e);
       } finally {
@@ -97,17 +97,17 @@ export default function WandererPage() {
   const currentFrags = fragmentsData.length > 0 ? fragmentsData : [];
   const displayLatest = latestPosts;
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.4, ease: 'easeOut' }}
       className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 py-12 lg:py-24 relative font-spectral"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-        
+
         {/* LEFT SIDE: MAIN READING FLOW */}
         <div className="lg:col-span-8 space-y-20 lg:space-y-32">
-          
+
           {/* HERO SECTION */}
           <header className="max-w-2xl select-none">
             <span id="hero-eyebrow" className="font-sans text-[10px] md:text-[11px] uppercase tracking-[0.25em] dark:text-[#B97A56] text-[#B67A55] block mb-4 md:mb-5 opacity-80">
@@ -136,7 +136,7 @@ export default function WandererPage() {
           {/* LATEST REFLECTIONS SECTION */}
           <section id="latest-reflections" className="space-y-16 lg:space-y-20">
             <div className="border-b border-[#E5DCCF] dark:border-[#E5DCCF]/15 pb-1.5 select-none">
-              <h2 className="font-sans text-[9.5px] uppercase tracking-[0.25em] dark:text-[#B97A56]/85 text-[#B67A55]/85 font-medium tracking-widest block">
+              <h2 className="font-sans text-[9.5px] uppercase dark:text-[#B97A56]/85 text-[#B67A55]/85 font-medium tracking-widest block">
                 LATEST REFLECTIONS
               </h2>
             </div>
@@ -153,11 +153,11 @@ export default function WandererPage() {
                 // Post 2: Image on left (4 cols), empty gap (1 col), text on right (7 cols)
                 return (
                   <article key={post.slug} className={`group ${index === 0 ? 'mb-16 lg:mb-28' : index === 1 ? 'mb-20 lg:mb-32' : 'mb-0'}`}>
-                    
+
                     {/* Mobile view post structure - Completely simplified and beautiful */}
                     <div className="block lg:hidden space-y-4">
                       {/* [thumbnail] */}
-                      <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm">
+                      <div className="relative aspect-3/2 w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm">
                         {post.thumbnailUrl ? (
                           <Image
                             src={post.thumbnailUrl}
@@ -165,10 +165,10 @@ export default function WandererPage() {
                             fill
                             sizes="(max-w-768px) 100vw, 800px"
                             referrerPolicy="no-referrer"
-                            className="object-cover w-full h-full filter grayscale-[22%] contrast-[88%] sepia-[12%] saturate-[75%] brightness-[92%] dark:brightness-[76%]"
+                            className="object-cover w-full h-full filter grayscale-22 contrast-88 sepia-12 saturate-75 brightness-92 dark:brightness-76"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
+                          <div className="w-full h-full bg-linear-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
                         )}
                       </div>
                       {/* [title] */}
@@ -193,7 +193,7 @@ export default function WandererPage() {
                         <>
                           {/* Post 1: Image Left, Text Right */}
                           <div className="lg:col-span-5 pr-10">
-                            <div className="relative aspect-[3/2] w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm my-2">
+                            <div className="relative aspect-3/2 w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm my-2">
                               {post.thumbnailUrl ? (
                                 <Image
                                   src={post.thumbnailUrl}
@@ -201,10 +201,10 @@ export default function WandererPage() {
                                   fill
                                   sizes="320px"
                                   referrerPolicy="no-referrer"
-                                  className="object-cover w-full h-full filter grayscale-[22%] contrast-[88%] sepia-[12%] saturate-[75%] brightness-[92%] dark:brightness-[76%] group-hover:grayscale-[8%] group-hover:brightness-[94%] dark:group-hover:brightness-[84%] transition-all duration-700 ease-in-out"
+                                  className="object-cover w-full h-full filter grayscale-22 contrast-88 sepia-12 saturate-75 brightness-92 dark:brightness-76 group-hover:grayscale-8 group-hover:brightness-94 dark:group-hover:brightness-84 transition-all duration-700 ease-in-out"
                                 />
                               ) : (
-                                <div className="w-full h-full bg-gradient-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
+                                <div className="w-full h-full bg-linear-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
                               )}
                             </div>
                           </div>
@@ -240,12 +240,12 @@ export default function WandererPage() {
                               {post.excerpt}
                             </p>
                           </div>
-                          
+
                           {/* 1 col empty buffer to let layout breathe */}
                           <div className="lg:col-span-1" />
 
                           <div className="lg:col-span-4">
-                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface border border-border rounded-[1px] my-1 opacity-90 shadow-sm">
+                            <div className="relative aspect-4/3 w-full overflow-hidden bg-surface border border-border rounded-[1px] my-1 opacity-90 shadow-sm">
                               {post.thumbnailUrl ? (
                                 <Image
                                   src={post.thumbnailUrl}
@@ -253,10 +253,10 @@ export default function WandererPage() {
                                   fill
                                   sizes="260px"
                                   referrerPolicy="no-referrer"
-                                  className="object-cover w-full h-full filter grayscale-[25%] contrast-[86%] sepia-[14%] saturate-[70%] brightness-[90%] dark:brightness-[74%] group-hover:grayscale-[5%] group-hover:brightness-[93%] dark:group-hover:brightness-[81%] transition-all duration-700 ease-in-out"
+                                  className="object-cover w-full h-full filter grayscale-25 contrast-86 sepia-14 saturate-70 brightness-90 dark:brightness-74 group-hover:grayscale-5 group-hover:brightness-93 dark:group-hover:brightness-81 transition-all duration-700 ease-in-out"
                                 />
                               ) : (
-                                <div className="w-full h-full bg-gradient-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
+                                <div className="w-full h-full bg-linear-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
                               )}
                             </div>
                           </div>
@@ -267,7 +267,7 @@ export default function WandererPage() {
                         <>
                           {/* Post 3: Alternate Ratio Image Left, Gap, Text Right */}
                           <div className="lg:col-span-4">
-                            <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm my-2">
+                            <div className="relative aspect-16/10 w-full overflow-hidden bg-surface border border-border rounded-[1px] shadow-sm my-2">
                               {post.thumbnailUrl ? (
                                 <Image
                                   src={post.thumbnailUrl}
@@ -275,10 +275,10 @@ export default function WandererPage() {
                                   fill
                                   sizes="320px"
                                   referrerPolicy="no-referrer"
-                                  className="object-cover w-full h-full filter grayscale-[22%] contrast-[88%] sepia-[12%] saturate-[75%] brightness-[92%] dark:brightness-[76%] group-hover:grayscale-[8%] group-hover:brightness-[94%] dark:group-hover:brightness-[84%] transition-all duration-700 ease-in-out"
+                                  className="object-cover w-full h-full filter grayscale-22 contrast-88 sepia-12 saturate-75 brightness-92 dark:brightness-76 group-hover:grayscale-8 group-hover:brightness-94 dark:group-hover:brightness-84 transition-all duration-700 ease-in-out"
                                 />
                               ) : (
-                                <div className="w-full h-full bg-gradient-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
+                                <div className="w-full h-full bg-linear-to-tr from-[#EAE3D5] to-[#D5CDBD] dark:from-[#15110E] dark:to-[#221C16]" />
                               )}
                             </div>
                           </div>
@@ -315,16 +315,16 @@ export default function WandererPage() {
               <span className="text-[9.5px] font-sans tracking-[0.25em] text-[#B67A55]/70 dark:text-[#B97A56]/70 uppercase font-medium">
                 FRAGMENT • NO. 8
               </span>
-              <button 
+              <button
                 onClick={handleNextFragment}
-                className="text-[9.5px] font-sans uppercase tracking-[0.1em] text-[#8A7C70]/80 dark:text-[#B6A798]/75 hover:text-[#B67A55] dark:hover:text-[#B97A56] underline cursor-pointer duration-300 transition-colors bg-transparent border-none p-0"
+                className="text-[9.5px] font-sans uppercase tracking-widest text-[#8A7C70]/80 dark:text-[#B6A798]/75 hover:text-[#B67A55] dark:hover:text-[#B97A56] underline cursor-pointer duration-300 transition-colors bg-transparent border-none p-0"
                 id="fragment-cycle-button"
               >
                 READ ANOTHER
               </button>
             </div>
 
-            <div className="min-h-[70px] flex items-center pr-4">
+            <div className="min-h-17.5 flex items-center pr-4">
               <p className="text-[17.5px] sm:text-lg italic font-light text-[#43382F] dark:text-[#E1D5C8] leading-relaxed max-w-xl pl-5 border-l border-[#B67A55]/20 dark:border-[#B97A56]/20 transition-all duration-500 ease-in-out">
                 {currentFrags.length > 0 ? `“${currentFrags[fragmentIndex]}”` : "No fragments collected yet."}
               </p>
@@ -353,8 +353,8 @@ export default function WandererPage() {
                   className="bg-transparent border-b border-[#E5DCCF] dark:border-[#E5DCCF]/25 dark:text-[#DDD2C5] text-[#43382F] py-1.5 focus:outline-none focus:border-[#B97A56]/50 dark:focus:border-[#B97A56]/50 transition-colors placeholder:dark:text-[#6F645A] placeholder:text-[#8A7C70]/60 font-spectral italic text-sm"
                   required
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="dark:text-[#B6A798] text-[#8A7C70] hover:dark:text-[#B97A56] hover:text-[#B67A55] py-1 transition-colors font-spectral italic text-xs uppercase tracking-widest cursor-pointer text-left"
                 >
                   Receive Letters
@@ -369,7 +369,7 @@ export default function WandererPage() {
           {/* OLDER REFLECTIONS & ARCHIVE */}
           <section id="older-reflections-archive" className="space-y-12 pb-12 border-t border-[#E5DCCF] dark:border-[#E5DCCF]/15 pt-16">
             <div className="border-b border-[#E5DCCF] dark:border-[#E5DCCF]/15 pb-1.5 select-none">
-              <h2 className="font-sans text-[9.5px] uppercase tracking-[0.25em] dark:text-[#B97A56]/85 text-[#B67A55]/85 font-medium tracking-widest block">
+              <h2 className="font-sans text-[9.5px] uppercase dark:text-[#B97A56]/85 text-[#B67A55]/85 font-medium tracking-widest block">
                 OLDER REFLECTIONS & ARCHIVE
               </h2>
             </div>
@@ -377,8 +377,8 @@ export default function WandererPage() {
             {/* Subtle timeline container - narrowed and intimate */}
             <div className="relative pl-4 sm:pl-5 ml-0 mt-8">
               {/* Vertical timeline line fading naturally to transition into footer area - ultra light and atmospheric */}
-              <div className="absolute left-0 top-1.5 bottom-0 w-[1px] bg-gradient-to-b from-[#B67A55]/25 via-[#B67A55]/12 to-transparent dark:from-[#B97A56]/25 dark:via-[#B97A56]/12 dark:to-transparent" />
-              
+              <div className="absolute left-0 top-1.5 bottom-0 w-px bg-linear-to-b from-[#B67A55]/25 via-[#B67A55]/12 to-transparent dark:from-[#B97A56]/25 dark:via-[#B97A56]/12 dark:to-transparent" />
+
               <div className="space-y-12 md:space-y-14">
                 {archiveEntries.length === 0 ? (
                   <div className="py-10 text-[#8A7C70] dark:text-[#B6A798]/60 font-spectral italic opacity-60">
@@ -388,16 +388,16 @@ export default function WandererPage() {
                   return (
                     <div key={idx} className="relative">
                       {/* Quiet and soft timeline marker circle - micro scale for pure atmospheric feeling */}
-                      <span className="absolute -left-[18.2px] sm:-left-[22.2px] top-[7px] w-1 h-1 rounded-full bg-[#B67A55]/40 dark:bg-[#B97A56]/40 transition-colors duration-300" />
-                      
+                      <span className="absolute left-[-18.2px] sm:left-[-22.2px] top-1.75 w-1 h-1 rounded-full bg-[#B67A55]/40 dark:bg-[#B97A56]/40 transition-colors duration-300" />
+
                       {/* Date Above Title */}
                       <div className="text-[9px] font-mono tracking-normal text-[#8A7C70]/60 dark:text-[#B6A798]/45 uppercase select-none mb-2">
                         {entry.date}
                       </div>
 
                       {/* Title - dominant, quiet, literary */}
-                      <Link 
-                        href={entry.slug !== '#' ? `/p/${entry.slug}` : '#'} 
+                      <Link
+                        href={entry.slug !== '#' ? `/p/${entry.slug}` : '#'}
                         className="font-cormorant italic text-[17.5px] md:text-[18.5px] leading-relaxed text-[#43382F] dark:text-[#DDD2C5] hover:text-[#B67A55] dark:hover:text-[#B97A56] duration-500 transition-colors block max-w-xl"
                       >
                         {entry.title}
@@ -425,7 +425,7 @@ export default function WandererPage() {
         {/* RIGHT SIDE: ATMOSPHERIC RAIL (ONLY ON DESKTOP) */}
         {/* Softened border and designed as un-chunky discovered margin notes */}
         <aside id="desktop-atmospheric-rail" className="hidden lg:flex flex-col lg:col-span-4 pl-12 border-l border-[#E5DCCF] dark:border-[#E5DCCF]/15 h-[calc(100vh-200px)] sticky top-36 select-none justify-between my-4 pt-10 pb-6">
-          
+
           {/* TOP: Atmospheric Notes */}
           <div className="space-y-3.5 pr-4">
             <span className="text-[9.5px] font-sans tracking-[0.25em] text-[#B67A55]/85 dark:text-[#B97A56]/85 uppercase font-medium block">
@@ -439,7 +439,7 @@ export default function WandererPage() {
             </p>
           </div>
 
-          <div className="flex-grow h-32" /> {/* Large breathing gap */}
+          <div className="grow h-32" /> {/* Large breathing gap */}
 
           {/* MIDDLE: Letters Signup Section with very thin border transitions and low product-style contrast */}
           <div className="space-y-4 py-8 border-y border-[#E5DCCF] dark:border-[#E5DCCF]/15 pr-4">
@@ -449,7 +449,7 @@ export default function WandererPage() {
             <p className="font-spectral font-light text-[13px] leading-[1.75] dark:text-[#AFA192] text-[#807266] italic">
               Sometimes I send quiet letters about memories, places, unfinished thoughts, and the things I notice when life slows down.
             </p>
-            
+
             {subscribed ? (
               <p className="text-[11.5px] font-sans tracking-wide text-[#B67A55]/90 dark:text-[#B97A56]/90 italic pt-1">
                 Thank you. I will write to you soon.
@@ -464,8 +464,8 @@ export default function WandererPage() {
                   className="bg-transparent border-b border-[#E5DCCF] dark:border-[#E5DCCF]/25 dark:text-[#DDD2C5] text-[#43382F] py-1 w-full focus:outline-none focus:border-[#B97A56]/50 dark:focus:border-[#B97A56]/50 transition-colors placeholder:dark:text-[#6F645A] placeholder:text-[#8A7C70]/60 font-spectral italic text-[13.5px]"
                   required
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="dark:text-[#B6A798]/90 text-[#8A7C70]/90 hover:dark:text-[#B97A56] hover:text-[#B67A55] py-1 w-full transition-all duration-300 font-spectral italic text-[11.5px] uppercase tracking-widest cursor-pointer text-left"
                 >
                   Receive Letters
@@ -478,7 +478,7 @@ export default function WandererPage() {
             </p>
           </div>
 
-          <div className="flex-grow h-32" /> {/* Large breathing gap */}
+          <div className="grow h-32" /> {/* Large breathing gap */}
 
           {/* BOTTOM: Tiny Forgotten Footer Note */}
           <div className="text-[10.5px] font-mono text-[#8A7C70]/60 dark:text-[#B6A798]/45 italic pt-1 pr-4">

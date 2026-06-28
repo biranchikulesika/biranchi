@@ -39,7 +39,7 @@ export function ArticleGrid({ posts, persona }: ArticleGridProps) {
             {/* Post Thumbnail */}
             <Link href={`/p/${post.slug}`} className="block">
               {(post.coverImageUrl) ? (
-                <div className={`relative aspect-[3/2] w-full overflow-hidden border bg-neutral-900/10 ${
+                <div className={`relative aspect-3/2 w-full overflow-hidden border bg-neutral-900/10 ${
                   isOperator ? 'rounded-none' : 'rounded-[1.5px]'
                 } ${theme.borderColor}`}>
                   <Image
@@ -48,15 +48,15 @@ export function ArticleGrid({ posts, persona }: ArticleGridProps) {
                     fill
                     referrerPolicy="no-referrer"
                     className={`object-cover w-full h-full filter duration-700 ease-in-out group-hover:scale-[1.015] ${
-                      isOperator 
-                        ? 'grayscale-[35%] contrast-[110%]' 
-                        : 'grayscale-[20%] contrast-[90%] sepia-[10%] saturate-[80%] brightness-[92%] dark:brightness-[76%] group-hover:grayscale-0 group-hover:contrast-100 group-hover:sepia-0 group-hover:saturate-100 group-hover:brightness-100 dark:group-hover:brightness-90'
+                      isOperator
+                        ? 'grayscale-35 contrast-110'
+                        : 'grayscale-20ntrast-[90%] sepia-10 saturate-80 brightness-92rk:brightness-76 group-hover:grayscale-0 group-hover:contrast-100 group-hover:sepia-0 group-hover:saturate-100 group-hover:brightness-100 dark:group-hover:brightness-90'
                     }`}
                     sizes="(max-w-768px) 100vw, 300px"
                   />
                 </div>
               ) : (
-                <div className={`w-full aspect-[3/2] border border-dashed flex flex-col justify-center items-center text-center p-6 ${theme.borderColor} ${theme.metaFont}`}>
+                <div className={`w-full aspect-3/2order border-dashed flex flex-col justify-center items-center text-center p-6 ${theme.borderColor} ${theme.metaFont}`}>
                   <span>Notebook trace</span>
                   <span className="text-[9px] mt-1 italic block opacity-50">Private recollection library</span>
                 </div>
@@ -99,9 +99,9 @@ export function ArticleGrid({ posts, persona }: ArticleGridProps) {
             <Link
               href={`/p/${post.slug}`}
               className={`text-xs uppercase tracking-widest font-mono font-medium inline-flex items-center gap-1.5 border-b border-transparent hover:border-current pb-0.5 transition-all duration-300 ${
-                isOperator 
-                  ? 'text-emerald-500 hover:text-emerald-400' 
-                  : persona === 'builder' 
+                isOperator
+                  ? 'text-emerald-500 hover:text-emerald-400'
+                  : persona === 'builder'
                   ? 'text-orange-500 hover:text-orange-400'
                   : isWanderer
                   ? 'text-primary'

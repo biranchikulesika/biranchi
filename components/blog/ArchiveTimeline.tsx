@@ -29,7 +29,7 @@ function parseDateMeta(dateStr: string): DateMeta {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
   const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  
+
   let foundMonthName = 'May';
   let foundMonthIdx = 4; // default May
 
@@ -165,7 +165,7 @@ export function ArchiveTimeline({ posts, persona }: ArchiveTimelineProps) {
 
                             {/* Optional Thumbnail Image */}
                             {(post.coverImageUrl) && (
-                              <div className="hidden md:block flex-shrink-0 select-none">
+                              <div className="hidden md:block shrink-0ct-none">
                                 <Link href={`/p/${post.slug}`}>
                                   <div className={`relative w-20 h-16 sm:w-28 sm:h-20 overflow-hidden border rounded-lg bg-zinc-950 ${theme.borderColor}`}>
                                     <Image
@@ -173,7 +173,7 @@ export function ArchiveTimeline({ posts, persona }: ArchiveTimelineProps) {
                                       alt={post.title}
                                       fill
                                       referrerPolicy="no-referrer"
-                                      className="object-cover w-full h-full filter saturate-[85%]"
+                                      className="object-cover w-full h-full filter saturate-85"
                                       sizes="120px"
                                     />
                                   </div>

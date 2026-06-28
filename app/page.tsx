@@ -18,7 +18,7 @@ function Typewriter() {
   const [targetWord, setTargetWord] = useState("Kulesika");
   const [phase, setPhase] = useState<'paused' | 'deleting' | 'preparing' | 'typing'>('paused');
   const [validPhrases, setValidPhrases] = useState<string[]>(["Kulesika", ...PHRASES]);
-  
+
   const containerRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
   const phraseQueueRef = useRef<string[]>([]);
@@ -38,7 +38,7 @@ function Typewriter() {
       const rect = containerRef.current.getBoundingClientRect();
       const bodyPadding = parseInt(window.getComputedStyle(document.body).paddingRight || '0');
       const availableWidth = window.innerWidth - rect.left - bodyPadding - 32; // 32px safe margin
-      
+
       const valid: string[] = ["Kulesika"];
       for (const phrase of PHRASES) {
         measureRef.current.textContent = phrase;
@@ -69,7 +69,7 @@ function Typewriter() {
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
-    
+
     if (phase === 'paused') {
       timeout = setTimeout(() => {
         setPhase('deleting');
@@ -104,7 +104,7 @@ function Typewriter() {
         }, 10);
       }
     }
-    
+
     return () => clearTimeout(timeout);
   }, [text, phase, targetWord, validPhrases]);
 
@@ -119,7 +119,7 @@ function Typewriter() {
 
 function NavCard({ title, subtitle, desc, href }: { title: string, subtitle: string, desc: string, href: string }) {
   return (
-    <Link href={href} className="flex flex-col justify-between group p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl border border-border bg-muted/50 hover:bg-muted hover:border-border transition-all duration-700 ease-out min-h-[110px] md:min-h-[170px]">
+    <Link href={href} className="flex flex-col justify-between group p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl border border-border bg-muted/50 hover:bg-muted hover:border-border transition-all duration-700 ease-out min-h-27.5 md:min-h-42.5">
       <div className="flex justify-between items-start mb-4 md:mb-8">
         <span className="font-mono text-[9px] md:text-[10px] tracking-[0.2em] text-primary uppercase">{title}</span>
         <ArrowUpRight className="w-3.5 h-3.5 text-primary group-hover:text-foreground transition-colors duration-500" />
@@ -181,13 +181,13 @@ export default function Home() {
   ];
 
   const toggleTopic = (cat: string) => {
-    setSelectedTopics(prev => 
+    setSelectedTopics(prev =>
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
     );
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
@@ -210,8 +210,8 @@ export default function Home() {
       <div className="flex flex-col w-full h-auto md:min-h-screen">
         {/* --- Section 1: Hero --- */}
         <section className="flex-1 flex flex-col justify-center px-5 sm:px-8 md:px-16 lg:px-24 pt-20 pb-8 md:pt-36 md:pb-16 relative w-full border-b border-border">
-          <div className="mx-auto w-full max-w-[1200px] flex flex-col gap-8 md:gap-16">
-          <motion.div 
+          <div className="mx-auto w-full max-w-300 flex flex-col gap-8 md:gap-16">
+          <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -227,23 +227,23 @@ export default function Home() {
               </span>
             </h1>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.6 }}
               className="w-full flex justify-start md:-mt-2"
           >
-              <p className="hidden md:block font-sans font-light text-[21px] text-primary leading-[1.65] w-full max-w-[700px] text-left tracking-tight">
+              <p className="hidden md:block font-sans font-light text-[21px] text-primary leading-[1.65] w-full max-w-175 text-left tracking-tight">
                 A personal ecosystem for building, thinking, writing, and documenting the things that continue to hold my attention.
               </p>
-              <p className="block md:hidden font-sans font-light text-[17px] sm:text-[19px] text-primary leading-[1.5] w-full max-w-[300px] text-left tracking-wide">
+              <p className="block md:hidden font-sans font-light text-[17px] sm:text-[19px] text-primary leading-normal w-full max-w-75 text-left tracking-wide">
                 A personal ecosystem for building, thinking, writing, and documenting the things that continue to hold my attention.
               </p>
           </motion.div>
-            
-          <motion.div 
+
+          <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -276,9 +276,9 @@ export default function Home() {
         {/* --- Section 2: About --- */}
         <section className="flex-1 flex flex-col justify-center px-5 sm:px-6 md:px-16 lg:px-24 pt-10 pb-8 md:pt-20 md:pb-16 border-b border-border relative overflow-hidden">
           {/* Subtle background glow with a tiny warmth element */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-900-[0.03] sm:bg-amber-900/5 blur-[120px] rounded-full pointer-events-none" />
-          
-          <div className="max-w-[1100px] mx-auto w-full relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-12 lg:gap-20 xl:gap-24">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 bg-amber-900-[0.03] sm:bg-amber-900/5 blur-[120px] rounded-full pointer-events-none" />
+
+          <div className="max-w-275 mx-auto w-full relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-12 lg:gap-20 xl:gap-24">
             {/* Left Column: Large Quote */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
@@ -301,41 +301,41 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="w-full md:w-[380px] lg:w-[440px] shrink-0 flex flex-col gap-5 md:gap-12 md:border-l border-border md:pl-10 lg:pl-14 relative py-2"
+              className="w-full md:w-95 lg:w-110 shrink-0 flex flex-col gap-5 md:gap-12 md:border-l border-border md:pl-10 lg:pl-14 relative py-2"
             >
               {/* Desktop Only Label */}
               <h2 className="hidden md:block font-mono text-[10px] tracking-widest text-primary uppercase opacity-70">
                 Operating Principles
               </h2>
-              
+
               <ul className="flex flex-col gap-3.5 sm:gap-6 md:gap-8">
                 <li className="flex items-start gap-4 sm:gap-5">
                   <span className="font-mono text-[10px] text-primary mt-1.5 shrink-0 w-6">01</span>
-                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-[1.5]">
+                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-normal">
                     Be kind. Don&apos;t be weak.
                   </p>
                 </li>
                 <li className="flex items-start gap-4 sm:gap-5">
                   <span className="font-mono text-[10px] text-primary mt-1.5 shrink-0 w-6">02</span>
-                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-[1.5]">
+                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-normal">
                     Attention is a resource. Protect it.
                   </p>
                 </li>
                 <li className="flex items-start gap-4 sm:gap-5">
                   <span className="font-mono text-[10px] text-primary mt-1.5 shrink-0 w-6">03</span>
-                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-[1.5]">
+                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-normal">
                     Stay curious. Keep learning.
                   </p>
                 </li>
                 <li className="flex items-start gap-4 sm:gap-5">
                   <span className="font-mono text-[10px] text-primary mt-1.5 shrink-0 w-6">04</span>
-                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-[1.5]">
+                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-normal">
                     Small habits shape identity.
                   </p>
                 </li>
                 <li className="flex items-start gap-4 sm:gap-5">
                   <span className="font-mono text-[10px] text-primary mt-1.5 shrink-0 w-6">05</span>
-                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-[1.5]">
+                  <p className="font-sans font-light text-foreground/80 text-[15px] md:text-lg leading-normal">
                     Truth matters even when uncomfortable.
                   </p>
                 </li>
@@ -363,7 +363,7 @@ export default function Home() {
       <div className="flex flex-col w-full relative h-auto md:min-h-screen">
         {/* --- Section 3: Current Focus --- */}
         <section className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-24 pt-10 pb-10 md:pt-20 md:pb-16 border-b border-border">
-          <div className="max-w-[1100px] mx-auto w-full relative z-10 flex flex-col justify-center h-full">
+          <div className="max-w-275 mx-auto w-full relative z-10 flex flex-col justify-center h-full">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -393,9 +393,9 @@ export default function Home() {
               >
                 <h3 className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase">Building</h3>
                 <ul className="flex flex-col gap-2.5 md:gap-3 font-sans font-light text-foreground/90 text-[15px] md:text-base leading-relaxed">
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Personal digital ecosystem</li>
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Minimal web experiences</li>
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Systems thinking</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Personal digital ecosystem</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Minimal web experiences</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Systems thinking</li>
                 </ul>
               </motion.div>
 
@@ -409,9 +409,9 @@ export default function Home() {
               >
                 <h3 className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase">Exploring</h3>
                 <ul className="flex flex-col gap-2.5 md:gap-3 font-sans font-light text-foreground/90 text-[15px] md:text-base leading-relaxed">
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Digital identity</li>
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Human attention</li>
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Long-term thinking</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Digital identity</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Human attention</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Long-term thinking</li>
                 </ul>
               </motion.div>
 
@@ -425,9 +425,9 @@ export default function Home() {
               >
                 <h3 className="font-mono text-[10px] tracking-[0.2em] text-primary uppercase">Thinking About</h3>
                 <ul className="flex flex-col gap-2.5 md:gap-3 font-sans font-light text-foreground/90 text-[15px] md:text-base leading-relaxed">
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Meaningful online presence</li>
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Technology and self-awareness</li>
-                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-[5px] shrink-0">✦</span> Creating without noise</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Meaningful online presence</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Technology and self-awareness</li>
+                  <li className="flex items-start gap-4"><span className="text-primary/50 text-[10px] mt-1.25 shrink-0">✦</span> Creating without noise</li>
                 </ul>
               </motion.div>
             </div>
@@ -462,13 +462,13 @@ export default function Home() {
       {/* Viewport Height Cover for Section 4 + Footer */}
       <div className="flex flex-col w-full relative h-auto md:min-h-screen">
         {/* Subtle Ambient Warmth */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] md:w-[600px] h-[600px] bg-amber-900/10 blur-[130px] rounded-full pointer-events-none opacity-50" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[100vw] h-[400px] bg-amber-950/20 blur-[150px] rounded-[100%] pointer-events-none opacity-40 mix-blend-screen" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] md:w-150 h-150 bg-amber-900/10 blur-[130px] rounded-full pointer-events-none opacity-50" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-screen h-100 bg-amber-950/20 blur-[150px] rounded-[100%] pointer-events-none opacity-40 mix-blend-screen" />
 
         {/* --- Section 4: Newsletter Invitation --- */}
         <section className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-24 w-full relative z-10 pt-10 pb-8 md:pb-16 md:pt-0">
-          <div className="w-full max-w-[1100px] mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-8 md:gap-12 lg:gap-20 xl:gap-24">
-            
+          <div className="w-full max-w-275 mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-8 md:gap-12 lg:gap-20 xl:gap-24">
+
             {/* Left text column */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
@@ -494,11 +494,11 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 1, delay: 0.1 }}
-              className={`w-full md:w-[380px] lg:w-[420px] shrink-0 flex flex-col mx-auto lg:mx-0 transition-transform duration-500 ${isInputFocused ? 'max-md:-translate-y-2' : ''}`}
+              className={`w-full md:w-95 lg:w-105 shrink-0 flex flex-col mx-auto lg:mx-0 transition-transform duration-500 ${isInputFocused ? 'max-md:-translate-y-2' : ''}`}
             >
               <form className="w-full flex flex-col" onSubmit={(e) => e.preventDefault()}>
-                
-                <div 
+
+                <div
                   className={`flex flex-col md:flex-col w-full sm:gap-1.5 md:mb-14 ${isGridMode ? 'max-md:grid max-md:grid-cols-2 max-md:gap-2 max-md:mb-4' : 'max-md:gap-0.5 max-md:mb-8'}`}
                   style={{ opacity: gridOpacity, transition: 'opacity 150ms ease-out' }}
                 >
@@ -510,25 +510,25 @@ export default function Home() {
                         type="button"
                         onPointerDown={(e) => {
                           // Prevent input from losing focus immediately on touch
-                          e.preventDefault(); 
+                          e.preventDefault();
                         }}
                         onClick={() => toggleTopic(nl.id)}
-                        className={`group flex items-start md:p-3.5 rounded-xl transition-colors duration-[400ms] text-left bg-muted/30 hover:bg-muted/80 relative md:-ml-3.5 md:w-[calc(100%+28px)] ${
-                          isGridMode 
-                            ? 'max-md:p-2.5 max-md:w-full max-md:border border-border' 
+                        className={`group flex items-start md:p-3.5 rounded-xl transition-colors duration-400 text-left bg-muted/30 hover:bg-muted/80 relative md:-ml-3.5 md:w-[calc(100%+28px)] ${
+                          isGridMode
+                            ? 'max-md:p-2.5 max-md:w-full max-md:border border-border'
                             : 'max-md:p-3 max-md:-ml-3 max-md:w-[calc(100%+24px)]'
                         }`}
                       >
-                        <div className={`shrink-0 w-[14px] h-[14px] rounded-[3px] border flex items-center justify-center transition-all duration-300 mt-[7px] mr-3.5 ${isSelected ? 'bg-primary border-primary text-background' : 'border-border group-hover:border-primary'}`}>
+                        <div className={`shrink-0 w-3.5 h-3.5 rounded-[3px] border flex items-center justify-center transition-all duration-300 mt-1.75 mr-3.5 ${isSelected ? 'bg-primary border-primary text-background' : 'border-border group-hover:border-primary'}`}>
                           {isSelected && <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                         </div>
                         <div className="flex flex-col relative w-full overflow-hidden">
-                            <div className="flex flex-col relative top-[-1px] w-full">
-                              <span className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] transition-all duration-[400ms] ease-out block origin-top w-full overflow-hidden ${isSelected ? 'text-primary' : 'text-primary/70 group-hover:text-primary'} ${isGridMode ? 'max-md:opacity-0 max-md:max-h-0' : 'max-md:opacity-100 max-md:max-h-[20px] max-md:mb-1.5 md:mb-1'}`}>{nl.persona}</span>
+                            <div className="flex flex-col relative -top-px w-full">
+                              <span className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] transition-all duration-400 ease-out block origin-top w-full overflow-hidden ${isSelected ? 'text-primary' : 'text-primary/70 group-hover:text-primary'} ${isGridMode ? 'max-md:opacity-0 max-md:max-h-0' : 'max-md:opacity-100 max-md:max-h-5 max-md:mb-1.5 md:mb-1'}`}>{nl.persona}</span>
                               <p className="font-serif text-[16px] sm:text-[19px] leading-tight mt-0 md:mt-0 tracking-tight flex flex-wrap items-baseline md:gap-y-1 w-full">
                                 <span className={`transition-colors duration-300 w-full md:w-auto ${isSelected ? 'text-foreground' : 'text-foreground/70 group-hover:text-foreground'}`}>{nl.name}</span>
                                 <span className="text-primary/60 mx-2.5 font-sans hidden sm:inline">·</span>
-                                <span className={`font-sans text-[13px] sm:text-[15px] font-light w-full sm:w-auto inline-block sm:inline overflow-hidden transition-all duration-[400ms] ease-out origin-top ${isSelected ? 'text-primary' : 'text-primary/70 group-hover:text-primary'} ${isGridMode ? 'max-md:opacity-0 max-md:max-h-0' : 'max-md:opacity-100 max-md:max-h-[30px] max-md:mt-0.5'}`}>{nl.desc}</span>
+                                <span className={`font-sans text-[13px] sm:text-[15px] font-light w-full sm:w-auto inline-block sm:inline overflow-hidden transition-all duration-400 ease-out origin-top ${isSelected ? 'text-primary' : 'text-primary/70 group-hover:text-primary'} ${isGridMode ? 'max-md:opacity-0 max-md:max-h-0' : 'max-md:opacity-100 max-md:max-h-7.5 max-md:mt-0.5'}`}>{nl.desc}</span>
                               </p>
                             </div>
                         </div>
@@ -538,20 +538,20 @@ export default function Home() {
                 </div>
 
                 <div className="relative group w-full mb-6 max-md:mt-2">
-                  <input 
+                  <input
                     type="email"
                     name="newsletter-email"
                     id="newsletter-email"
                     autoComplete="email"
                     data-1p-ignore="true"
-                    data-lpignore="true" 
-                    placeholder="Enter your email address" 
+                    data-lpignore="true"
+                    placeholder="Enter your email address"
                     onFocus={() => handleFocusChange(true)}
                     onBlur={() => handleFocusChange(false)}
                     className="w-full bg-transparent border-b border-border px-1 py-4 text-foreground focus:outline-none focus:border-primary transition-colors duration-500 font-sans text-[16px] font-light placeholder:text-primary/80 rounded-none shadow-none"
                     required
                   />
-                  <button 
+                  <button
                     type="submit"
                     className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-primary hover:text-foreground transition-colors active:scale-95"
                     aria-label="Subscribe"
@@ -569,9 +569,9 @@ export default function Home() {
 
         {/* Global Footer */}
         <footer className="w-full px-6 md:px-16 lg:px-24 py-6 md:py-14 flex flex-col md:flex-row justify-between items-center gap-5 md:gap-4 z-50 bg-transparent border-t border-border">
-          
+
           {/* Left */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -584,7 +584,7 @@ export default function Home() {
           </motion.div>
 
           {/* Center */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -600,7 +600,7 @@ export default function Home() {
           </motion.div>
 
           {/* Right */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}

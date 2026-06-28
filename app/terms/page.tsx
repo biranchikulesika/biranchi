@@ -27,7 +27,7 @@ export default function TermsPage() {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col w-full relative pt-24 md:pt-32 px-6 md:px-16 lg:px-24 py-10 sm:py-12 max-w-[900px] mx-auto z-10">
+      <main className="flex-1 flex flex-col w-full relative pt-24 md:pt-32 px-6 md:px-16 lg:px-24 py-10 sm:py-12 max-w-225 mx-auto z-10">
         <span className="font-mono text-[10px] tracking-[0.2em] text-primary/80 uppercase mb-6 md:mb-8 block">
           AGREEMENTS
         </span>
@@ -39,7 +39,7 @@ export default function TermsPage() {
             This page outlines the terms, conditions, and agreements for engaging with the content, projects, and resources available across the Builder, Operator, Thinker, and Wanderer personas.
           </p>
           <p>
-            The content is provided for informational and educational purposes. While every effort is made to ensure accuracy, the materials are provided "as is" without any guarantees. 
+            The content is provided for informational and educational purposes. While every effort is made to ensure accuracy, the materials are provided &quot;as is&quot; without any guarantees. 
           </p>
           <p>
             Please check back as these terms are subject to change as the ecosystem evolves.

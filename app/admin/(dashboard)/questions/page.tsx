@@ -10,7 +10,7 @@ export default function QuestionPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dbError, setDbError] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState({
     text: '',
     order: 0,
@@ -88,7 +88,7 @@ export default function QuestionPage() {
     loadData();
   };
 
-  
+
   const moveUp = async (item: any) => {
     await moveQuestionUp(item.id);
     loadData();
@@ -99,13 +99,13 @@ export default function QuestionPage() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12">
+    <div className="w-full max-w-350 mx-auto p-5 md:p-8 lg:p-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
           <h1 className="text-3xl font-medium tracking-tight text-neutral-100 mb-2">Questions</h1>
           <p className="text-neutral-500 text-sm">Manage questions for the site.</p>
         </div>
-        <button 
+        <button
           onClick={handleCreateNew}
           className="bg-neutral-100 text-black px-4 py-2.5 rounded-md text-sm font-medium hover:bg-white transition-colors flex items-center justify-center gap-2 w-fit"
         >
@@ -117,8 +117,8 @@ export default function QuestionPage() {
       <div className="flex flex-col xl:flex-row gap-4 mb-8">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Search..."
             className="w-full bg-[#111111] border border-[#1a1a1a] rounded-lg pl-10 pr-4 py-3 text-sm outline-none focus:border-neutral-500 transition-colors placeholder-neutral-600 text-neutral-200"
           />
@@ -135,7 +135,7 @@ export default function QuestionPage() {
 
       <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className="w-full text-left border-collapse min-w-200">
             <thead>
               <tr className="border-b border-[#1a1a1a] bg-[#0A0A0A]">
                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-neutral-500 font-semibold font-mono w-[60%]">Item Name</th>
@@ -177,7 +177,7 @@ export default function QuestionPage() {
           </table>
         </div>
       </div>
-      
+
       {isEditing && (
         <div className="mt-12 border-t border-[#1a1a1a] pt-12">
           {Object.keys(errors).length > 0 && isEditing && (
@@ -195,19 +195,19 @@ export default function QuestionPage() {
               {editingId ? 'Edit Question' : 'New Question'}
             </h2>
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={() => setIsEditing(false)}
                 className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-[#111111] text-neutral-300 hover:bg-[#1a1a1a] border border-[#222]"
               >
                 Cancel
               </button>
               <div className="flex flex-col items-end gap-1">
-                <button 
+                <button
                   onClick={handleSave}
                   disabled={!isValid}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
-                    isValid 
-                      ? 'bg-white text-black hover:bg-neutral-200 cursor-pointer' 
+                    isValid
+                      ? 'bg-white text-black hover:bg-neutral-200 cursor-pointer'
                       : 'bg-neutral-800 text-neutral-500 opacity-50 cursor-not-allowed border border-[#222]'
                   }`}
                 >
@@ -220,37 +220,37 @@ export default function QuestionPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6 bg-[#111111] p-6 rounded-lg border border-[#1a1a1a]">
               <div>
                 <FormLabel label="Question Text" required />
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.text}
                   onChange={(e) => setFormData({...formData, text: e.target.value})}
                   className={`w-full bg-[#161616] border rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 ${
                     errors.text ? 'border-rose-500/60 focus:border-rose-500' : 'border-[#222]'
-                  }`} 
+                  }`}
                 />
                 <InlineError message={errors.text} />
               </div>
               <div>
                 <FormLabel label="Order Index" />
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   value={formData.order}
                   onChange={(e) => setFormData({...formData, order: parseInt(e.target.value) || 0})}
-                  className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500" 
+                  className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500"
                 />
               </div>
             </div>
-            
+
             <div className="space-y-6">
               <div className="bg-[#111111] p-6 rounded-lg border border-[#1a1a1a] space-y-6">
                 <div>
                   <FormLabel label="Status" />
-                  <select 
+                  <select
                     value={!formData.hidden ? 'active' : 'hidden'}
                     onChange={(e) => setFormData({...formData, hidden: e.target.value !== 'active'})}
                     className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500"

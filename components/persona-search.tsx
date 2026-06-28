@@ -59,8 +59,8 @@ export function PersonaSearch({ persona, mobileBgColor }: PersonaSearchProps) {
       {/* Desktop Search Input */}
       <div className="hidden md:flex relative items-center">
         <Search className={`w-4 h-4 absolute left-3 ${isThinker ? 'opacity-30' : 'opacity-50'} pointer-events-none`} />
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder={placeholderText}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -77,7 +77,7 @@ export function PersonaSearch({ persona, mobileBgColor }: PersonaSearchProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: isThinker || persona?.toLowerCase() === 'wanderer' ? 0.4 : 0.2, ease: "easeOut" }}
-              className={`absolute top-full right-0 mt-4 w-[300px] backdrop-blur-xl p-2 shadow-2xl flex flex-col gap-1 z-50 rounded-lg ${mobileBgColor} border border-border text-foreground max-h-[60vh] overflow-y-auto`}
+              className={`absolute top-full right-0 mt-4 w-75 backdrop-blur-xl p-2 shadow-2xl flex flex-col gap-1 z-50 rounded-lg ${mobileBgColor} border border-border text-foreground max-h-[60vh] overflow-y-auto`}
             >
               {results.length > 0 ? results.map((r, i) => (
                 <div key={i} onClick={() => { setIsOpen(false); router.push(`/p/${r.slug}`); }} className={`px-3 py-2 text-sm rounded-md cursor-pointer transition-colors overflow-hidden hover:bg-muted`}>
@@ -93,7 +93,7 @@ export function PersonaSearch({ persona, mobileBgColor }: PersonaSearchProps) {
       </div>
 
       {/* Mobile Search Button */}
-      <button 
+      <button
         className="md:hidden p-2 rounded-full hover:bg-current/10 transition-colors opacity-70 hover:opacity-100 flex items-center justify-center"
         onClick={() => setIsOpen(true)}
       >
@@ -122,13 +122,13 @@ export function PersonaSearch({ persona, mobileBgColor }: PersonaSearchProps) {
             {isPending && query.length > 0 && (
               <Loader2 className="w-5 h-5 absolute right-16 opacity-50 animate-spin" />
             )}
-            <button 
-              onClick={() => { setIsOpen(false); setQuery(''); }} 
+            <button
+              onClick={() => { setIsOpen(false); setQuery(''); }}
               className={`p-2 ml-2 rounded-full transition-colors opacity-70 hover:opacity-100 hover:bg-muted`}
             >
               <X className="w-5 h-5" />
             </button>
-            
+
             {query.length > 0 && (
               <motion.div
                 initial={{ opacity: 0 }}

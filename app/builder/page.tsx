@@ -470,7 +470,7 @@ export default function BuilderPage() {
             <span className="text-[9px] text-primary/50 font-mono">CHRONOLOGICAL</span>
           </div>
 
-          <div className="relative max-h-[800px] overflow-y-auto scrollbar-hide pr-2">
+          <div className="relative max-h-200 overflow-y-auto scrollbar-hide pr-2">
             {buildLogsData.length === 0 ? (
               <div className="flex items-center justify-center py-20 border border-dashed border-border rounded-sm">
                 <span className="text-primary/70 font-sans font-light italic text-sm">No build logs recorded yet.</span>

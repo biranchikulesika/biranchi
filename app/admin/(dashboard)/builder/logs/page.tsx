@@ -8,7 +8,7 @@ export default function BuildLogPage() {
   const [items, setItems] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState<any>({"title":"","description":"","date":"","source":"manual","aiGenerated":false,"relatedCommits":[],"relatedRepositories":[],"hidden":false});
 
   const loadData = async () => {
@@ -52,13 +52,13 @@ export default function BuildLogPage() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12">
+    <div className="w-full max-w-350 mx-auto p-5 md:p-8 lg:p-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
           <h1 className="text-3xl font-medium tracking-tight text-neutral-100 mb-2">Build Logs</h1>
           <p className="text-neutral-500 text-sm">Manage build logs for the site.</p>
         </div>
-        <button 
+        <button
           onClick={handleCreateNew}
           className="bg-neutral-100 text-black px-4 py-2.5 rounded-md text-sm font-medium hover:bg-white transition-colors flex items-center justify-center gap-2 w-fit"
         >
@@ -69,7 +69,7 @@ export default function BuildLogPage() {
 
       <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className="w-full text-left border-collapse min-w-200">
             <thead>
               <tr className="border-b border-[#1a1a1a] bg-[#0A0A0A]">
                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-neutral-500 font-semibold font-mono w-[80%]">Details</th>
@@ -101,7 +101,7 @@ export default function BuildLogPage() {
           </table>
         </div>
       </div>
-      
+
       {isEditing && (
         <div className="mt-12 border-t border-[#1a1a1a] pt-12">
           <div className="flex items-center justify-between mb-6">
@@ -109,13 +109,13 @@ export default function BuildLogPage() {
               {editingId ? 'Edit Item' : 'New Item'}
             </h2>
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => setIsEditing(false)}
                 className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-[#111111] text-neutral-300 hover:bg-[#1a1a1a] border border-[#222]"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleSave}
                 className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-white text-black hover:bg-neutral-200 flex items-center gap-2"
               >
@@ -124,9 +124,9 @@ export default function BuildLogPage() {
               </button>
             </div>
           </div>
-          
+
           <div className="space-y-6 bg-[#111111] p-6 rounded-lg border border-[#1a1a1a]">
-            
+
               <div>
                 <label className="block text-xs uppercase tracking-widest text-neutral-500 font-mono mb-2">Title</label>
                 <input type="text" value={formData.title || ''} onChange={(e) => setFormData({...formData, title: e.target.value})} className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500" />

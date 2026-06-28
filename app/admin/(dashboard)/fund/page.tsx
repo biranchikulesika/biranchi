@@ -140,7 +140,7 @@ export default function RedistributionRecordPage() {
                 
                 <div className="text-[11px] font-mono text-neutral-500 border-t border-[#222] pt-2 mt-1 flex justify-between">
                   <span>{item.donatedAt ? new Date(item.donatedAt).toLocaleDateString() : 'No date'}</span>
-                  <span className="truncate max-w-[200px]">{item.transactionReference || 'No Ref'}</span>
+                  <span className="truncate max-w-50">{item.transactionReference || 'No Ref'}</span>
                 </div>
               </div>
             ))}

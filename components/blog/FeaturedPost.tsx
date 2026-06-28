@@ -35,7 +35,7 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.0, ease: 'easeOut' }}
-      className={`group relative w-full overflow-hidden border rounded-xl shadow-2xl flex flex-col-reverse lg:grid lg:grid-cols-12 min-h-[380px] ${getBannerBgBorder()}`}
+      className={`group relative w-full overflow-hidden border rounded-xl shadow-2xl flex flex-col-reverse lg:grid lg:grid-cols-12 min-h-95 ${getBannerBgBorder()}`}
       id="unified-hero-banner"
     >
       {/* Dynamic blurred image backdrop that covers the entire banner for a cohesive editorial style */}
@@ -47,16 +47,16 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
             fill
             referrerPolicy="no-referrer"
             priority
-            className="object-cover w-full h-full opacity-55 scale-125 saturate-[130%] brightness-50"
+            className="object-cover w-full h-full opacity-55 scale-125 saturate-130 brightness-50"
             style={{ filter: 'blur(80px)' }}
           />
         ) : (
-          <div className="w-full h-full bg-muted opacity-55 scale-125 saturate-[130%] brightness-50" />
+          <div className="w-full h-full bg-muted opacity-55 scale-125 saturate-130 brightness-50" />
         )}
         {/* Gradients ensuring perfect contrast on text and balancing the photo light */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-transparent lg:block hidden z-10" />
-        <div className="absolute inset-y-0 right-0 w-2/5 bg-gradient-to-l from-black/45 via-black/10 to-transparent lg:block hidden z-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/55 to-black/90 lg:hidden block z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/90 via-black/65 to-transparent lg:block hidden z-10" />
+        <div className="absolute inset-y-0 right-0 w-2/5 bg-linear-to-l from-black/45 via-black/10 to-transparent lg:block hidden z-10" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-black/55 to-black/90 lg:hidden block z-10" />
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
@@ -136,7 +136,7 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
       </div>
 
       {/* RIGHT COMPONENT: COVER OUTDOOR PHOTOGRAPHY WITH GRADIENT BLEND */}
-      <div id="hero-image-sharp-transition" className="relative lg:col-span-7 h-[180px] sm:h-[260px] lg:h-auto overflow-hidden z-10">
+      <div id="hero-image-sharp-transition" className="relative lg:col-span-7 h-45 sm:h-65 lg:h-auto overflow-hidden z-10">
         {(post.coverImageUrl) ? (
           <Image
             src={post.coverImageUrl || ""}
@@ -144,7 +144,7 @@ export function FeaturedPost({ post, persona }: FeaturedPostProps) {
             fill
             priority
             referrerPolicy="no-referrer"
-            className="object-cover object-center w-full h-full filter saturate-[92%] brightness-[85%]"
+            className="object-cover object-center w-full h-full filter saturate-92 brightness-85"
             sizes="(max-w-1024px) 100vw, 750px"
           />
         ) : (

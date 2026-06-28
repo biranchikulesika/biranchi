@@ -20,7 +20,7 @@ export default function ThoughtFragmentPage() {
   const [items, setItems] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState<any>({"text":"","publishedAt":"","hidden":false});
 
   const loadData = async () => {
@@ -76,13 +76,13 @@ export default function ThoughtFragmentPage() {
 
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-5 md:p-8 lg:p-12">
+    <div className="w-full max-w-350 mx-auto p-5 md:p-8 lg:p-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
           <h1 className="text-3xl font-medium tracking-tight text-neutral-100 mb-2">Thought Fragments</h1>
           <p className="text-neutral-500 text-sm">Manage thought fragments for the site.</p>
         </div>
-        <button 
+        <button
           onClick={handleCreateNew}
           className="bg-neutral-100 text-black px-4 py-2.5 rounded-md text-sm font-medium hover:bg-white transition-colors flex items-center justify-center gap-2 w-fit"
         >
@@ -93,7 +93,7 @@ export default function ThoughtFragmentPage() {
 
       <div className="border border-[#1a1a1a] rounded-lg overflow-hidden bg-[#111111]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className="w-full text-left border-collapse min-w-200">
             <thead>
               <tr className="border-b border-[#1a1a1a] bg-[#0A0A0A]">
                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-neutral-500 font-semibold font-mono w-[80%]">Details</th>
@@ -104,15 +104,15 @@ export default function ThoughtFragmentPage() {
               {items.map((item, idx) => (
                 <tr key={item.id || idx} className="hover:bg-[#161616] group transition-colors">
                   <td className="px-6 py-4">
-                    
+
                     <div className="flex flex-col gap-1.5">
                       <p className="font-medium text-neutral-200 text-sm pr-4 line-clamp-1">{String(item['text'] || 'Unnamed Item')}</p>
                       <div className="flex flex-wrap gap-1">
-                        {(item.hidden === true || item.hidden === true) && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-[#ff7700]/10 text-[#ff7700]">Hidden</span>}
-                        {(item.hidden === false || item.hidden === false) && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-emerald-500/10 text-emerald-500">Visible</span>}
-                        {item.featured && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-amber-400/10 text-amber-400">Featured</span>}
-                        {item.status === 'draft' && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-neutral-500/10 text-neutral-400">Draft</span>}
-                        {item.status === 'published' && <span className="px-1.5 py-[2px] rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-blue-500/10 text-blue-400">Published</span>}
+                        {(item.hidden === true || item.hidden === true) && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-[#ff7700]/10 text-[#ff7700]">Hidden</span>}
+                        {(item.hidden === false || item.hidden === false) && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-emerald-500/10 text-emerald-500">Visible</span>}
+                        {item.featured && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-amber-400/10 text-amber-400">Featured</span>}
+                        {item.status === 'draft' && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-neutral-500/10 text-neutral-400">Draft</span>}
+                        {item.status === 'published' && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-mono font-bold bg-blue-500/10 text-blue-400">Published</span>}
                       </div>
                     </div>
 
@@ -137,7 +137,7 @@ export default function ThoughtFragmentPage() {
           </table>
         </div>
       </div>
-      
+
       {isEditing && (
         <div className="mt-12 border-t border-[#1a1a1a] pt-12">
           <div className="flex items-center justify-between mb-6">
@@ -145,13 +145,13 @@ export default function ThoughtFragmentPage() {
               {editingId ? 'Edit Item' : 'New Item'}
             </h2>
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => setIsEditing(false)}
                 className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-[#111111] text-neutral-300 hover:bg-[#1a1a1a] border border-[#222]"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleSave}
                 className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-white text-black hover:bg-neutral-200 flex items-center gap-2"
               >
@@ -160,18 +160,18 @@ export default function ThoughtFragmentPage() {
               </button>
             </div>
           </div>
-          
+
           <div className="space-y-6 bg-[#111111] p-6 rounded-lg border border-[#1a1a1a]">
-            
+
               <div>
                 <label className="block text-xs uppercase tracking-widest text-neutral-500 font-mono mb-2">Text</label>
                 <textarea value={formData.text || ''} onChange={(e) => setFormData({...formData, text: e.target.value})} className="w-full h-32 bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 resize-none"></textarea>
               </div>
               <div>
                 <label className="block text-xs uppercase tracking-widest text-neutral-500 font-mono mb-2">Published At</label>
-                <input 
-                  type="datetime-local" 
-                  value={formatToDatetimeLocal(formData.publishedAt)} 
+                <input
+                  type="datetime-local"
+                  value={formatToDatetimeLocal(formData.publishedAt)}
                   onChange={(e) => {
                     const val = e.target.value;
                     if (!val) {
@@ -184,8 +184,8 @@ export default function ThoughtFragmentPage() {
                         setFormData({ ...formData, publishedAt: val });
                       }
                     }
-                  }} 
-                  className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 [color-scheme:dark]" 
+                  }}
+                  className="w-full bg-[#161616] border border-[#222] rounded-md px-4 py-2.5 text-sm text-neutral-200 outline-none focus:border-neutral-500 scheme-dark"
                 />
               </div>
               <div>

@@ -109,9 +109,9 @@ export default function ReadingPage() {
                     <div key={book.id || idx} className="group flex flex-col justify-between">
                       <div className="w-full">
                         {/* Simulated Book Cover Graphic */}
-                        <div className={`aspect-[2/3] w-full max-w-[170px] sm:max-w-[190px] mx-auto md:mx-0 relative mb-6 rounded-sm shadow-sm md:shadow-md border ${coverStyle} overflow-hidden select-none flex flex-col justify-between p-4 sm:p-6 transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1`}>
+                        <div className={`aspect-2/3 w-full max-w-42.5 sm:max-w-47.5 mx-auto md:mx-0 relative mb-6 rounded-sm shadow-sm md:shadow-md border ${coverStyle} overflow-hidden select-none flex flex-col justify-between p-4 sm:p-6 transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1`}>
                           {/* Spine Crease / Ridge Overlay */}
-                          <div className="absolute top-0 bottom-0 left-2 sm:left-3 w-[1px] bg-black/10 dark:bg-white/5 shadow-[1px_0_2px_rgba(0,0,0,0.05),-1px_0_1px_rgba(255,255,255,0.1)] h-full" />
+                          <div className="absolute top-0 bottom-0 left-2 sm:left-3 w-px bg-black/10 dark:bg-white/5 shadow-[1px_0_2px_rgba(0,0,0,0.05),-1px_0_1px_rgba(255,255,255,0.1)] h-full" />
                           
                           <div className="flex flex-col h-full justify-between relative z-10 pl-1.5 sm:pl-2">
                             {/* Top corner label */}
@@ -147,7 +147,7 @@ export default function ReadingPage() {
                       
                       {/* Personal Note */}
                       {book.notes && (
-                        <div className="min-h-[2.5rem] mt-1">
+                        <div className="min-h-10 mt-1">
                           <p className="text-[13px] sm:text-[13.5px] text-[#55524B] dark:text-[#A7A39B] leading-relaxed font-light line-clamp-2">
                             {book.notes}
                           </p>
@@ -179,9 +179,9 @@ export default function ReadingPage() {
                     >
                       <div className="w-full">
                         {/* Simulated Book Cover Graphic */}
-                        <div className={`aspect-[2/3] w-full relative mb-4 rounded-sm border ${coverStyle} overflow-hidden select-none flex flex-col justify-between p-3 sm:p-4 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1`}>
+                        <div className={`aspect-2/3 w-full relative mb-4 rounded-sm border ${coverStyle} overflow-hidden select-none flex flex-col justify-between p-3 sm:p-4 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1`}>
                           {/* Spine Crease / Ridge Overlay */}
-                          <div className="absolute top-0 bottom-0 left-2 sm:left-2.5 w-[1px] bg-black/10 dark:bg-white/5 shadow-[1px_0_2px_rgba(0,0,0,0.05)] h-full" />
+                          <div className="absolute top-0 bottom-0 left-2 sm:left-2.5 w-px bg-black/10 dark:bg-white/5 shadow-[1px_0_2px_rgba(0,0,0,0.05)] h-full" />
                           
                           <div className="flex flex-col h-full justify-between relative z-10 pl-1.5 sm:pl-2">
                             {/* Small serial identifier */}
@@ -207,7 +207,7 @@ export default function ReadingPage() {
                           </div>
                         </div>
 
-                        <h3 className="text-[13px] sm:text-[14.5px] md:text-base font-sans font-normal text-[#2F3134] dark:text-[#DEDAD3] leading-snug mb-0.5 group-hover:text-[#7E7A73] transition-colors duration-200 line-clamp-2 min-h-[2.25rem] sm:min-h-[2.75rem]">
+                        <h3 className="text-[13px] sm:text-[14.5px] md:text-base font-sans font-normal text-[#2F3134] dark:text-[#DEDAD3] leading-snug mb-0.5 group-hover:text-[#7E7A73] transition-colors duration-200 line-clamp-2 min-h-9 sm:min-h-11">
                           {book.title}
                         </h3>
                         <p className="text-[10.5px] sm:text-[11.5px] italic font-cormorant text-[#7E7A73]/95 mb-2 leading-none line-clamp-1">

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  Plus, X, Image as ImageIcon, GripVertical, Check, RefreshCw, 
+import {
+  Plus, X, Image as ImageIcon, GripVertical, Check, RefreshCw,
   Trash2, UploadCloud, Send, Undo, Redo, MessageSquare, List, Settings
 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
@@ -57,38 +57,38 @@ function slugify(text: string): string {
 }
 
 async function validateCustomSlug(
-  customSlug: string, 
-  currentId: string | null, 
+  customSlug: string,
+  currentId: string | null,
   currentPersona: string
 ): Promise<{ valid: boolean; cleanSlug?: string; error?: string }> {
   const clean = customSlug.trim().toLowerCase();
-  
+
   if (!clean) {
     return { valid: false, error: "Slug cannot be empty." };
   }
-  
+
   const validCharsRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
   if (!validCharsRegex.test(clean)) {
     return { valid: false, error: "Slug must contain only lowercase letters, numbers, and single hyphens. No leading/trailing hyphens or special characters." };
   }
-  
+
   const systemRoutes = ['admin', 'blogs', 'p', 'thinker', 'wanderer', 'builder', 'operator', 'about', 'newsletter', 'reading', 'phrases', 'quotes', 'api'];
   if (systemRoutes.includes(clean)) {
     return { valid: false, error: `Slug '${clean}' is reserved for system routing.` };
   }
-  
+
   const conflictRes = await checkSlugExists(clean, currentId, currentPersona);
   const isConflict = conflictRes.success ? conflictRes.data : false;
   if (isConflict) {
     return { valid: false, error: `The custom URL slug '${clean}' is already in use by another article in the '${currentPersona}' persona.` };
   }
-  
+
   return { valid: true, cleanSlug: clean };
 }
 
 async function getUniqueSlug(baseSlug: string, currentId: string | null, currentPersona: string): Promise<string> {
   let candidate = baseSlug || 'untitled';
-  
+
   const res1 = await checkSlugExists(candidate, currentId, currentPersona);
   if (!(res1.success ? res1.data : false)) {
     return candidate;
@@ -177,22 +177,22 @@ function ComposePageContent() {
       setUrlValidationError(result.error || "Invalid slug.");
       return;
     }
-    
+
     setFormData((prev: any) => ({
       ...prev,
       slug: result.cleanSlug
     }));
-    
+
     setIsCustomizingUrl(false);
   };
 
   // Fetch / Select Post
-  const loadPostToComposer = async () => {
+  const loadPostToComposer = useCallback(async () => {
     setLoading(true);
     try {
       const postsResponse = await getPosts();
       const posts = postsResponse.success ? postsResponse.data : [];
-      
+
       if (editId) {
         const found = (posts || []).find((p: any) => p.id === editId || p.slug === editId);
         if (found) {
@@ -254,11 +254,11 @@ function ComposePageContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [editId, targetPersona, router]);
 
   useEffect(() => {
     loadPostToComposer();
-  }, [editId, targetPersona]);
+  }, [editId, targetPersona, loadPostToComposer]);
 
   const getWordCount = () => {
     const text = compileFromBlocks(composerBlocks);
@@ -299,7 +299,7 @@ function ComposePageContent() {
   // Show "Unsaved" immediately upon any state updates
   useEffect(() => {
     if (loading) return;
-    
+
     const compiledContent = JSON.stringify(composerBlocks);
     const splitTags = pasteTagsText.split(',').map(t => t.trim()).filter(Boolean);
     const currentPayloadStr = JSON.stringify({
@@ -318,11 +318,11 @@ function ComposePageContent() {
       lastSavedPayloadRef.current = currentPayloadStr;
       return;
     }
-    
+
     if (lastSavedPayloadRef.current === currentPayloadStr) {
       return; // No actual content delta
     }
-    
+
     setSaveStatus('Unsaved');
   }, [formData.title, formData.subtitle, formData.persona, formData.coverImageUrl, formData.autoCoverImage, formData.excerpt, composerBlocks, pasteTagsText, loading]);
 
@@ -334,7 +334,7 @@ function ComposePageContent() {
       try {
         const compiledContent = JSON.stringify(composerBlocks);
         const compiledLegacy = compileFromBlocks(composerBlocks);
-        
+
         let coverUrl = formData.coverImageUrl;
         if (formData.autoCoverImage) {
           const extMatch = compiledLegacy.match(/src="([^"]+)"/);
@@ -407,19 +407,21 @@ function ComposePageContent() {
     return () => clearTimeout(timer);
   }, [
     saveStatus,
-    formData.title, 
-    formData.subtitle, 
-    formData.persona, 
-    formData.coverImageUrl, 
-    formData.autoCoverImage, 
-    formData.excerpt, 
-    composerBlocks, 
-    pasteTagsText, 
-    loading, 
+    formData.title,
+    formData.subtitle,
+    formData.persona,
+    formData.coverImageUrl,
+    formData.autoCoverImage,
+    formData.excerpt,
+    composerBlocks,
+    pasteTagsText,
+    loading,
     currentPostId,
     wasPublished,
     formData.slug,
-    formData.status
+    formData.status,
+    formData,
+    router
   ]);
 
   useEffect(() => {
@@ -446,24 +448,24 @@ function ComposePageContent() {
     setDeletedBlockState(null);
   };
 
-  // Handle Slash command replacement 
+  // Handle Slash command replacement
   const handleSelectSlashCommand = (blockId: string, cmdType: string) => {
     const idx = composerBlocks.findIndex(b => b.id === blockId);
     if (idx === -1) return;
-    
+
     const currentBlock = composerBlocks[idx];
     let cleanedContent = currentBlock.content ? currentBlock.content.trim() : '';
     if (cleanedContent.endsWith('/')) {
       cleanedContent = cleanedContent.slice(0, -1).trim();
     }
-    
+
     const updatedBlocks = [...composerBlocks];
     updatedBlocks[idx] = { ...currentBlock, content: cleanedContent };
-    
+
     const shouldReplace = !cleanedContent;
     const newId = generateUniqueId('blk_added');
     let newBlock: any;
-    
+
     if (cmdType === 'heading') {
       newBlock = { id: newId, type: 'heading', level: 2, content: '' };
     } else if (cmdType === 'image') {
@@ -485,18 +487,18 @@ function ComposePageContent() {
     } else {
       newBlock = { id: newId, type: 'text', content: '' };
     }
-    
+
     if (shouldReplace) {
       updatedBlocks[idx] = newBlock;
     } else {
       updatedBlocks.splice(idx + 1, 0, newBlock);
     }
-    
+
     updateBlocksAndSync(updatedBlocks);
     setSelectedBlockId(newId);
     setFocusedBlockId(newId);
     setSlashMenuBlockId(null);
-    
+
     if (cmdType === 'image') {
       handleTriggerFilePicker(shouldReplace ? idx : idx + 1);
     }
@@ -515,13 +517,13 @@ function ComposePageContent() {
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, blockId: string, idx: number) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      
+
       const newId = generateUniqueId('blk_enter');
       const newBlock = { id: newId, type: 'text', content: '' };
-      
+
       const updated = [...composerBlocks];
       updated.splice(idx + 1, 0, newBlock);
-      
+
       updateBlocksAndSync(updated);
       setSelectedBlockId(newId);
       setFocusedBlockId(newId);
@@ -530,14 +532,14 @@ function ComposePageContent() {
       const target = e.target as HTMLTextAreaElement;
       if (target.selectionStart === 0 && target.selectionEnd === 0 && idx > 0) {
         e.preventDefault();
-        
+
         const currentBlock = composerBlocks[idx];
         const prevBlockIdx = idx - 1;
         const prevBlock = composerBlocks[prevBlockIdx];
-        
+
         const updated = [...composerBlocks];
         updated.splice(idx, 1);
-        
+
         if (prevBlock.type === 'text' || prevBlock.type === 'heading' || prevBlock.type === 'quote') {
             const cursorPosition = (prevBlock.content || '').length;
             updated[prevBlockIdx] = {
@@ -548,7 +550,7 @@ function ComposePageContent() {
             setSelectedBlockId(prevBlock.id);
             setFocusedBlockId(prevBlock.id);
             setSlashMenuBlockId(null);
-            
+
             // Note: In React, we delay setting the cursor to allow render
             setTimeout(() => {
                 const el = document.querySelector(`textarea[data-block-id="${prevBlock.id}"]`) as HTMLTextAreaElement;
@@ -647,11 +649,11 @@ function ComposePageContent() {
     if (deletedBlockState?.timerId) {
       clearTimeout(deletedBlockState.timerId);
     }
-    
+
     const timerId = setTimeout(() => {
       setDeletedBlockState(null);
     }, 5000);
-    
+
     setDeletedBlockState({ block: blockToDel, index: idx, originalId: blockId, timerId });
   };
 
@@ -678,7 +680,7 @@ function ComposePageContent() {
   const handleContentFilesUpload = async (files: FileList | File[], index?: number) => {
     const file = files[0];
     if (!file || !file.type.startsWith('image/')) return;
-    
+
     const uploadId = generateUniqueId('upload');
     const newBlock = {
       id: uploadId,
@@ -706,7 +708,7 @@ function ComposePageContent() {
         progressSim = 92;
         clearInterval(interval);
       }
-      setComposerBlocks(prev => 
+      setComposerBlocks(prev =>
         prev.map(b => (b.id === uploadId ? { ...b, progress: progressSim } : b))
       );
     }, 200);
@@ -714,7 +716,7 @@ function ComposePageContent() {
     try {
       const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
       clearInterval(interval);
-      
+
       setComposerBlocks(prev => {
         const next = prev.map(b => {
           if (b.id === uploadId) {
@@ -804,7 +806,7 @@ function ComposePageContent() {
   const handleSavePost = async (isNewDraftState: boolean) => {
     setDbError(null);
     setSaving(true);
-    
+
     let coverUrl = formData.coverImageUrl;
     const compiledHtml = compileFromBlocks(composerBlocks);
     const compiledJson = JSON.stringify(composerBlocks);
@@ -880,20 +882,20 @@ function ComposePageContent() {
 
   return (
     <div className="w-full min-h-screen bg-[#0a0a0a] text-neutral-200 flex flex-col font-sans selection:bg-[#222]">
-      
+
       {/* Top Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-[#181818] bg-[#0c0c0c] shrink-0 sticky top-0 z-40">
         <div className="flex items-center gap-4">
-          <Link 
+          <Link
             href="/admin/library"
             className="flex items-center gap-1.5 text-xs font-mono uppercase text-neutral-400 hover:text-white bg-[#111] hover:bg-[#161616] border border-[#222] px-3 py-1.5 rounded-lg transition-all"
             id="back-to-library-btn"
           >
             <span>← Back</span>
           </Link>
-          
+
           <span className="text-neutral-800 font-mono">/</span>
-          
+
           <span className={`text-xs font-mono uppercase ${activePersonaParams.color} flex items-center gap-1 bg-[#111] px-3 py-1 rounded-full border border-[#1b1b1b]`}>
             <span className={`w-1.5 h-1.5 rounded-full ${activePersonaParams.color.replace('text-', 'bg-')}`} />
             <span>{personaDisplayLabel[formData.persona] || 'Writing'}</span>
@@ -912,12 +914,12 @@ function ComposePageContent() {
 
         {/* Right Action Bar */}
         <div className="flex items-center gap-3">
-          <button 
+          <button
             type="button"
             onClick={() => setActiveTab(prev => prev === 'composer' ? 'preview' : 'composer')}
             className={`px-3 py-1.5 border rounded-lg text-xs font-mono uppercase tracking-wider font-semibold transition-all ${
-              activeTab === 'preview' 
-                ? 'bg-[#ff7700]/10 border-[#ff7700] text-[#ff7700]' 
+              activeTab === 'preview'
+                ? 'bg-[#ff7700]/10 border-[#ff7700] text-[#ff7700]'
                 : 'bg-[#111] border-[#1b1b1b] text-neutral-400 hover:text-white hover:border-neutral-700'
             }`}
             id="preview-toggle-btn"
@@ -925,7 +927,7 @@ function ComposePageContent() {
             {activeTab === 'preview' ? 'Writing' : 'Preview'}
           </button>
 
-          <button 
+          <button
             type="button"
             onClick={() => {
               setFormData((prev: any) => {
@@ -947,42 +949,42 @@ function ComposePageContent() {
 
       {/* Simplified Toolbar containing ONLY standard text flow formatting commands */}
       {activeTab === 'composer' && !loading && (
-        <div className="flex items-center justify-center py-2 bg-[#0a0a0a] border-b border-[#151515] overflow-x-auto px-4 sticky top-[61px] z-30 scrollbar-hide">
+        <div className="flex items-center justify-center py-2 bg-[#0a0a0a] border-b border-[#151515] overflow-x-auto px-4 sticky top-15.25 z-30 scrollbar-hide">
           <div className="flex items-center gap-1 bg-[#121212] border border-[#222]/80 px-4 py-1 rounded-full shadow-2xl text-neutral-400 text-sm max-w-full">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 if (typeof document !== 'undefined') document.execCommand('undo');
               }}
-              className="p-1.5 hover:text-white rounded transition-colors" 
+              className="p-1.5 hover:text-white rounded transition-colors"
               title="Undo"
             >
               <Undo className="w-3.5 h-3.5" />
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 if (typeof document !== 'undefined') document.execCommand('redo');
               }}
-              className="p-1.5 hover:text-white rounded transition-colors" 
+              className="p-1.5 hover:text-white rounded transition-colors"
               title="Redo"
             >
               <Redo className="w-3.5 h-3.5" />
             </button>
-            
+
             <div className="w-px h-3.5 bg-[#222] mx-1 shrink-0" />
 
-            <button 
-              type="button" 
-              onClick={() => handleAddBlock('heading')} 
+            <button
+              type="button"
+              onClick={() => handleAddBlock('heading')}
               className="px-2 py-1 hover:text-white rounded text-xs font-mono font-bold"
               title="Heading"
             >
               Heading
             </button>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
                 if (idx !== -1 && composerBlocks[idx].type === 'text') {
@@ -995,8 +997,8 @@ function ComposePageContent() {
               Bold
             </button>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
                 if (idx !== -1 && composerBlocks[idx].type === 'text') {
@@ -1009,8 +1011,8 @@ function ComposePageContent() {
               Italic
             </button>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
                 if (idx !== -1 && composerBlocks[idx].type === 'text') {
@@ -1023,8 +1025,8 @@ function ComposePageContent() {
               Underline
             </button>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
                 if (idx !== -1 && composerBlocks[idx].type === 'text') {
@@ -1037,48 +1039,48 @@ function ComposePageContent() {
               Link
             </button>
 
-            <button 
-              type="button" 
-              onClick={() => handleAddBlock('quote')} 
+            <button
+              type="button"
+              onClick={() => handleAddBlock('quote')}
               className="px-2 py-1 hover:text-white rounded text-xs"
               title="Quote"
             >
               Quote
             </button>
 
-            <button 
-              type="button" 
-              onClick={() => handleAddBlock('list')} 
+            <button
+              type="button"
+              onClick={() => handleAddBlock('list')}
               className="px-2 py-1 hover:text-white rounded text-xs font-mono"
               title="List"
             >
               List
             </button>
 
-            <button 
-              type="button" 
-              onClick={() => handleAddBlock('code')} 
+            <button
+              type="button"
+              onClick={() => handleAddBlock('code')}
               className="px-2 py-1 hover:text-white rounded text-xs font-mono"
               title="Code Block"
             >
               Code
             </button>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => {
                 const selectedIdx = composerBlocks.findIndex(b => b.id === selectedBlockId);
                 handleTriggerFilePicker(selectedIdx >= 0 ? selectedIdx : undefined);
-              }} 
-              className="px-2 py-1 hover:text-white rounded text-xs" 
+              }}
+              className="px-2 py-1 hover:text-white rounded text-xs"
               title="Insert Image"
             >
               Image
             </button>
 
-            <button 
-              type="button" 
-              onClick={() => handleAddBlock('divider')} 
+            <button
+              type="button"
+              onClick={() => handleAddBlock('divider')}
               className="px-2 py-1 hover:text-white rounded text-xs font-mono"
               title="Divider"
             >
@@ -1107,15 +1109,15 @@ function ComposePageContent() {
         ) : (
           <div className="flex-1 w-full bg-[#0a0a0a]">
             {activeTab === 'composer' ? (
-              <main 
-                className="w-full max-w-[840px] mx-auto px-6 py-12 md:py-20 flex flex-col min-h-screen"
+              <main
+                className="w-full max-w-210 mx-auto px-6 py-12 md:py-20 flex flex-col min-h-screen"
                 onDragOver={onDragOver}
                 onDrop={(e) => onDrop(e)}
               >
                 {/* Title & Subtitle Inputs */}
                 <div className="space-y-4 mb-10 w-full">
-                  <textarea 
-                    value={formData.title} 
+                  <textarea
+                    value={formData.title}
                     onChange={(e) => {
                       const newTitle = e.target.value;
                       setFormData((prev: any) => ({ ...prev, title: newTitle }));
@@ -1138,10 +1140,10 @@ function ComposePageContent() {
                       target.style.height = `${target.scrollHeight}px`;
                     }}
                   />
-                  
+
                   <input
                     type="text"
-                    value={formData.subtitle} 
+                    value={formData.subtitle}
                     onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                     placeholder="An elegant subtitle leads the narrative..."
                     className="w-full bg-transparent border-none text-lg text-neutral-400 font-light outline-none placeholder-neutral-800 font-sans focus:ring-0 focus:outline-none"
@@ -1180,7 +1182,7 @@ function ComposePageContent() {
             ) : (
               /* High-Fidelity Preview inside actual Persona Layout via PostRenderer */
               <div className="w-full h-full min-h-screen bg-transparent">
-                <PostRenderer 
+                <PostRenderer
                   post={{
                     id: currentPostId || 'preview-draft',
                     slug: formData.slug || 'preview-draft-slug',
@@ -1194,7 +1196,7 @@ function ComposePageContent() {
                     coverImageUrl: getEffectiveCoverImage(),
                     coverImageLocation: formData.coverImageLocation,
                     autoCoverImage: formData.autoCoverImage,
-                    content: JSON.stringify(composerBlocks), 
+                    content: JSON.stringify(composerBlocks),
                     featured: formData.featured,
                     hidden: formData.hidden,
                     status: 'draft',
@@ -1211,7 +1213,7 @@ function ComposePageContent() {
       </div>
 
       {/* Floating fixed Settings and Publishing Button in Bottom-Right Corner of Screen */}
-      <button 
+      <button
         type="button"
         onClick={() => {
           setFormData((prev: any) => {
