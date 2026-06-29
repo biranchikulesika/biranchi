@@ -8,8 +8,9 @@ interface PostPageClientProps {
   slug: string;
   allPosts: any[];
   fallbackPersona?: string;
+  compiledMdx?: any;
 }
 
-export default function PostPageClient({ post, slug, allPosts, fallbackPersona }: PostPageClientProps) {
-  return <PostRenderer post={post} slug={slug} allPosts={allPosts} fallbackPersona={fallbackPersona} />;
+export default function PostPageClient({ post, slug, allPosts, fallbackPersona, compiledMdx }: PostPageClientProps) {
+  return <PostRenderer post={post} slug={slug} allPosts={allPosts} fallbackPersona={fallbackPersona} compiledMdx={compiledMdx} />;
 }

@@ -11,7 +11,9 @@ import { uploadImage } from '@/lib/supabase/storage';
 import { getPosts, createPost, updatePost, checkSlugExists } from '@/app/admin/actions/posts.actions';
 import PostRenderer from '@/components/post-renderer/PostRenderer';
 import PublishDrawer from './PublishDrawer';
-import RichTextEditor from './RichTextEditor';
+import MDXEditor from './MDXEditor';
+import MDXPreview from './MDXPreview';
+import { compileMDXAction } from './actions';
 import { generateUniqueId, parseToBlocks, compileFromBlocks } from '@/lib/parsers';
 import { parseDbError } from '@/components/admin/validation';
 
@@ -145,6 +147,10 @@ function ComposePageContent() {
   const [customUrlVal, setCustomUrlVal] = useState('');
   const [urlValidationError, setUrlValidationError] = useState<string | null>(null);
 
+  // MDX Preview State
+  const [compiledMdx, setCompiledMdx] = useState<any>(null);
+  const [isCompilingPreview, setIsCompilingPreview] = useState(false);
+
   // Focus and Slash commands
   const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
   const [slashMenuBlockId, setSlashMenuBlockId] = useState<string | null>(null);
@@ -174,6 +180,27 @@ function ComposePageContent() {
 
   const [richTextContent, setRichTextContent] = useState('');
   const [pasteTagsText, setPasteTagsText] = useState('');
+
+  useEffect(() => {
+    if (activeTab === 'preview' && richTextContent) {
+      const compile = async () => {
+        setIsCompilingPreview(true);
+        try {
+          const res = await compileMDXAction(richTextContent);
+          if (res.source) {
+            setCompiledMdx(res.source);
+          } else {
+            console.error(res.error);
+          }
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setIsCompilingPreview(false);
+        }
+      };
+      compile();
+    }
+  }, [activeTab, richTextContent]);
 
   const handleApplyCustomUrl = async () => {
     setUrlValidationError(null);
@@ -638,7 +665,7 @@ function ComposePageContent() {
 
                 {/* Rich Text Editor stream */}
                 <div className="w-full relative mt-4">
-                  <RichTextEditor 
+                  <MDXEditor 
                     content={richTextContent} 
                     onChange={setRichTextContent} 
                     persona={formData.persona}
@@ -648,30 +675,31 @@ function ComposePageContent() {
             ) : (
               /* High-Fidelity Preview inside actual Persona Layout via PostRenderer */
               <div className="w-full h-full min-h-screen bg-transparent">
-                <PostRenderer
-                  post={{
-                    id: currentPostId || 'preview-draft',
-                    slug: formData.slug || 'preview-draft-slug',
-                    persona: formData.persona,
-                    title: formData.title || 'Untitled Post',
-                    subtitle: formData.subtitle || '',
-                    excerpt: formData.excerpt || '',
-                    tags: splitTagsFromText(pasteTagsText),
-                    publishedAt: formData.publishedAt || new Date().toISOString(),
-                    readingTime: getReadingTime(),
-                    coverImageUrl: getEffectiveCoverImage(),
-                    coverImageLocation: formData.coverImageLocation,
-                    autoCoverImage: formData.autoCoverImage,
-                    content: richTextContent,
-                    featured: formData.featured,
-                    hidden: formData.hidden,
-                    status: 'draft',
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                  } as any}
-                  slug={formData.slug || 'preview-draft-slug'}
-                  allPosts={[]}
-                />
+                  <PostRenderer
+                    post={{
+                      id: currentPostId || 'preview-draft',
+                      slug: formData.slug || 'preview-draft-slug',
+                      persona: formData.persona,
+                      title: formData.title || 'Untitled Post',
+                      subtitle: formData.subtitle || '',
+                      excerpt: formData.excerpt || '',
+                      tags: splitTagsFromText(pasteTagsText),
+                      publishedAt: formData.publishedAt || new Date().toISOString(),
+                      readingTime: getReadingTime(),
+                      coverImageUrl: getEffectiveCoverImage(),
+                      coverImageLocation: formData.coverImageLocation,
+                      autoCoverImage: formData.autoCoverImage,
+                      content: richTextContent,
+                      featured: formData.featured,
+                      hidden: formData.hidden,
+                      status: 'draft',
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString(),
+                    } as any}
+                    slug={formData.slug || 'preview-draft-slug'}
+                    allPosts={[]}
+                    compiledMdx={compiledMdx}
+                  />
               </div>
             )}
           </div>

@@ -44,3 +44,8 @@ export async function getRecentUploads(bucket: StorageBucket, limit: number = 10
       };
     });
 }
+
+export function getPublicUrl({ bucket, path }: { bucket: StorageBucket; path: string }) {
+  const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
+}

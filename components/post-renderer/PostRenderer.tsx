@@ -10,7 +10,7 @@ import { FooterBuilder } from '@/components/footer-builder';
 import { FooterWanderer } from '@/components/footer-wanderer';
 import { FooterOperator } from '@/components/footer-operator';
 import { FooterMain } from '@/components/footer-main';
-import { MarkdownRenderer } from '@/components/mdx/MarkdownRenderer';
+import { MDXRenderer, MarkdownRenderer } from '@/lib/mdx/renderer';
 
 import { ThemeToggle } from '@/components/theme-toggle';
 import { PersonaSwitcher } from '@/components/persona-switcher';
@@ -74,9 +74,10 @@ export interface PostRendererProps {
   slug: string;
   allPosts: any[];
   fallbackPersona?: string;
+  compiledMdx?: any;
 }
 
-export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: PostRendererProps) {
+export default function PostRenderer({ post, slug, allPosts, fallbackPersona, compiledMdx }: PostRendererProps) {
   const [copied, setCopied] = useState(false);
   const [, setScrollPercent] = useState(0);
   const [, setShowToTop] = useState(false);
@@ -524,6 +525,21 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
   );
 
   const renderArticleBody = () => {
+    if (compiledMdx) {
+      return (
+        <article
+          className={`leading-[1.8] outline-none max-w-none ${
+            p === 'builder' ? 'prose prose-invert prose-neutral text-foreground font-sans' :
+            p === 'operator' ? 'prose-emerald text-foreground font-mono' :
+            p === 'thinker' ? 'prose-stone text-foreground font-serif' :
+            'prose-stone text-foreground font-serif'
+          }`}
+        >
+          <MDXRenderer source={compiledMdx} />
+        </article>
+      );
+    }
+
     let parsedContent = post?.content;
     if (typeof post?.content === 'string') {
       try {

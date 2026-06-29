@@ -94,6 +94,18 @@ export default async function Page({
     finalPost = undefined;
   }
 
+  let compiledMdx;
+  if (finalPost && finalPost.content && typeof finalPost.content === 'string' && !/<[a-z][\s\S]*>/i.test(finalPost.content)) {
+    // If it's a string and doesn't look like raw HTML, compile it as MDX
+    try {
+      // Import compileMDX dynamically or use the action logic directly, but we can just import from lib
+      const { compileMDX } = await import('@/lib/mdx/compile');
+      compiledMdx = await compileMDX(finalPost.content);
+    } catch (e) {
+      console.error('Failed to compile MDX for post', finalPost.slug, e);
+    }
+  }
+
   // Fetch only necessary posts metadata for related posts in the renderer
   const posts = await getPostsMeta();
   const publishedPosts = posts.filter((p: any) => p.status !== 'draft' && (!p.status || p.status.toLowerCase() !== 'draft') && p.hidden !== true);
@@ -103,7 +115,13 @@ export default async function Page({
   return (
     <>
       {finalPost && <ArticleJsonLd post={finalPost} url={canonicalUrl} />}
-      <PostPageClient post={finalPost} slug={resolvedParams.slug} allPosts={publishedPosts} fallbackPersona={detectedPersona} />
+      <PostPageClient 
+        post={finalPost} 
+        slug={resolvedParams.slug} 
+        allPosts={publishedPosts} 
+        fallbackPersona={detectedPersona} 
+        compiledMdx={compiledMdx}
+      />
     </>
   );
 }
