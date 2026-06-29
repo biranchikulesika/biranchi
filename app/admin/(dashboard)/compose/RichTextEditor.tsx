@@ -22,7 +22,7 @@ import TerminalExtension from './terminalExtension';
 import DetailsExtension from './detailsExtension';
 import SummaryExtension from './summaryExtension';
 import { uploadImage } from '@/lib/supabase/storage';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading2, List, ListOrdered, Quote, Video, Loader2, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight, Columns, Rows, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Trash2, LayoutPanelTop } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading2, List, ListOrdered, Quote, Video, Loader2, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight, Columns, Rows, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Trash2, LayoutPanelTop, Code } from 'lucide-react';
 
 const lowlight = createLowlight(common);
 
@@ -234,6 +234,14 @@ export default function RichTextEditor({ content, onChange, className = '', pers
         >
           <LinkIcon className="w-4 h-4" />
         </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('code') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Inline Code"
+        >
+          <Code className="w-4 h-4" />
+        </button>
 
         <div className="w-px h-4 bg-[#333] mx-1"></div>
 
@@ -352,6 +360,13 @@ export default function RichTextEditor({ content, onChange, className = '', pers
             className={`p-1.5 rounded transition-colors ${editor.isActive('link') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
           >
             <LinkIcon className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            className={`p-1.5 rounded transition-colors ${editor.isActive('code') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+            title="Inline Code"
+          >
+            <Code className="w-4 h-4" />
           </button>
           <div className="w-px h-4 bg-[#222] mx-1"></div>
           <button
