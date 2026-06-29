@@ -30,6 +30,24 @@ const personaDisplayLabel: Record<string, string> = {
   'wanderer': 'Writing in Scribble',
 };
 
+const getTitleClass = (persona: string) => {
+  const base = "w-full bg-transparent border-none outline-none placeholder-neutral-800 resize-none focus:ring-0 focus:outline-none text-neutral-100 transition-all duration-300";
+  if (persona === 'wanderer') return `${base} font-serif font-bold text-4xl md:text-5xl leading-snug tracking-tight`;
+  if (persona === 'thinker') return `${base} font-cormorant font-normal text-4xl md:text-5xl leading-[1.07] tracking-tight`;
+  if (persona === 'builder') return `${base} font-sans font-semibold text-3xl md:text-4xl leading-snug tracking-tight`;
+  if (persona === 'operator') return `${base} font-mono font-bold uppercase text-xl md:text-2xl leading-tight tracking-tight`;
+  return `${base} font-serif font-bold text-4xl md:text-5xl leading-snug tracking-tight`;
+};
+
+const getSubtitleClass = (persona: string) => {
+  const base = "w-full bg-transparent border-none outline-none placeholder-neutral-800 focus:ring-0 focus:outline-none text-neutral-400 transition-all duration-300";
+  if (persona === 'wanderer') return `${base} font-serif font-light italic text-lg sm:text-xl leading-relaxed`;
+  if (persona === 'thinker') return `${base} font-spectral font-light italic text-[17px] leading-relaxed`;
+  if (persona === 'builder') return `${base} font-mono text-[14px] leading-relaxed`;
+  if (persona === 'operator') return `${base} font-mono text-[12px] leading-relaxed`;
+  return `${base} font-sans font-light text-lg`;
+};
+
 function formatToDatetimeLocal(isoString?: string): string {
   if (!isoString) return '';
   try {
@@ -591,7 +609,7 @@ function ComposePageContent() {
                       });
                     }}
                     placeholder="Title"
-                    className="w-full bg-transparent border-none text-4xl md:text-5xl font-semibold text-neutral-155 outline-none placeholder-neutral-800 resize-none leading-snug font-serif tracking-tight focus:ring-0 focus:outline-none"
+                    className={getTitleClass(formData.persona)}
                     rows={1}
                     onInput={(e) => {
                       const target = e.target as HTMLTextAreaElement;
@@ -605,7 +623,7 @@ function ComposePageContent() {
                     value={formData.subtitle}
                     onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                     placeholder="An elegant subtitle leads the narrative..."
-                    className="w-full bg-transparent border-none text-lg text-neutral-400 font-light outline-none placeholder-neutral-800 font-sans focus:ring-0 focus:outline-none"
+                    className={getSubtitleClass(formData.persona)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -623,6 +641,7 @@ function ComposePageContent() {
                   <RichTextEditor 
                     content={richTextContent} 
                     onChange={setRichTextContent} 
+                    persona={formData.persona}
                   />
                 </div>
               </main>

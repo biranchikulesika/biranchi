@@ -12,9 +12,29 @@ interface RichTextEditorProps {
   content: string;
   onChange: (content: string) => void;
   className?: string;
+  persona?: string;
 }
 
-export default function RichTextEditor({ content, onChange, className = '' }: RichTextEditorProps) {
+const getProseClass = (persona: string) => {
+  const base = "prose prose-invert max-w-none focus:outline-none min-h-[400px] prose-a:text-[#ff7700] prose-strong:text-white";
+  
+  if (persona === 'wanderer') {
+    return `${base} prose-p:font-serif prose-p:text-[17px] prose-p:leading-[1.78] prose-p:text-neutral-300 prose-headings:font-serif prose-headings:text-neutral-100`;
+  }
+  if (persona === 'thinker') {
+    return `${base} prose-p:font-sans prose-p:font-light prose-p:text-[1.1rem] prose-p:leading-[1.8] prose-p:text-neutral-300 prose-headings:font-cormorant prose-headings:text-neutral-100`;
+  }
+  if (persona === 'builder') {
+    return `${base} prose-p:font-sans prose-p:font-light prose-p:text-[1.05rem] prose-p:leading-[1.8] prose-p:text-neutral-300 prose-headings:font-sans prose-headings:font-semibold prose-headings:text-neutral-100`;
+  }
+  if (persona === 'operator') {
+    return `${base} prose-p:font-mono prose-p:text-[13px] prose-p:leading-[1.8] prose-p:text-neutral-300 prose-headings:font-mono prose-headings:font-bold prose-headings:uppercase prose-headings:text-neutral-100 tracking-wide`;
+  }
+  
+  return `${base} prose-p:text-neutral-300 prose-headings:text-neutral-100`;
+};
+
+export default function RichTextEditor({ content, onChange, className = '', persona = 'builder' }: RichTextEditorProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,7 +71,7 @@ export default function RichTextEditor({ content, onChange, className = '' }: Ri
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-invert prose-p:text-neutral-300 prose-headings:text-neutral-100 prose-a:text-[#ff7700] prose-strong:text-white max-w-none focus:outline-none min-h-[400px]',
+        class: getProseClass(persona),
       },
       handleDrop: (view, event, slice, moved) => {
         if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
@@ -66,6 +86,20 @@ export default function RichTextEditor({ content, onChange, className = '' }: Ri
       },
     },
   });
+
+  useEffect(() => {
+    if (editor && !editor.isDestroyed) {
+      editor.setOptions({
+        editorProps: {
+          ...editor.options.editorProps,
+          attributes: {
+            ...editor.options.editorProps?.attributes,
+            class: getProseClass(persona),
+          },
+        },
+      });
+    }
+  }, [editor, persona]);
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
@@ -129,8 +163,70 @@ export default function RichTextEditor({ content, onChange, className = '' }: Ri
 
   return (
     <div className={`relative ${className}`}>
-      {/* Floating Toolbar inside editor for images/youtube */}
-      <div className="absolute -top-12 right-0 flex items-center gap-1 bg-[#0c0c0c] border border-[#222] p-1 rounded-lg z-10 shadow-lg">
+      {/* Standard Formatting Toolbar (Sticky) */}
+      <div className="sticky top-4 z-30 flex items-center flex-wrap gap-1 bg-[#121212]/95 backdrop-blur-md border border-[#222] p-1.5 rounded-lg mb-8 shadow-2xl w-full max-w-full overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('bold') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Bold"
+        >
+          <Bold className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('italic') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Italic"
+        >
+          <Italic className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={setLink}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('link') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Link"
+        >
+          <LinkIcon className="w-4 h-4" />
+        </button>
+
+        <div className="w-px h-4 bg-[#333] mx-1"></div>
+
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('heading', { level: 2 }) ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Heading 2"
+        >
+          <Heading2 className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('bulletList') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Bullet List"
+        >
+          <List className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('orderedList') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Numbered List"
+        >
+          <ListOrdered className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('blockquote') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Quote"
+        >
+          <Quote className="w-4 h-4" />
+        </button>
+
+        <div className="w-px h-4 bg-[#333] mx-1"></div>
+
         <button
           type="button"
           onClick={handleTriggerFilePicker}
