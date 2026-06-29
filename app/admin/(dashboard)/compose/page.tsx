@@ -606,20 +606,20 @@ function ComposePageContent() {
       )}
 
       {/* Main Container Area */}
-      <div className="flex-1 overflow-y-auto w-full flex flex-col bg-[#0a0a0a]">
+      <div className={`flex-1 w-full flex flex-col bg-[#0a0a0a] ${activeTab === 'preview' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 text-neutral-600 gap-3">
             <RefreshCw className="w-5 h-5 animate-spin text-[#ff7700]" />
             <span className="text-xs font-mono tracking-wider">preparing studio drawing tools...</span>
           </div>
         ) : (
-          <div className="flex-1 w-full bg-[#0a0a0a]">
+          <div className="flex-1 w-full flex flex-col bg-[#0a0a0a]">
             {activeTab === 'composer' ? (
               <main
-                className="w-full max-w-210 mx-auto px-6 py-12 md:py-20 flex flex-col min-h-screen"
+                className="w-full flex-1 flex flex-col p-4 md:p-6 min-h-0"
               >
                 {/* Title & Subtitle Inputs */}
-                <div className="space-y-4 mb-10 w-full">
+                <div className="space-y-4 mb-4 w-full shrink-0">
                   <textarea
                     value={formData.title}
                     onChange={(e) => {
@@ -664,7 +664,7 @@ function ComposePageContent() {
                 </div>
 
                 {/* Rich Text Editor stream */}
-                <div className="w-full relative mt-4">
+                <div className="w-full flex-1 min-h-0 mt-2">
                   <MDXEditor 
                     content={richTextContent} 
                     onChange={setRichTextContent} 

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, Loader2 } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, Loader2, Search, LayoutTemplate, Quote, TableProperties, Video } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import MediaLibraryModal from './MediaLibraryModal';
 
@@ -13,10 +13,20 @@ interface MDXEditorProps {
   persona?: string;
 }
 
+const componentLibrary = [
+  { name: 'Callout', tag: 'Callout', props: { type: 'info' }, icon: Type, description: 'Highlighted info box', selfClosing: false },
+  { name: 'YouTube', tag: 'YouTube', props: { id: 'dQw4w9WgXcQ' }, icon: Video, description: 'Embed a YouTube video', selfClosing: true },
+  { name: 'Image', tag: 'Image', props: { path: 'path/to/image.jpg', alt: 'Description' }, icon: ImageIcon, description: 'MDX native image', selfClosing: true },
+  { name: 'Table', tag: 'table', props: {}, icon: TableProperties, description: 'Standard HTML table', selfClosing: false },
+  { name: 'Blockquote', tag: 'blockquote', props: {}, icon: Quote, description: 'Standard blockquote', selfClosing: false },
+  { name: 'Pre', tag: 'pre', props: {}, icon: Code, description: 'Code block wrapper', selfClosing: false },
+];
+
 export default function MDXEditor({ content, onChange, className = '', persona = 'builder' }: MDXEditorProps) {
   const monaco = useMonaco();
   const [isUploading, setIsUploading] = useState(false);
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<any>(null);
 
@@ -113,7 +123,6 @@ export default function MDXEditor({ content, onChange, className = '', persona =
   const handleImageUpload = async (file: File) => {
     setIsUploading(true);
     try {
-      // Instead of getting public URL, get the storage path for MDX
       const { path: storagePath } = await uploadImage({ bucket: 'post-images', file }); 
       
       if (storagePath) {
@@ -137,35 +146,33 @@ export default function MDXEditor({ content, onChange, className = '', persona =
     }
   };
 
-  return (
-    <div className={`flex flex-col h-[600px] border border-border rounded-lg overflow-hidden bg-background ${className}`} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
-      <div className="flex items-center gap-1 border-b border-border p-2 bg-[#0c0c0c]">
-        <button onClick={() => applyFormat('**')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Bold (Cmd+B)">
-          <Bold className="w-4 h-4" />
-        </button>
-        <button onClick={() => applyFormat('*')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Italic (Cmd+I)">
-          <Italic className="w-4 h-4" />
-        </button>
-        <button onClick={applyLink} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Link (Cmd+K)">
-          <LinkIcon className="w-4 h-4" />
-        </button>
-        <button onClick={() => applyFormat('`')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Inline Code">
-          <Code className="w-4 h-4" />
-        </button>
-        
-        <div className="w-px h-4 bg-border mx-1"></div>
-        
-        <button onClick={() => setIsMediaLibraryOpen(true)} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors flex items-center gap-1">
-          <ImageIcon className="w-4 h-4" />
-          <span className="text-xs uppercase font-mono">Media Library</span>
-        </button>
-        
-        <div className="w-px h-4 bg-border mx-1"></div>
+  const filteredComponents = componentLibrary.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-        <button onClick={() => insertComponent('Callout', { type: 'info' })} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors flex items-center gap-1">
-          <Type className="w-4 h-4" />
-          <span className="text-xs uppercase font-mono">Callout</span>
-        </button>
+  return (
+    <div className={`flex flex-col h-full border border-border rounded-lg overflow-hidden bg-background ${className}`} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
+      {/* Top Toolbar */}
+      <div className="flex items-center justify-between border-b border-border p-1 bg-[#0c0c0c] shrink-0">
+        <div className="flex items-center gap-1 pl-1">
+          <button onClick={() => applyFormat('**')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Bold (Cmd+B)">
+            <Bold className="w-4 h-4" />
+          </button>
+          <button onClick={() => applyFormat('*')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Italic (Cmd+I)">
+            <Italic className="w-4 h-4" />
+          </button>
+          <button onClick={applyLink} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Link (Cmd+K)">
+            <LinkIcon className="w-4 h-4" />
+          </button>
+          <button onClick={() => applyFormat('`')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Inline Code">
+            <Code className="w-4 h-4" />
+          </button>
+          
+          <div className="w-px h-4 bg-border mx-1"></div>
+          
+          <button onClick={() => setIsMediaLibraryOpen(true)} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors flex items-center gap-1">
+            <ImageIcon className="w-4 h-4" />
+            <span className="text-[11px] uppercase font-mono tracking-wider">Media Library</span>
+          </button>
+        </div>
       </div>
 
       <input
@@ -189,30 +196,79 @@ export default function MDXEditor({ content, onChange, className = '', persona =
         }}
       />
 
-      <div className="flex-1 w-full relative">
-        <Editor
-          height="100%"
-          defaultLanguage="mdx"
-          language="mdx"
-          theme="vs-dark"
-          value={content}
-          onChange={(val) => onChange(val || '')}
-          onMount={handleEditorDidMount}
-          options={{
-            minimap: { enabled: false },
-            wordWrap: 'on',
-            lineNumbers: 'on',
-            scrollBeyondLastLine: false,
-            smoothScrolling: true,
-            padding: { top: 16, bottom: 16 },
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            bracketPairColorization: { enabled: true },
-            autoClosingBrackets: 'always',
-            autoClosingQuotes: 'always',
-            formatOnPaste: true,
-          }}
-        />
+      <div className="flex flex-1 min-h-0 relative">
+        {/* Editor Area */}
+        <div className="flex-1 min-w-0 relative h-full">
+          <Editor
+            height="100%"
+            defaultLanguage="mdx"
+            language="mdx"
+            theme="vs-dark"
+            value={content}
+            onChange={(val) => onChange(val || '')}
+            onMount={handleEditorDidMount}
+            options={{
+              minimap: { enabled: false },
+              wordWrap: 'on',
+              lineNumbers: 'on',
+              scrollBeyondLastLine: false,
+              smoothScrolling: true,
+              padding: { top: 24, bottom: 48 },
+              fontFamily: 'var(--font-mono)',
+              fontSize: 14,
+              bracketPairColorization: { enabled: true },
+              autoClosingBrackets: 'always',
+              autoClosingQuotes: 'always',
+              formatOnPaste: true,
+            }}
+          />
+        </div>
+
+        {/* Right Sidebar Component Library */}
+        <div className="w-72 border-l border-border bg-[#0a0a0a] flex flex-col h-full shrink-0">
+          <div className="p-3 border-b border-border bg-[#111]">
+            <h3 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-3 flex items-center gap-2">
+              <LayoutTemplate className="w-3.5 h-3.5" /> Component Library
+            </h3>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+              <input 
+                type="text" 
+                placeholder="Search components..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1a1a1a] border border-[#222] rounded-md py-1.5 pl-9 pr-3 text-xs font-mono text-neutral-300 focus:outline-none focus:border-[#ff7700] transition-colors"
+              />
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-2">
+            <div className="space-y-1">
+              {filteredComponents.length > 0 ? filteredComponents.map((comp) => {
+                const Icon = comp.icon;
+                return (
+                  <button
+                    key={comp.name}
+                    onClick={() => comp.selfClosing ? insertSelfClosingComponent(comp.tag, comp.props) : insertComponent(comp.tag, comp.props)}
+                    className="w-full text-left p-2.5 rounded-md hover:bg-[#1a1a1a] transition-colors flex items-start gap-3 group"
+                  >
+                    <div className="p-1.5 bg-[#111] border border-[#222] rounded mt-0.5 group-hover:border-[#333] transition-colors">
+                      <Icon className="w-4 h-4 text-neutral-400 group-hover:text-[#ff7700] transition-colors" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold font-sans text-neutral-300 group-hover:text-white transition-colors">{comp.name}</div>
+                      <div className="text-[11px] font-mono text-neutral-500 truncate mt-0.5">{comp.description}</div>
+                    </div>
+                  </button>
+                );
+              }) : (
+                <div className="p-4 text-center text-xs font-mono text-neutral-500">
+                  No components found.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
