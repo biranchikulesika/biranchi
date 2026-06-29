@@ -9,7 +9,11 @@ A high-performance, aesthetically refined digital space to capture, organize, an
     *   **Wanderer:** An interactive, cyclical canvas for poetry, journal moments, and fleeting fragments.
     *   **Builder:** A home for build logs, system architecture docs, and project statuses.
     *   **Operator:** Dedicated specifically to current operational focuses and actionable goals.
-*   **Block-Based Editor:** A custom-built, modern block editor allowing for rich composition of text, markdown, and images (with drag-and-drop file uploads).
+*   **TipTap-Powered WYSIWYG Editor:** A highly advanced, custom-built rich text editor inspired by Notion.
+    *   **Slash Commands (`/`)**: Instantly summon headings, code blocks, tables, toggle lists (`<details>`), and terminal blocks.
+    *   **Dynamic Typography**: The editor's font and layout adapt in real-time to match the selected persona (e.g., monospace for Operator, elegant serifs for Thinker).
+    *   **Custom Blocks**: Supports bespoke blocks like a MacOS-style Terminal with syntax highlighting and one-click copy.
+*   **Payments Integration:** Fully integrated Razorpay support for seamless transactions and webhook handling.
 *   **Next.js App Router:** Optimized for server components, automatic caching, and minimal client-side JavaScript.
 *   **Supabase Backend:** Utilizes Supabase for PostgreSQL database, secure user authentication, and robust image/bucket storage.
 *   **Elegant & Responsive UI:** Powered by Tailwind CSS v4 with bespoke animations utilizing `motion/react`. Uses precise typography pairings (Inter, JetBrains Mono, Space Grotesk).
@@ -21,6 +25,8 @@ A high-performance, aesthetically refined digital space to capture, organize, an
 *   **Framework:** [Next.js](https://nextjs.org/) (App Router, Server Actions)
 *   **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
 *   **Backend & DB:** [Supabase](https://supabase.com/) (PostgreSQL, Storage, Auth)
+*   **Payments:** [Razorpay](https://razorpay.com/)
+*   **Editor:** [TipTap](https://tiptap.dev/) (ProseMirror-based with `lowlight` syntax highlighting)
 *   **Validation:** [Zod](https://zod.dev/)
 *   **Animation:** [Motion (Framer Motion)](https://motion.dev/)
 *   **Typography:** Google Fonts (`next/font/google`), Tailwind Typography plugin
@@ -70,7 +76,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 *   **/components:** Reusable React components.
     *   **/ui:** Base-level UI elements (buttons, inputs).
     *   **/blog:** Public-facing post and archive layouts.
-    *   **/post-renderer:** Custom renderer processing the block-format payload to HTML/Markdown.
+    *   **/post-renderer:** Custom renderer processing the TipTap HTML output and legacy block formats to HTML/Markdown.
     *   **/mdx:** Markdown specific view components.
 *   **/lib:** Core utility functions.
     *   **/supabase:** Supabase clients and helper methods.
