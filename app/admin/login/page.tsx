@@ -158,7 +158,7 @@ export default function LoginPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-        className="relative z-10 w-full max-w-[420px] px-6 flex flex-col items-center sm:-mt-12"
+        className="relative z-10 w-full max-w-[420px] px-6 flex flex-col items-center -mt-12"
       >
         {/* Floating Status Message to prevent layout shift */}
         <div className="absolute bottom-[calc(100%+1.5rem)] left-0 w-full flex justify-center pointer-events-none px-6">
