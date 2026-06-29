@@ -164,7 +164,17 @@ export default function RichTextEditor({ content, onChange, className = '' }: Ri
 
       {/* Bubble Menu for text selection formatting */}
       {editor && (
-        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }} className="flex items-center bg-[#0c0c0c] border border-[#222] p-1 rounded-lg shadow-2xl overflow-hidden gap-0.5">
+        <BubbleMenu 
+          editor={editor} 
+          tippyOptions={{ duration: 100 }} 
+          shouldShow={({ editor, view, state, from, to }) => {
+            const { selection } = state;
+            const { empty } = selection;
+            const hasEditorFocus = view.hasFocus();
+            return hasEditorFocus && !empty && !editor.isActive('image');
+          }}
+          className="flex items-center bg-[#0c0c0c] border border-[#222] p-1 rounded-lg shadow-2xl overflow-hidden gap-0.5"
+        >
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
             className={`p-1.5 rounded transition-colors ${editor.isActive('bold') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
@@ -208,6 +218,37 @@ export default function RichTextEditor({ content, onChange, className = '' }: Ri
           >
             <Quote className="w-4 h-4" />
           </button>
+        </BubbleMenu>
+      )}
+
+      {/* Bubble Menu for Images (Alt Text and Title) */}
+      {editor && (
+        <BubbleMenu 
+          editor={editor} 
+          tippyOptions={{ duration: 100 }} 
+          shouldShow={({ editor }) => editor.isActive('image')}
+          className="flex flex-col bg-[#0c0c0c] border border-[#222] p-2 rounded-lg shadow-2xl overflow-hidden gap-2 min-w-[240px]"
+        >
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] uppercase font-mono text-neutral-500 px-1">Alt Text (Accessibility)</label>
+            <input 
+              type="text" 
+              placeholder="Describe the image..."
+              value={editor.getAttributes('image').alt || ''}
+              onChange={(e) => editor.chain().focus().updateAttributes('image', { alt: e.target.value }).run()}
+              className="w-full bg-[#111] border border-[#222] text-xs text-white p-2 rounded outline-none focus:border-[#ff7700] transition-colors"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] uppercase font-mono text-neutral-500 px-1">Caption / Title</label>
+            <input 
+              type="text" 
+              placeholder="Caption shown on hover..."
+              value={editor.getAttributes('image').title || ''}
+              onChange={(e) => editor.chain().focus().updateAttributes('image', { title: e.target.value }).run()}
+              className="w-full bg-[#111] border border-[#222] text-xs text-white p-2 rounded outline-none focus:border-[#ff7700] transition-colors"
+            />
+          </div>
         </BubbleMenu>
       )}
 
