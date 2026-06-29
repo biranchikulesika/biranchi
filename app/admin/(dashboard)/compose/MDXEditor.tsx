@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, Loader2, Search, LayoutTemplate, Quote, TableProperties, Video } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, Loader2, Search, LayoutTemplate, Quote, TableProperties, Video, X } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import MediaLibraryModal from './MediaLibraryModal';
 
@@ -15,8 +15,6 @@ interface MDXEditorProps {
   onTitleChange: (title: string) => void;
   subtitle: string;
   onSubtitleChange: (subtitle: string) => void;
-  wordCount: number;
-  readingTime: number;
 }
 
 const componentLibrary = [
@@ -36,9 +34,7 @@ export default function MDXEditor({
   title,
   onTitleChange,
   subtitle,
-  onSubtitleChange,
-  wordCount,
-  readingTime
+  onSubtitleChange
 }: MDXEditorProps) {
   const monaco = useMonaco();
   const [isUploading, setIsUploading] = useState(false);
@@ -165,56 +161,70 @@ export default function MDXEditor({
 
   const filteredComponents = componentLibrary.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
+  const displayTabName = (title || 'untitled').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.mdx';
+
   return (
-    <div className={`flex flex-col h-full border border-border rounded-lg overflow-hidden bg-background ${className}`} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
-      {/* Top Toolbar */}
-      <div className="flex items-center justify-between border-b border-border p-1 bg-[#0c0c0c] shrink-0">
-        <div className="flex items-center gap-1 pl-1">
-          <button onClick={() => applyFormat('**')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Bold (Cmd+B)">
+    <div className={`flex flex-col h-full bg-[#1e1e1e] border-l border-[#222] ${className}`} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
+      
+      {/* VS Code Editor Tabs */}
+      <div className="flex bg-[#111111] h-[35px] shrink-0 overflow-x-auto custom-scrollbar">
+        {/* Active Tab */}
+        <div className="flex items-center h-full px-3 bg-[#1e1e1e] border-t-2 border-t-[#007acc] text-[#cccccc] cursor-pointer min-w-[140px] max-w-[200px] group transition-colors">
+          <Type className="w-3.5 h-3.5 text-[#519aba] mr-2 shrink-0" />
+          <span className="text-[13px] font-sans truncate select-none flex-1">
+            {displayTabName.replace(/^-+|-+$/g, '') || 'untitled.mdx'}
+          </span>
+          <X className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 hover:bg-[#333] rounded p-0.5 transition-all shrink-0" />
+        </div>
+        
+        {/* Empty space next to tab */}
+        <div className="flex-1 bg-[#111111]"></div>
+        
+        {/* Formatting actions in the tab bar area */}
+        <div className="flex items-center px-2 bg-[#111111] gap-1 shrink-0">
+          <button onClick={() => applyFormat('**')} className="p-1 hover:bg-[#333] rounded text-[#cccccc]" title="Bold (Cmd+B)">
             <Bold className="w-4 h-4" />
           </button>
-          <button onClick={() => applyFormat('*')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Italic (Cmd+I)">
+          <button onClick={() => applyFormat('*')} className="p-1 hover:bg-[#333] rounded text-[#cccccc]" title="Italic (Cmd+I)">
             <Italic className="w-4 h-4" />
           </button>
-          <button onClick={applyLink} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Link (Cmd+K)">
+          <button onClick={applyLink} className="p-1 hover:bg-[#333] rounded text-[#cccccc]" title="Link (Cmd+K)">
             <LinkIcon className="w-4 h-4" />
           </button>
-          <button onClick={() => applyFormat('`')} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors" title="Inline Code">
+          <button onClick={() => applyFormat('`')} className="p-1 hover:bg-[#333] rounded text-[#cccccc]" title="Inline Code">
             <Code className="w-4 h-4" />
           </button>
-          
-          <div className="w-px h-4 bg-border mx-1"></div>
-          
-          <button onClick={() => setIsMediaLibraryOpen(true)} className="p-1.5 rounded hover:bg-[#1a1a1a] text-neutral-400 hover:text-white transition-colors flex items-center justify-center" title="Media Library">
+          <div className="w-px h-4 bg-[#333] mx-1"></div>
+          <button onClick={() => setIsMediaLibraryOpen(true)} className="p-1 hover:bg-[#333] rounded text-[#cccccc]" title="Media Library">
             <ImageIcon className="w-4 h-4" />
           </button>
-          
-          <div className="w-px h-4 bg-border mx-2"></div>
-          
-          <div className="flex flex-1 items-center gap-3 mr-4">
-            <input 
-              type="text" 
-              value={title} 
-              onChange={(e) => onTitleChange(e.target.value)} 
-              placeholder="Post Title..."
-              className="bg-transparent border-none outline-none text-sm font-sans font-semibold text-neutral-200 placeholder-neutral-600 focus:ring-0 w-48 lg:w-64 shrink-0"
-            />
-            <div className="w-px h-3 bg-[#333] shrink-0"></div>
-            <input 
-              type="text"
-              value={subtitle}
-              onChange={(e) => onSubtitleChange(e.target.value)}
-              placeholder="An elegant subtitle leads the narrative..."
-              className="flex-1 bg-transparent border-none outline-none text-xs font-serif text-neutral-400 placeholder-neutral-700 focus:ring-0 min-w-[150px]"
-            />
-          </div>
         </div>
+      </div>
 
-        <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 shrink-0 pr-3">
-          <span>{wordCount} words</span>
-          <div className="w-px h-3 bg-[#333]"></div>
-          <span>{readingTime} min read</span>
-        </div>
+      {/* VS Code Breadcrumbs */}
+      <div className="flex items-center h-[22px] bg-[#1e1e1e] px-4 text-[#cccccc] shrink-0 text-[12px] font-sans shadow-[0_1px_2px_rgba(0,0,0,0.2)] z-10 relative">
+        <span className="opacity-60 font-mono">biranchi</span>
+        <span className="mx-2 opacity-40">›</span>
+        <span className="opacity-60 font-mono">admin</span>
+        <span className="mx-2 opacity-40">›</span>
+        <span className="opacity-60 font-mono">compose</span>
+        <span className="mx-2 opacity-40">›</span>
+        
+        <input 
+          type="text" 
+          value={title} 
+          onChange={(e) => onTitleChange(e.target.value)} 
+          placeholder="Post Title"
+          className="bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 w-32 lg:w-48 shrink-0 py-0"
+        />
+        <span className="mx-2 opacity-40">›</span>
+        <input 
+          type="text"
+          value={subtitle}
+          onChange={(e) => onSubtitleChange(e.target.value)}
+          placeholder="Subtitle"
+          className="flex-1 bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 min-w-[150px] py-0 italic"
+        />
       </div>
 
       <input

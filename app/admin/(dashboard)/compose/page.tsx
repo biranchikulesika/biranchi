@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Plus, X, Image as ImageIcon, GripVertical, Check, RefreshCw,
-  Trash2, UploadCloud, Send, Undo, Redo, MessageSquare, List, Settings
+  Trash2, UploadCloud, Send, Undo, Redo, MessageSquare, List, Settings,
+  Files, Eye, CloudUpload
 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import { getPosts, createPost, updatePost, checkSlugExists } from '@/app/admin/actions/posts.actions';
@@ -528,148 +529,130 @@ function ComposePageContent() {
   const activePersonaParams = personaInfoMap[formData.persona] || { label: 'Universal', system: 'ECOSYSTEM', color: 'text-neutral-400', bg: 'bg-neutral-850' };
 
   return (
-    <div className="w-full min-h-screen bg-[#0a0a0a] text-neutral-200 flex flex-col font-sans selection:bg-[#222]">
+    <div className={`w-full bg-[#0a0a0a] text-neutral-200 flex flex-col font-sans selection:bg-[#222] ${activeTab === 'preview' ? 'min-h-screen' : 'h-screen overflow-hidden'}`}>
 
-      {/* Top Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-[#181818] bg-[#0c0c0c] shrink-0 sticky top-0 z-40">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/admin/library"
-            className="flex items-center gap-1.5 text-xs font-mono uppercase text-neutral-400 hover:text-white bg-[#111] hover:bg-[#161616] border border-[#222] px-3 py-1.5 rounded-lg transition-all"
-            id="back-to-library-btn"
-          >
-            <span>← Back</span>
-          </Link>
-
-          <span className="text-neutral-800 font-mono">/</span>
-
-          <span className={`text-xs font-mono uppercase ${activePersonaParams.color} flex items-center gap-1 bg-[#111] px-3 py-1 rounded-full border border-[#1b1b1b]`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${activePersonaParams.color.replace('text-', 'bg-')}`} />
-            <span>{personaDisplayLabel[formData.persona] || 'Writing'}</span>
-          </span>
-
-          <span className="text-neutral-800 font-mono">/</span>
-
-          {/* Simple Draft Autosave Status Display */}
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-500">
-            <span className={`w-1.5 h-1.5 rounded-full ${
-              saveStatus === 'Saving...' ? 'bg-orange-500 animate-pulse' : 'bg-emerald-500'
-            }`} />
-            <span>{saveStatus}</span>
+      {/* Main Row */}
+      <div className="flex-1 min-h-0 w-full flex flex-row">
+        
+        {/* Activity Bar (Left) */}
+        <div className="w-12 bg-[#111] border-r border-[#222] flex flex-col items-center py-3 justify-between shrink-0">
+          <div className="flex flex-col gap-4 w-full items-center">
+            <Link
+              href="/admin/library"
+              className="p-2 text-neutral-500 hover:text-white transition-colors"
+              title="Back to Library"
+            >
+              <Files className="w-6 h-6" strokeWidth={1.5} />
+            </Link>
+          </div>
+          <div className="flex flex-col gap-4 w-full items-center mb-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab(prev => prev === 'composer' ? 'preview' : 'composer')}
+              className={`p-2 transition-colors ${activeTab === 'preview' ? 'text-white' : 'text-neutral-500 hover:text-white'}`}
+              title={activeTab === 'preview' ? 'Return to Editor' : 'Open Preview'}
+            >
+              {activeTab === 'preview' ? <Undo className="w-6 h-6" strokeWidth={1.5} /> : <Eye className="w-6 h-6" strokeWidth={1.5} />}
+            </button>
+            <button
+              onClick={() => setIsPublishModalOpen(true)}
+              className="p-2 text-neutral-500 hover:text-white transition-colors"
+              title="Publish Settings"
+            >
+              <CloudUpload className="w-6 h-6" strokeWidth={1.5} />
+            </button>
           </div>
         </div>
 
-        {/* Right Action Bar */}
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setActiveTab(prev => prev === 'composer' ? 'preview' : 'composer')}
-            className={`px-3 py-1.5 border rounded-lg text-xs font-mono uppercase tracking-wider font-semibold transition-all ${
-              activeTab === 'preview'
-                ? 'bg-[#ff7700]/10 border-[#ff7700] text-[#ff7700]'
-                : 'bg-[#111] border-[#1b1b1b] text-neutral-400 hover:text-white hover:border-neutral-700'
-            }`}
-            id="preview-toggle-btn"
-          >
-            {activeTab === 'preview' ? 'Writing' : 'Preview'}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setFormData((prev: any) => {
-                const updated = { ...prev };
-                if (!updated.excerpt) {
-                  updated.excerpt = getExcerptFromContent();
-                }
-                return updated;
-              });
-              setIsPublishModalOpen(true);
-            }}
-            className="px-4 py-1.5 bg-[#ff7700] hover:bg-[#ff881a] text-black font-bold text-xs font-mono uppercase rounded-lg transition-colors shadow-lg shadow-orange-500/5"
-            id="publish-drawer-trigger"
-          >
-            Publish
-          </button>
-        </div>
-      </header>
-
-
-
-      {dbError && (
-        <div className="max-w-2xl mx-auto mt-6 w-full px-4">
-          <div className="p-4 bg-red-950/20 border border-red-900/30 rounded-xl text-red-400 text-xs font-mono flex items-center gap-2">
-            <span>⚠️</span>
-            <span>{dbError}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Main Container Area */}
-      <div className={`flex-1 w-full flex flex-col bg-[#0a0a0a] ${activeTab === 'preview' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 text-neutral-600 gap-3">
-            <RefreshCw className="w-5 h-5 animate-spin text-[#ff7700]" />
-            <span className="text-xs font-mono tracking-wider">preparing studio drawing tools...</span>
-          </div>
-        ) : (
-          <div className="flex-1 w-full flex flex-col bg-[#0a0a0a]">
-            {activeTab === 'composer' ? (
-              <main
-                className="w-full flex-1 flex flex-col p-4 md:p-6 min-h-0"
-              >
-                {/* Rich Text Editor stream */}
-                <div className="w-full flex-1 min-h-0 mt-2">
-                  <MDXEditor 
-                    content={richTextContent} 
-                    onChange={setRichTextContent} 
-                    persona={formData.persona}
-                    title={formData.title}
-                    onTitleChange={(title) => {
-                      setFormData((prev: any) => ({ ...prev, title }));
-                      if (!formData.slug || formData.slug.trim() === '') {
-                        setFormData((prev: any) => ({ ...prev, slug: slugify(title) }));
-                      }
-                    }}
-                    subtitle={formData.subtitle}
-                    onSubtitleChange={(subtitle) => setFormData((prev: any) => ({ ...prev, subtitle }))}
-                    wordCount={getWordCount()}
-                    readingTime={getReadingTime()}
-                  />
-                </div>
-              </main>
-            ) : (
-              /* High-Fidelity Preview inside actual Persona Layout via PostRenderer */
-              <div className="w-full h-full min-h-screen bg-transparent">
-                  <PostRenderer
-                    post={{
-                      id: currentPostId || 'preview-draft',
-                      slug: formData.slug || 'preview-draft-slug',
-                      persona: formData.persona,
-                      title: formData.title || 'Untitled Post',
-                      subtitle: formData.subtitle || '',
-                      excerpt: formData.excerpt || '',
-                      tags: splitTagsFromText(pasteTagsText),
-                      publishedAt: formData.publishedAt || new Date().toISOString(),
-                      readingTime: getReadingTime(),
-                      coverImageUrl: getEffectiveCoverImage(),
-                      coverImageLocation: formData.coverImageLocation,
-                      autoCoverImage: formData.autoCoverImage,
-                      content: richTextContent,
-                      featured: formData.featured,
-                      hidden: formData.hidden,
-                      status: 'draft',
-                      createdAt: new Date().toISOString(),
-                      updatedAt: new Date().toISOString(),
-                    } as any}
-                    slug={formData.slug || 'preview-draft-slug'}
-                    allPosts={[]}
-                    compiledMdx={compiledMdx}
-                  />
+        {/* Editor or Preview Pane */}
+        <div className={`flex-1 min-w-0 flex flex-col bg-[#0a0a0a] ${activeTab === 'preview' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
+          {dbError && (
+            <div className="max-w-2xl mx-auto mt-6 w-full px-4 shrink-0">
+              <div className="p-4 bg-red-950/20 border border-red-900/30 rounded-xl text-red-400 text-xs font-mono flex items-center gap-2">
+                <span>⚠️</span>
+                <span>{dbError}</span>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-32 text-neutral-600 gap-3">
+              <RefreshCw className="w-5 h-5 animate-spin text-[#ff7700]" />
+              <span className="text-xs font-mono tracking-wider">preparing studio drawing tools...</span>
+            </div>
+          ) : (
+            <div className="flex-1 min-h-0 w-full flex flex-col bg-[#0a0a0a]">
+              {activeTab === 'composer' ? (
+                <main className="w-full flex-1 flex flex-col min-h-0">
+                  <div className="w-full flex-1 min-h-0">
+                    <MDXEditor 
+                      content={richTextContent} 
+                      onChange={setRichTextContent} 
+                      persona={formData.persona}
+                      title={formData.title}
+                      onTitleChange={(title) => {
+                        setFormData((prev: any) => ({ ...prev, title }));
+                        if (!formData.slug || formData.slug.trim() === '') {
+                          setFormData((prev: any) => ({ ...prev, slug: slugify(title) }));
+                        }
+                      }}
+                      subtitle={formData.subtitle}
+                      onSubtitleChange={(subtitle) => setFormData((prev: any) => ({ ...prev, subtitle }))}
+                    />
+                  </div>
+                </main>
+              ) : (
+                <div className="w-full h-full min-h-screen bg-transparent">
+                    <PostRenderer
+                      post={{
+                        id: currentPostId || 'preview-draft',
+                        slug: formData.slug || 'preview-draft-slug',
+                        persona: formData.persona,
+                        title: formData.title || 'Untitled Post',
+                        subtitle: formData.subtitle || '',
+                        excerpt: formData.excerpt || '',
+                        tags: splitTagsFromText(pasteTagsText),
+                        publishedAt: formData.publishedAt || new Date().toISOString(),
+                        readingTime: getReadingTime(),
+                        coverImageUrl: getEffectiveCoverImage(),
+                        coverImageLocation: formData.coverImageLocation,
+                        autoCoverImage: formData.autoCoverImage,
+                        content: richTextContent,
+                        featured: formData.featured,
+                        hidden: formData.hidden,
+                        status: 'draft',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                      } as any}
+                      slug={formData.slug || 'preview-draft-slug'}
+                      allPosts={[]}
+                      compiledMdx={compiledMdx}
+                    />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Status Bar (Bottom) */}
+      <div className="h-[22px] bg-[#007acc] text-white flex items-center justify-between px-3 text-[11px] font-sans shrink-0 border-t border-[#005f9e]">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">
+            <Check className="w-3 h-3" />
+            {saveStatus}
+          </span>
+          <span className="flex items-center gap-1.5 uppercase hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">
+            <div className={`w-2 h-2 rounded-full ${activePersonaParams.color.replace('text-', 'bg-')}`} />
+            {personaDisplayLabel[formData.persona] || 'Writing'}
+          </span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="font-mono hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">{getWordCount()} words</span>
+          <span className="font-mono hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">{getReadingTime()} mins</span>
+          <span className="font-mono hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">UTF-8</span>
+          <span className="font-mono hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">MDX</span>
+        </div>
       </div>
 
       <PublishDrawer
