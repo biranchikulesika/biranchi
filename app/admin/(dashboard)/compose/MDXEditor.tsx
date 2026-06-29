@@ -11,6 +11,12 @@ interface MDXEditorProps {
   onChange: (content: string) => void;
   className?: string;
   persona?: string;
+  title: string;
+  onTitleChange: (title: string) => void;
+  subtitle: string;
+  onSubtitleChange: (subtitle: string) => void;
+  wordCount: number;
+  readingTime: number;
 }
 
 const componentLibrary = [
@@ -22,7 +28,18 @@ const componentLibrary = [
   { name: 'Pre', tag: 'pre', props: {}, icon: Code, description: 'Code block wrapper', selfClosing: false },
 ];
 
-export default function MDXEditor({ content, onChange, className = '', persona = 'builder' }: MDXEditorProps) {
+export default function MDXEditor({ 
+  content, 
+  onChange, 
+  className = '', 
+  persona = 'builder',
+  title,
+  onTitleChange,
+  subtitle,
+  onSubtitleChange,
+  wordCount,
+  readingTime
+}: MDXEditorProps) {
   const monaco = useMonaco();
   const [isUploading, setIsUploading] = useState(false);
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
@@ -172,6 +189,16 @@ export default function MDXEditor({ content, onChange, className = '', persona =
             <ImageIcon className="w-4 h-4" />
             <span className="text-[11px] uppercase font-mono tracking-wider">Media Library</span>
           </button>
+          
+          <div className="w-px h-4 bg-border mx-2"></div>
+          
+          <input 
+            type="text" 
+            value={title} 
+            onChange={(e) => onTitleChange(e.target.value)} 
+            placeholder="Post Title..."
+            className="bg-transparent border-none outline-none text-sm font-sans font-semibold text-neutral-200 placeholder-neutral-600 focus:ring-0 ml-1 w-64 md:w-96"
+          />
         </div>
       </div>
 
@@ -198,30 +225,48 @@ export default function MDXEditor({ content, onChange, className = '', persona =
 
       <div className="flex flex-1 min-h-0 relative">
         {/* Editor Area */}
-        <div className="flex-1 min-w-0 relative h-full">
-          <Editor
-            height="100%"
-            defaultLanguage="mdx"
-            language="mdx"
-            theme="vs-dark"
-            value={content}
-            onChange={(val) => onChange(val || '')}
-            onMount={handleEditorDidMount}
-            options={{
-              minimap: { enabled: false },
-              wordWrap: 'on',
-              lineNumbers: 'on',
-              scrollBeyondLastLine: false,
-              smoothScrolling: true,
-              padding: { top: 24, bottom: 48 },
-              fontFamily: 'var(--font-mono)',
-              fontSize: 14,
-              bracketPairColorization: { enabled: true },
-              autoClosingBrackets: 'always',
-              autoClosingQuotes: 'always',
-              formatOnPaste: true,
-            }}
-          />
+        <div className="flex-1 min-w-0 flex flex-col relative h-full">
+          {/* Subtitle & Stats Bar */}
+          <div className="flex items-center justify-between border-b border-border bg-[#111] px-4 py-2 shrink-0">
+            <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 shrink-0">
+              <span>{wordCount} words</span>
+              <div className="w-px h-3 bg-[#333]"></div>
+              <span>{readingTime} min read</span>
+            </div>
+            <input 
+              type="text"
+              value={subtitle}
+              onChange={(e) => onSubtitleChange(e.target.value)}
+              placeholder="An elegant subtitle leads the narrative..."
+              className="flex-1 ml-4 bg-transparent border-none outline-none text-[13px] font-serif text-neutral-400 placeholder-neutral-700 text-right focus:ring-0"
+            />
+          </div>
+          
+          <div className="flex-1 relative">
+            <Editor
+              height="100%"
+              defaultLanguage="mdx"
+              language="mdx"
+              theme="vs-dark"
+              value={content}
+              onChange={(val) => onChange(val || '')}
+              onMount={handleEditorDidMount}
+              options={{
+                minimap: { enabled: false },
+                wordWrap: 'on',
+                lineNumbers: 'on',
+                scrollBeyondLastLine: false,
+                smoothScrolling: true,
+                padding: { top: 24, bottom: 48 },
+                fontFamily: 'var(--font-mono)',
+                fontSize: 14,
+                bracketPairColorization: { enabled: true },
+                autoClosingBrackets: 'always',
+                autoClosingQuotes: 'always',
+                formatOnPaste: true,
+              }}
+            />
+          </div>
         </div>
 
         {/* Right Sidebar Component Library */}

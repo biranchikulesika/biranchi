@@ -618,57 +618,23 @@ function ComposePageContent() {
               <main
                 className="w-full flex-1 flex flex-col p-4 md:p-6 min-h-0"
               >
-                {/* Title & Subtitle Inputs */}
-                <div className="space-y-4 mb-4 w-full shrink-0">
-                  <textarea
-                    value={formData.title}
-                    onChange={(e) => {
-                      const newTitle = e.target.value;
-                      setFormData((prev: any) => ({ ...prev, title: newTitle }));
-                    }}
-                    onBlur={(e) => {
-                      const newTitle = e.target.value;
-                      setFormData((prev: any) => {
-                        if (!prev.slug || prev.slug.trim() === '') {
-                          return { ...prev, slug: slugify(newTitle) };
-                        }
-                        return prev;
-                      });
-                    }}
-                    placeholder="Title"
-                    className={getTitleClass(formData.persona)}
-                    rows={1}
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement;
-                      target.style.height = 'auto';
-                      target.style.height = `${target.scrollHeight}px`;
-                    }}
-                  />
-
-                  <input
-                    type="text"
-                    value={formData.subtitle}
-                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                    placeholder="An elegant subtitle leads the narrative..."
-                    className={getSubtitleClass(formData.persona)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const editorEl = document.querySelector('.ProseMirror');
-                        if (editorEl) {
-                          (editorEl as HTMLElement).focus();
-                        }
-                      }
-                    }}
-                  />
-                </div>
-
                 {/* Rich Text Editor stream */}
                 <div className="w-full flex-1 min-h-0 mt-2">
                   <MDXEditor 
                     content={richTextContent} 
                     onChange={setRichTextContent} 
                     persona={formData.persona}
+                    title={formData.title}
+                    onTitleChange={(title) => {
+                      setFormData((prev: any) => ({ ...prev, title }));
+                      if (!formData.slug || formData.slug.trim() === '') {
+                        setFormData((prev: any) => ({ ...prev, slug: slugify(title) }));
+                      }
+                    }}
+                    subtitle={formData.subtitle}
+                    onSubtitleChange={(subtitle) => setFormData((prev: any) => ({ ...prev, subtitle }))}
+                    wordCount={getWordCount()}
+                    readingTime={getReadingTime()}
                   />
                 </div>
               </main>
@@ -704,35 +670,6 @@ function ComposePageContent() {
             )}
           </div>
         )}
-      </div>
-
-      {/* Floating fixed Settings and Publishing Button in Bottom-Right Corner of Screen */}
-      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2">
-        {activeTab === 'composer' && (
-          <div className="hidden md:flex bg-[#121212] border border-[#222] px-4 py-2 rounded-full shadow-2xl items-center gap-3 text-xs font-mono text-neutral-500 mr-2">
-            <span>{getWordCount()} words</span>
-            <div className="w-px h-3 bg-[#333]"></div>
-            <span>{getReadingTime()} min read</span>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={() => {
-            setFormData((prev: any) => {
-              const updated = { ...prev };
-              if (!updated.excerpt) {
-                updated.excerpt = getExcerptFromContent();
-              }
-              return updated;
-            });
-            setIsPublishModalOpen(true);
-          }}
-          className="bg-[#121212] hover:bg-[#1a1a1a] border border-[#222] p-3.5 text-neutral-400 hover:text-white rounded-full shadow-2xl transition-all duration-200 flex items-center justify-center group"
-          title="Article Settings & Publishing Setup"
-          id="editor-settings-floating-btn"
-        >
-          <Settings className="w-5 h-5 text-neutral-400 group-hover:text-[#ff7700] transition-colors" />
-        </button>
       </div>
 
       <PublishDrawer
