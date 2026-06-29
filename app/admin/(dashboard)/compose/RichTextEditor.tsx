@@ -8,6 +8,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Color from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
+import TextAlign from '@tiptap/extension-text-align';
 import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
@@ -21,7 +22,7 @@ import TerminalExtension from './terminalExtension';
 import DetailsExtension from './detailsExtension';
 import SummaryExtension from './summaryExtension';
 import { uploadImage } from '@/lib/supabase/storage';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading2, List, ListOrdered, Quote, Video, Loader2, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading2, List, ListOrdered, Quote, Video, Loader2, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight, Columns, Rows, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Trash2, LayoutPanelTop } from 'lucide-react';
 
 const lowlight = createLowlight(common);
 
@@ -89,6 +90,9 @@ export default function RichTextEditor({ content, onChange, className = '', pers
       Color,
       Highlight.configure({
         multicolor: true,
+      }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
       }),
       Table.configure({
         resizable: true,
@@ -262,6 +266,33 @@ export default function RichTextEditor({ content, onChange, className = '', pers
 
         <button
           type="button"
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive({ textAlign: 'left' }) ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Align Left"
+        >
+          <AlignLeft className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive({ textAlign: 'center' }) ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Align Center"
+        >
+          <AlignCenter className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive({ textAlign: 'right' }) ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Align Right"
+        >
+          <AlignRight className="w-4 h-4" />
+        </button>
+
+        <div className="w-px h-4 bg-[#333] mx-1"></div>
+
+        <button
+          type="button"
           onClick={handleTriggerFilePicker}
           disabled={isUploading}
           className="p-1.5 text-neutral-400 hover:text-white hover:bg-[#1a1a1a] rounded transition-colors disabled:opacity-50"
@@ -378,6 +409,82 @@ export default function RichTextEditor({ content, onChange, className = '', pers
               className="w-full bg-[#111] border border-[#222] text-xs text-white p-2 rounded outline-none focus:border-[#ff7700] transition-colors"
             />
           </div>
+        </BubbleMenu>
+      )}
+
+      {/* Bubble Menu for Tables */}
+      {editor && (
+        <BubbleMenu
+          editor={editor}
+          tippyOptions={{ duration: 100, maxWidth: 'none' }}
+          shouldShow={({ editor }) => editor.isActive('table')}
+          className="flex flex-wrap items-center bg-[#0c0c0c] border border-[#222] p-1 rounded-lg shadow-2xl gap-0.5 max-w-[320px]"
+        >
+          <button
+            onClick={() => editor.chain().focus().addColumnBefore().run()}
+            className="p-1.5 text-neutral-400 hover:text-white hover:bg-[#1a1a1a] rounded transition-colors flex items-center gap-1 text-xs"
+            title="Add Column Before"
+          >
+            <Columns className="w-3 h-3" /> <ArrowLeft className="w-3 h-3" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().addColumnAfter().run()}
+            className="p-1.5 text-neutral-400 hover:text-white hover:bg-[#1a1a1a] rounded transition-colors flex items-center gap-1 text-xs"
+            title="Add Column After"
+          >
+            <Columns className="w-3 h-3" /> <ArrowRight className="w-3 h-3" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().deleteColumn().run()}
+            className="p-1.5 text-red-400 hover:text-red-300 hover:bg-[#1a1a1a] rounded transition-colors text-xs flex items-center gap-1"
+            title="Delete Column"
+          >
+            <Trash2 className="w-3 h-3" /> Col
+          </button>
+          
+          <div className="w-px h-4 bg-[#222] mx-1"></div>
+
+          <button
+            onClick={() => editor.chain().focus().addRowBefore().run()}
+            className="p-1.5 text-neutral-400 hover:text-white hover:bg-[#1a1a1a] rounded transition-colors flex items-center gap-1 text-xs"
+            title="Add Row Before"
+          >
+            <Rows className="w-3 h-3" /> <ArrowUp className="w-3 h-3" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().addRowAfter().run()}
+            className="p-1.5 text-neutral-400 hover:text-white hover:bg-[#1a1a1a] rounded transition-colors flex items-center gap-1 text-xs"
+            title="Add Row After"
+          >
+            <Rows className="w-3 h-3" /> <ArrowDown className="w-3 h-3" />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().deleteRow().run()}
+            className="p-1.5 text-red-400 hover:text-red-300 hover:bg-[#1a1a1a] rounded transition-colors text-xs flex items-center gap-1"
+            title="Delete Row"
+          >
+            <Trash2 className="w-3 h-3" /> Row
+          </button>
+
+          <div className="w-px h-4 bg-[#222] mx-1"></div>
+
+          <button
+            onClick={() => editor.chain().focus().toggleHeaderRow().run()}
+            className={`p-1.5 rounded transition-colors flex items-center gap-1 text-xs text-neutral-400 hover:bg-[#1a1a1a] hover:text-white`}
+            title="Toggle Header Row"
+          >
+            <LayoutPanelTop className="w-3 h-3" /> Header
+          </button>
+
+          <div className="w-px h-4 bg-[#222] mx-1"></div>
+
+          <button
+            onClick={() => editor.chain().focus().deleteTable().run()}
+            className="p-1.5 text-red-500 hover:bg-red-500/10 rounded transition-colors flex items-center gap-1 text-xs"
+            title="Delete Table"
+          >
+            <Trash2 className="w-3 h-3" /> Table
+          </button>
         </BubbleMenu>
       )}
 
