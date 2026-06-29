@@ -5,8 +5,25 @@ import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Youtube from '@tiptap/extension-youtube';
 import Placeholder from '@tiptap/extension-placeholder';
+import Color from '@tiptap/extension-color';
+import TextStyle from '@tiptap/extension-text-style';
+import Highlight from '@tiptap/extension-highlight';
+import Table from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { common, createLowlight } from 'lowlight';
+import SlashCommand from './slashExtension';
+import getSuggestionItems from './slashSuggestion';
+import { getSlashItems } from './slashItems';
+import TerminalExtension from './terminalExtension';
+import DetailsExtension from './detailsExtension';
+import SummaryExtension from './summaryExtension';
 import { uploadImage } from '@/lib/supabase/storage';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading2, List, ListOrdered, Quote, Video, Loader2 } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Heading2, List, ListOrdered, Quote, Video, Loader2, Palette, Highlighter, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+
+const lowlight = createLowlight(common);
 
 interface RichTextEditorProps {
   content: string;
@@ -41,7 +58,11 @@ export default function RichTextEditor({ content, onChange, className = '', pers
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: { levels: [2, 3] },
+        heading: { levels: [1, 2, 3] },
+        codeBlock: false,
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
       }),
       Image.configure({
         inline: true,
@@ -61,8 +82,28 @@ export default function RichTextEditor({ content, onChange, className = '', pers
         },
       }),
       Placeholder.configure({
-        placeholder: 'Start writing your story... Use markdown like # for headings or just begin typing.',
+        placeholder: "Type '/' for commands or start writing...",
         emptyEditorClass: 'is-editor-empty',
+      }),
+      TextStyle,
+      Color,
+      Highlight.configure({
+        multicolor: true,
+      }),
+      Table.configure({
+        resizable: true,
+        HTMLAttributes: {
+          class: 'w-full my-4 border-collapse table-auto',
+        },
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      TerminalExtension,
+      DetailsExtension,
+      SummaryExtension,
+      SlashCommand.configure({
+        suggestion: getSuggestionItems(getSlashItems()),
       }),
     ],
     content: content || '',
@@ -194,35 +235,27 @@ export default function RichTextEditor({ content, onChange, className = '', pers
 
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`p-1.5 rounded transition-colors ${editor.isActive('heading', { level: 2 }) ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
-          title="Heading 2"
+          onClick={() => editor.chain().focus().setColor('#ff7700').run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('textStyle', { color: '#ff7700' }) ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Orange Text"
         >
-          <Heading2 className="w-4 h-4" />
+          <Palette className="w-4 h-4 text-[#ff7700]" />
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-1.5 rounded transition-colors ${editor.isActive('bulletList') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
-          title="Bullet List"
+          onClick={() => editor.chain().focus().toggleHighlight({ color: '#ff770040' }).run()}
+          className={`p-1.5 rounded transition-colors ${editor.isActive('highlight') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
+          title="Highlight Background"
         >
-          <List className="w-4 h-4" />
+          <Highlighter className="w-4 h-4 text-yellow-500" />
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-1.5 rounded transition-colors ${editor.isActive('orderedList') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
-          title="Numbered List"
+          onClick={() => editor.chain().focus().toggleHighlight({ color: '#27c93f40' }).run()}
+          className={`p-1.5 rounded transition-colors text-neutral-400 hover:bg-[#1a1a1a] hover:text-white`}
+          title="Highlight Green"
         >
-          <ListOrdered className="w-4 h-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`p-1.5 rounded transition-colors ${editor.isActive('blockquote') ? 'bg-[#ff7700] text-black' : 'text-neutral-400 hover:bg-[#1a1a1a] hover:text-white'}`}
-          title="Quote"
-        >
-          <Quote className="w-4 h-4" />
+          <div className="w-4 h-4 rounded bg-[#27c93f]"></div>
         </button>
 
         <div className="w-px h-4 bg-[#333] mx-1"></div>

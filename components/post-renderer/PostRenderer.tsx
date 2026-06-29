@@ -537,16 +537,22 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona }: 
     }
 
     if (typeof parsedContent === 'string') {
+      const isHtml = /<[a-z][\s\S]*>/i.test(parsedContent);
+
       return (
         <article
-          className={`leading-[1.8] outline-none max-w-none ${
+          className={`leading-[1.8] outline-none max-w-none ${isHtml ? 'tiptap-content ' : ''}${
             p === 'builder' ? 'prose prose-invert prose-neutral text-foreground font-sans' :
             p === 'operator' ? 'prose-emerald text-foreground font-mono' :
             p === 'thinker' ? 'prose-stone text-foreground font-serif' :
             'prose-stone text-foreground font-serif'
           }`}
         >
-          <MarkdownRenderer content={parsedContent} />
+          {isHtml ? (
+            <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
+          ) : (
+            <MarkdownRenderer content={parsedContent} />
+          )}
         </article>
       );
     }

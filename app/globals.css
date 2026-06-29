@@ -198,3 +198,92 @@
   scrollbar-width: none !important;  /* Firefox */
 }
 
+/* TipTap Editor Styles */
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+.ProseMirror table td, .ProseMirror table th {
+  border: 1px solid #333;
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 6px 8px;
+  position: relative;
+  vertical-align: top;
+}
+.ProseMirror table th {
+  background-color: rgba(255, 255, 255, 0.05);
+  font-weight: bold;
+  text-align: left;
+}
+.ProseMirror .selectedCell:after {
+  background: rgba(255, 255, 255, 0.1);
+  content: "";
+  left: 0; right: 0; top: 0; bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.ProseMirror mark {
+  background-color: #ff770040;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* PostRenderer Styles for TipTap output */
+.tiptap-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+}
+.tiptap-content table td, .tiptap-content table th {
+  border: 1px solid var(--border);
+  padding: 8px;
+}
+.tiptap-content mark {
+  background-color: #ff770040;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+.tiptap-content details {
+  margin: 1em 0;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  border: 1px solid var(--border);
+  background: rgba(128, 128, 128, 0.05);
+}
+.tiptap-content summary {
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+}
+.tiptap-content div[data-type="terminal"] {
+  background: #050505;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  margin: 1.5em 0;
+}
+.tiptap-content div[data-type="terminal"]::before {
+  content: "";
+  display: block;
+  height: 32px;
+  background: #0a0a0a;
+  border-bottom: 1px solid var(--border);
+  background-image: radial-gradient(circle at 14px 16px, #ff5f56 4px, transparent 4px),
+                    radial-gradient(circle at 30px 16px, #ffbd2e 4px, transparent 4px),
+                    radial-gradient(circle at 46px 16px, #27c93f 4px, transparent 4px);
+  background-repeat: no-repeat;
+}
+.tiptap-content div[data-type="terminal"] div {
+  padding: 1rem;
+  font-family: monospace;
+  color: #34d399; /* emerald-400 */
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
