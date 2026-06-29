@@ -310,6 +310,21 @@ export default function PublishDrawer({
 
           {/* Slideover actions */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1c1c1c]">
+            {wasPublished && (
+              <button
+                type="button"
+                onClick={async () => {
+                  if (confirm('Are you sure you want to unpublish this post? It will revert to draft status.')) {
+                    await handleSavePost(true);
+                  }
+                }}
+                disabled={saving}
+                className="px-4 py-2 border border-red-900/50 hover:bg-red-950/30 text-red-500 text-xs font-sans uppercase rounded transition-colors mr-auto"
+              >
+                Unpublish
+              </button>
+            )}
+            
             <button
               type="button"
               onClick={onClose}
@@ -345,10 +360,10 @@ export default function PublishDrawer({
               {saving ? (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>Publishing...</span>
+                  <span>{wasPublished ? 'Updating...' : 'Publishing...'}</span>
                 </>
               ) : (
-                <span>Publish</span>
+                <span>{wasPublished ? 'Update Post' : 'Publish'}</span>
               )}
             </button>
           </div>

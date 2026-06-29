@@ -11,7 +11,7 @@ import { uploadImage } from '@/lib/supabase/storage';
 import { getPosts, createPost, updatePost, checkSlugExists } from '@/app/admin/actions/posts.actions';
 import PostRenderer from '@/components/post-renderer/PostRenderer';
 import PublishDrawer from './PublishDrawer';
-import BlockList from './BlockList';
+import RichTextEditor from './RichTextEditor';
 import { generateUniqueId, parseToBlocks, compileFromBlocks } from '@/lib/parsers';
 import { parseDbError } from '@/components/admin/validation';
 
@@ -154,20 +154,8 @@ function ComposePageContent() {
     status: 'draft'
   });
 
-  const [composerBlocks, setComposerBlocks] = useState<any[]>([]);
-  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [richTextContent, setRichTextContent] = useState('');
   const [pasteTagsText, setPasteTagsText] = useState('');
-
-  // Drag states for Block Reordering
-  const [draggingBlockIdx, setDraggingBlockIdx] = useState<number | null>(null);
-  const [dragOverBlockIdx, setDragOverBlockIdx] = useState<number | null>(null);
-
-  const updateBlocksAndSync = (newBlocks: any[]) => {
-    setComposerBlocks(newBlocks);
-    const compiled = compileFromBlocks(newBlocks);
-    setFormData((prev: any) => ({ ...prev, content: compiled }));
-  };
 
   const handleApplyCustomUrl = async () => {
     setUrlValidationError(null);
@@ -204,19 +192,16 @@ function ComposePageContent() {
           setCurrentPostId(found.id);
           setInitialSlug(found.slug || '');
           setWasPublished(found.status === 'published' && !!found.publishedAt);
-          let parsedBlocks;
+          let htmlContent = found.draftContent || found.content || '';
           try {
-              const contentToParse = found.draftContent || found.content || '[]';
-              const maybeJson = JSON.parse(contentToParse);
-              if (Array.isArray(maybeJson) && maybeJson.length > 0) {
-                  parsedBlocks = maybeJson;
-              } else {
-                  parsedBlocks = parseToBlocks(contentToParse);
+              const maybeJson = JSON.parse(htmlContent);
+              if (Array.isArray(maybeJson)) {
+                  htmlContent = compileFromBlocks(maybeJson);
               }
           } catch (e) {
-              parsedBlocks = parseToBlocks(found.draftContent || found.content || '');
+              // It's already HTML
           }
-          setComposerBlocks(parsedBlocks);
+          setRichTextContent(htmlContent);
           setPasteTagsText((found.tags || []).join(', '));
         } else {
           router.push('/admin/compose');
@@ -247,7 +232,7 @@ function ComposePageContent() {
         setCurrentPostId(null);
         setInitialSlug('');
         setWasPublished(false);
-        setComposerBlocks([{ id: 'first_para', type: 'text', content: '' }]);
+        setRichTextContent('');
       }
     } catch (e) {
       console.error('Error in workspace composer initialization: ', e);
@@ -261,9 +246,8 @@ function ComposePageContent() {
   }, [editId, targetPersona, loadPostToComposer]);
 
   const getWordCount = () => {
-    const text = compileFromBlocks(composerBlocks);
-    if (!text) return 0;
-    const cleanText = text.replace(/<[^>]*>/g, '').trim();
+    if (!richTextContent) return 0;
+    const cleanText = richTextContent.replace(/<[^>]*>/g, '').trim();
     if (!cleanText) return 0;
     return cleanText.split(/\s+/).filter(Boolean).length;
   };
@@ -274,20 +258,16 @@ function ComposePageContent() {
   };
 
   const getExcerptFromContent = () => {
-    const firstTextB = composerBlocks.find(b => b.type === 'text' && b.content?.trim());
-    if (firstTextB) {
-      const text = firstTextB.content.trim();
-      return text.length > 150 ? text.substring(0, 147) + '...' : text;
-    }
-    return '';
+    if (!richTextContent) return '';
+    const cleanText = richTextContent.replace(/<[^>]*>/g, ' ').trim();
+    return cleanText.length > 150 ? cleanText.substring(0, 147) + '...' : cleanText;
   };
 
   const getEffectiveCoverImage = () => {
     if (!formData.autoCoverImage && formData.coverImageUrl) {
       return formData.coverImageUrl;
     }
-    const compiledContent = compileFromBlocks(composerBlocks);
-    const extMatch = compiledContent.match(/src="([^"]+)"/);
+    const extMatch = richTextContent.match(/src="([^"]+)"/);
     if (extMatch) return extMatch[1];
     return null;
   };
@@ -300,7 +280,6 @@ function ComposePageContent() {
   useEffect(() => {
     if (loading) return;
 
-    const compiledContent = JSON.stringify(composerBlocks);
     const splitTags = pasteTagsText.split(',').map(t => t.trim()).filter(Boolean);
     const currentPayloadStr = JSON.stringify({
       title: formData.title || '',
@@ -309,7 +288,7 @@ function ComposePageContent() {
       coverImageUrl: formData.coverImageUrl || '',
       autoCoverImage: formData.autoCoverImage,
       excerpt: formData.excerpt || '',
-      content: compiledContent,
+      content: richTextContent,
       tags: splitTags,
     });
 
@@ -324,7 +303,7 @@ function ComposePageContent() {
     }
 
     setSaveStatus('Unsaved');
-  }, [formData.title, formData.subtitle, formData.persona, formData.coverImageUrl, formData.autoCoverImage, formData.excerpt, composerBlocks, pasteTagsText, loading]);
+  }, [formData.title, formData.subtitle, formData.persona, formData.coverImageUrl, formData.autoCoverImage, formData.excerpt, richTextContent, pasteTagsText, loading]);
 
   useEffect(() => {
     if (loading || saveStatus !== 'Unsaved') return;
@@ -332,12 +311,9 @@ function ComposePageContent() {
     setSaveStatus('Saving...');
     const timer = setTimeout(async () => {
       try {
-        const compiledContent = JSON.stringify(composerBlocks);
-        const compiledLegacy = compileFromBlocks(composerBlocks);
-
         let coverUrl = formData.coverImageUrl;
         if (formData.autoCoverImage) {
-          const extMatch = compiledLegacy.match(/src="([^"]+)"/);
+          const extMatch = richTextContent.match(/src="([^"]+)"/);
           if (extMatch) {
             coverUrl = extMatch[1];
           } else {
@@ -365,14 +341,14 @@ function ComposePageContent() {
           coverImageUrl: coverUrl,
           autoCoverImage: formData.autoCoverImage,
           excerpt: formData.excerpt || '',
-          draftContent: compiledContent,
+          draftContent: richTextContent,
           tags: splitTags,
         });
 
         const payload = {
           ...formData,
           title: titleToSave,
-          draftContent: compiledContent,
+          draftContent: richTextContent,
           slug: finalSlug,
           tags: splitTags,
           coverImageUrl: coverUrl,
@@ -413,7 +389,7 @@ function ComposePageContent() {
     formData.coverImageUrl,
     formData.autoCoverImage,
     formData.excerpt,
-    composerBlocks,
+    richTextContent,
     pasteTagsText,
     loading,
     currentPostId,
@@ -437,379 +413,15 @@ function ComposePageContent() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [saveStatus]);
 
-  const [deletedBlockState, setDeletedBlockState] = useState<{ block: any, index: number, originalId: string, timerId?: NodeJS.Timeout } | null>(null);
 
-  const undoDeleteBlock = () => {
-    if (!deletedBlockState) return;
-    clearTimeout(deletedBlockState.timerId);
-    const newBlocks = [...composerBlocks];
-    newBlocks.splice(deletedBlockState.index, 0, deletedBlockState.block);
-    updateBlocksAndSync(newBlocks);
-    setDeletedBlockState(null);
-  };
-
-  // Handle Slash command replacement
-  const handleSelectSlashCommand = (blockId: string, cmdType: string) => {
-    const idx = composerBlocks.findIndex(b => b.id === blockId);
-    if (idx === -1) return;
-
-    const currentBlock = composerBlocks[idx];
-    let cleanedContent = currentBlock.content ? currentBlock.content.trim() : '';
-    if (cleanedContent.endsWith('/')) {
-      cleanedContent = cleanedContent.slice(0, -1).trim();
-    }
-
-    const updatedBlocks = [...composerBlocks];
-    updatedBlocks[idx] = { ...currentBlock, content: cleanedContent };
-
-    const shouldReplace = !cleanedContent;
-    const newId = generateUniqueId('blk_added');
-    let newBlock: any;
-
-    if (cmdType === 'heading') {
-      newBlock = { id: newId, type: 'heading', level: 2, content: '' };
-    } else if (cmdType === 'image') {
-      newBlock = { id: newId, type: 'image', src: '', alt: 'Image', caption: '' };
-    } else if (cmdType === 'quote') {
-      newBlock = { id: newId, type: 'quote', content: '' };
-    } else if (cmdType === 'divider') {
-      newBlock = { id: newId, type: 'divider' };
-    } else if (cmdType === 'code') {
-      newBlock = { id: newId, type: 'code', content: '' };
-    } else if (cmdType === 'callout') {
-      newBlock = { id: newId, type: 'callout', content: '' };
-    } else if (cmdType === 'table') {
-      newBlock = { id: newId, type: 'table', content: '| Header 1 | Header 2 |\\n|---|---|\\n| Cell 1 | Cell 2 |' };
-    } else if (cmdType === 'list') {
-      newBlock = { id: newId, type: 'list', content: '- ' };
-    } else if (cmdType === 'embed') {
-      newBlock = { id: newId, type: 'embed', src: '', caption: '' };
-    } else {
-      newBlock = { id: newId, type: 'text', content: '' };
-    }
-
-    if (shouldReplace) {
-      updatedBlocks[idx] = newBlock;
-    } else {
-      updatedBlocks.splice(idx + 1, 0, newBlock);
-    }
-
-    updateBlocksAndSync(updatedBlocks);
-    setSelectedBlockId(newId);
-    setFocusedBlockId(newId);
-    setSlashMenuBlockId(null);
-
-    if (cmdType === 'image') {
-      handleTriggerFilePicker(shouldReplace ? idx : idx + 1);
-    }
-  };
-
-  const handleTextareaChange = (blockId: string, val: string) => {
-    handleUpdateBlockContent(blockId, val);
-    const lastChar = val.trim();
-    if (lastChar.endsWith('/')) {
-      setSlashMenuBlockId(blockId);
-    } else {
-      setSlashMenuBlockId(null);
-    }
-  };
-
-  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, blockId: string, idx: number) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-
-      const newId = generateUniqueId('blk_enter');
-      const newBlock = { id: newId, type: 'text', content: '' };
-
-      const updated = [...composerBlocks];
-      updated.splice(idx + 1, 0, newBlock);
-
-      updateBlocksAndSync(updated);
-      setSelectedBlockId(newId);
-      setFocusedBlockId(newId);
-      setSlashMenuBlockId(null);
-    } else if (e.key === 'Backspace') {
-      const target = e.target as HTMLTextAreaElement;
-      if (target.selectionStart === 0 && target.selectionEnd === 0 && idx > 0) {
-        e.preventDefault();
-
-        const currentBlock = composerBlocks[idx];
-        const prevBlockIdx = idx - 1;
-        const prevBlock = composerBlocks[prevBlockIdx];
-
-        const updated = [...composerBlocks];
-        updated.splice(idx, 1);
-
-        if (prevBlock.type === 'text' || prevBlock.type === 'heading' || prevBlock.type === 'quote') {
-            const cursorPosition = (prevBlock.content || '').length;
-            updated[prevBlockIdx] = {
-                ...prevBlock,
-                content: (prevBlock.content || '') + (currentBlock.content || '')
-            };
-            updateBlocksAndSync(updated);
-            setSelectedBlockId(prevBlock.id);
-            setFocusedBlockId(prevBlock.id);
-            setSlashMenuBlockId(null);
-
-            // Note: In React, we delay setting the cursor to allow render
-            setTimeout(() => {
-                const el = document.querySelector(`textarea[data-block-id="${prevBlock.id}"]`) as HTMLTextAreaElement;
-                if (el) {
-                    el.focus();
-                    el.setSelectionRange(cursorPosition, cursorPosition);
-                }
-            }, 0);
-        } else {
-            // Just delete empty block if previous is not text mergeable
-            if (!currentBlock.content) {
-                updateBlocksAndSync(updated);
-                setSelectedBlockId(prevBlock.id);
-                setFocusedBlockId(prevBlock.id);
-                setSlashMenuBlockId(null);
-            }
-        }
-      }
-    }
-  };
-
-  const handleAddBlock = (type: 'text' | 'heading' | 'quote' | 'list' | 'image' | 'divider' | 'code', initialContent = '', index?: number) => {
-    const id = generateUniqueId('blk_added');
-    let newBlock: any;
-    if (type === 'image') {
-      newBlock = {
-        id,
-        type: 'image',
-        src: '',
-        alt: 'Image',
-        caption: '',
-        isUploading: false,
-        progress: 0,
-      };
-    } else if (type === 'heading') {
-      newBlock = {
-        id,
-        type: 'heading',
-        level: 2,
-        content: initialContent || '',
-      };
-    } else if (type === 'quote') {
-      newBlock = {
-        id,
-        type: 'quote',
-        content: initialContent || '',
-      };
-    } else if (type === 'list') {
-      newBlock = {
-        id,
-        type: 'list',
-        content: initialContent || '- ',
-      };
-    } else if (type === 'divider') {
-      newBlock = {
-        id,
-        type: 'divider',
-      };
-    } else if (type === 'code') {
-      newBlock = {
-        id,
-        type: 'code',
-        content: initialContent || '',
-      };
-    } else {
-      newBlock = {
-        id,
-        type: 'text',
-        content: initialContent || '',
-      };
-    }
-
-    let updated = [...composerBlocks];
-    if (typeof index === 'number') {
-      updated.splice(index + 1, 0, newBlock);
-    } else {
-      updated.push(newBlock);
-    }
-    updateBlocksAndSync(updated);
-    setSelectedBlockId(id);
-    setFocusedBlockId(id);
-  };
-
-  const handleDeleteBlock = (blockId: string) => {
-    if (composerBlocks.length <= 1) {
-      updateBlocksAndSync([{ id: 'fallback', type: 'text', content: '' }]);
-      return;
-    }
-    const idx = composerBlocks.findIndex(b => b.id === blockId);
-    if (idx === -1) return;
-    const blockToDel = composerBlocks[idx];
-
-    const updated = composerBlocks.filter(b => b.id !== blockId);
-    updateBlocksAndSync(updated);
-
-    if (deletedBlockState?.timerId) {
-      clearTimeout(deletedBlockState.timerId);
-    }
-
-    const timerId = setTimeout(() => {
-      setDeletedBlockState(null);
-    }, 5000);
-
-    setDeletedBlockState({ block: blockToDel, index: idx, originalId: blockId, timerId });
-  };
-
-  const handleUpdateBlockContent = (blockId: string, text: string) => {
-    const updated = composerBlocks.map(b => {
-      if (b.id === blockId) {
-        return { ...b, content: text };
-      }
-      return b;
-    });
-    updateBlocksAndSync(updated);
-  };
-
-  const handleUpdateBlockImageProps = (blockId: string, props: Partial<any>) => {
-    const updated = composerBlocks.map(b => {
-      if (b.id === blockId) {
-        return { ...b, ...props };
-      }
-      return b;
-    });
-    updateBlocksAndSync(updated);
-  };
-
-  const handleContentFilesUpload = async (files: FileList | File[], index?: number) => {
-    const file = files[0];
-    if (!file || !file.type.startsWith('image/')) return;
-
-    const uploadId = generateUniqueId('upload');
-    const newBlock = {
-      id: uploadId,
-      type: 'image',
-      src: 'uploading',
-      alt: file.name.split('.')[0] || 'Image',
-      isUploading: true,
-      progress: 0,
-    };
-
-    let updated = [...composerBlocks];
-    const insertIdx = typeof index === 'number' ? index : updated.length - 1;
-    if (insertIdx >= 0 && insertIdx < updated.length) {
-      updated.splice(insertIdx + 1, 0, newBlock);
-    } else {
-      updated.push(newBlock);
-    }
-    setComposerBlocks(updated);
-    setIsUploading(true);
-
-    let progressSim = 0;
-    const interval = setInterval(() => {
-      progressSim += Math.floor(Math.random() * 8) + 4;
-      if (progressSim > 92) {
-        progressSim = 92;
-        clearInterval(interval);
-      }
-      setComposerBlocks(prev =>
-        prev.map(b => (b.id === uploadId ? { ...b, progress: progressSim } : b))
-      );
-    }, 200);
-
-    try {
-      const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
-      clearInterval(interval);
-
-      setComposerBlocks(prev => {
-        const next = prev.map(b => {
-          if (b.id === uploadId) {
-            return {
-              ...b,
-              src: publicUrl,
-              isUploading: false,
-              progress: 100,
-            };
-          }
-          return b;
-        });
-        setFormData((fd: any) => ({ ...fd, content: compileFromBlocks(next) }));
-        return next;
-      });
-    } catch (err: any) {
-      clearInterval(interval);
-      setComposerBlocks(prev => {
-        const next = prev.map(b => {
-          if (b.id === uploadId) {
-            return {
-              ...b,
-              isUploading: false,
-              src: '',
-              alt: `Upload failed: ${file.name}`
-            };
-          }
-          return b;
-        });
-        setFormData((fd: any) => ({ ...fd, content: compileFromBlocks(next) }));
-        return next;
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleTriggerFilePicker = (index?: number) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        await handleContentFilesUpload([file], index);
-      }
-    };
-    input.click();
-  };
-
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const onDrop = async (e: React.DragEvent, index?: number) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      await handleContentFilesUpload(Array.from(files), index);
-    }
-  };
-
-  const handleUploadCoverBtn = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    try {
-      const { publicUrl } = await uploadImage({ bucket: 'post-images', file });
-      setFormData({ ...formData, coverImageUrl: publicUrl });
-    } catch (err: any) {
-      alert('Cover image upload error: ' + err.message);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleBlocksReorder = (targetIdx: number) => {
-    if (draggingBlockIdx === null) return;
-    const reordered = [...composerBlocks];
-    const [dragged] = reordered.splice(draggingBlockIdx, 1);
-    reordered.splice(targetIdx, 0, dragged);
-    updateBlocksAndSync(reordered);
-    setDraggingBlockIdx(null);
-    setDragOverBlockIdx(null);
-  };
 
   const handleSavePost = async (isNewDraftState: boolean) => {
     setDbError(null);
     setSaving(true);
 
     let coverUrl = formData.coverImageUrl;
-    const compiledHtml = compileFromBlocks(composerBlocks);
-    const compiledJson = JSON.stringify(composerBlocks);
+    const compiledHtml = richTextContent;
+    const compiledJson = richTextContent;
 
     if (formData.autoCoverImage) {
       const extMatch = compiledHtml.match(/src="([^"]+)"/);
@@ -866,17 +478,7 @@ function ComposePageContent() {
     }
   };
 
-  const slashCommands = [
-    { type: 'heading', label: 'Heading', desc: 'Add a section heading (H2)' },
-    { type: 'image', label: 'Image', desc: 'Upload or insert an image' },
-    { type: 'quote', label: 'Quote', desc: 'Add a styled blockquote' },
-    { type: 'divider', label: 'Divider', desc: 'Insert a horizontal divider line' },
-    { type: 'code', label: 'Code Block', desc: 'Insert a block of system code' },
-    { type: 'callout', label: 'Callout', desc: 'Add a highlighted callout block' },
-    { type: 'table', label: 'Table', desc: 'Insert a structured data table' },
-    { type: 'list', label: 'List', desc: 'Insert a bulleted list' },
-    { type: 'embed', label: 'Embed', desc: 'Embed public media or web pages' },
-  ];
+
 
   const activePersonaParams = personaInfoMap[formData.persona] || { label: 'Universal', system: 'ECOSYSTEM', color: 'text-neutral-400', bg: 'bg-neutral-850' };
 
@@ -947,148 +549,7 @@ function ComposePageContent() {
         </div>
       </header>
 
-      {/* Simplified Toolbar containing ONLY standard text flow formatting commands */}
-      {activeTab === 'composer' && !loading && (
-        <div className="flex items-center justify-center py-2 bg-[#0a0a0a] border-b border-[#151515] overflow-x-auto px-4 sticky top-15.25 z-30 scrollbar-hide">
-          <div className="flex items-center gap-1 bg-[#121212] border border-[#222]/80 px-4 py-1 rounded-full shadow-2xl text-neutral-400 text-sm max-w-full">
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof document !== 'undefined') document.execCommand('undo');
-              }}
-              className="p-1.5 hover:text-white rounded transition-colors"
-              title="Undo"
-            >
-              <Undo className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof document !== 'undefined') document.execCommand('redo');
-              }}
-              className="p-1.5 hover:text-white rounded transition-colors"
-              title="Redo"
-            >
-              <Redo className="w-3.5 h-3.5" />
-            </button>
 
-            <div className="w-px h-3.5 bg-[#222] mx-1 shrink-0" />
-
-            <button
-              type="button"
-              onClick={() => handleAddBlock('heading')}
-              className="px-2 py-1 hover:text-white rounded text-xs font-mono font-bold"
-              title="Heading"
-            >
-              Heading
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
-                if (idx !== -1 && composerBlocks[idx].type === 'text') {
-                  handleUpdateBlockContent(selectedBlockId!, `${composerBlocks[idx].content} **bold**`);
-                }
-              }}
-              className="px-2 py-1 hover:text-white rounded text-xs font-bold font-sans"
-              title="Bold"
-            >
-              Bold
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
-                if (idx !== -1 && composerBlocks[idx].type === 'text') {
-                  handleUpdateBlockContent(selectedBlockId!, `${composerBlocks[idx].content} *italic*`);
-                }
-              }}
-              className="px-2 py-1 hover:text-white rounded text-xs italic font-serif"
-              title="Italic"
-            >
-              Italic
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
-                if (idx !== -1 && composerBlocks[idx].type === 'text') {
-                  handleUpdateBlockContent(selectedBlockId!, `${composerBlocks[idx].content} <u>underline</u>`);
-                }
-              }}
-              className="px-2 py-1 hover:text-white rounded text-xs underline"
-              title="Underline"
-            >
-              Underline
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                const idx = composerBlocks.findIndex(b => b.id === selectedBlockId);
-                if (idx !== -1 && composerBlocks[idx].type === 'text') {
-                  handleUpdateBlockContent(selectedBlockId!, `${composerBlocks[idx].content} [Link](https://example.com)`);
-                }
-              }}
-              className="px-2 py-1 hover:text-white rounded text-xs"
-              title="Link"
-            >
-              Link
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleAddBlock('quote')}
-              className="px-2 py-1 hover:text-white rounded text-xs"
-              title="Quote"
-            >
-              Quote
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleAddBlock('list')}
-              className="px-2 py-1 hover:text-white rounded text-xs font-mono"
-              title="List"
-            >
-              List
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleAddBlock('code')}
-              className="px-2 py-1 hover:text-white rounded text-xs font-mono"
-              title="Code Block"
-            >
-              Code
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                const selectedIdx = composerBlocks.findIndex(b => b.id === selectedBlockId);
-                handleTriggerFilePicker(selectedIdx >= 0 ? selectedIdx : undefined);
-              }}
-              className="px-2 py-1 hover:text-white rounded text-xs"
-              title="Insert Image"
-            >
-              Image
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleAddBlock('divider')}
-              className="px-2 py-1 hover:text-white rounded text-xs font-mono"
-              title="Divider"
-            >
-              Divider
-            </button>
-          </div>
-        </div>
-      )}
 
       {dbError && (
         <div className="max-w-2xl mx-auto mt-6 w-full px-4">
@@ -1111,8 +572,6 @@ function ComposePageContent() {
             {activeTab === 'composer' ? (
               <main
                 className="w-full max-w-210 mx-auto px-6 py-12 md:py-20 flex flex-col min-h-screen"
-                onDragOver={onDragOver}
-                onDrop={(e) => onDrop(e)}
               >
                 {/* Title & Subtitle Inputs */}
                 <div className="space-y-4 mb-10 w-full">
@@ -1150,34 +609,22 @@ function ComposePageContent() {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
-                        const firstBlockInput = document.querySelector('textarea[data-block-id]');
-                        if (firstBlockInput) {
-                          (firstBlockInput as HTMLTextAreaElement).focus();
+                        const editorEl = document.querySelector('.ProseMirror');
+                        if (editorEl) {
+                          (editorEl as HTMLElement).focus();
                         }
                       }
                     }}
                   />
                 </div>
 
-                {/* Sub-blocks writing stream */}
-                <BlockList
-                  composerBlocks={composerBlocks}
-                  selectedBlockId={selectedBlockId}
-                  focusedBlockId={focusedBlockId}
-                  slashMenuBlockId={slashMenuBlockId}
-                  slashCommands={slashCommands}
-                  setDraggingBlockIdx={setDraggingBlockIdx}
-                  setDragOverBlockIdx={setDragOverBlockIdx}
-                  handleBlocksReorder={handleBlocksReorder}
-                  setSelectedBlockId={setSelectedBlockId}
-                  handleDeleteBlock={handleDeleteBlock}
-                  handleTriggerFilePicker={handleTriggerFilePicker}
-                  handleUpdateBlockImageProps={handleUpdateBlockImageProps}
-                  handleTextareaChange={handleTextareaChange}
-                  handleTextareaKeyDown={handleTextareaKeyDown}
-                  handleUpdateBlockContent={handleUpdateBlockContent}
-                  handleSelectSlashCommand={handleSelectSlashCommand}
-                />
+                {/* Rich Text Editor stream */}
+                <div className="w-full relative mt-4">
+                  <RichTextEditor 
+                    content={richTextContent} 
+                    onChange={setRichTextContent} 
+                  />
+                </div>
               </main>
             ) : (
               /* High-Fidelity Preview inside actual Persona Layout via PostRenderer */
@@ -1196,7 +643,7 @@ function ComposePageContent() {
                     coverImageUrl: getEffectiveCoverImage(),
                     coverImageLocation: formData.coverImageLocation,
                     autoCoverImage: formData.autoCoverImage,
-                    content: JSON.stringify(composerBlocks),
+                    content: richTextContent,
                     featured: formData.featured,
                     hidden: formData.hidden,
                     status: 'draft',
@@ -1213,24 +660,33 @@ function ComposePageContent() {
       </div>
 
       {/* Floating fixed Settings and Publishing Button in Bottom-Right Corner of Screen */}
-      <button
-        type="button"
-        onClick={() => {
-          setFormData((prev: any) => {
-            const updated = { ...prev };
-            if (!updated.excerpt) {
-              updated.excerpt = getExcerptFromContent();
-            }
-            return updated;
-          });
-          setIsPublishModalOpen(true);
-        }}
-        className="fixed bottom-6 right-6 z-40 bg-[#121212] hover:bg-[#1a1a1a] border border-[#222] p-3.5 text-neutral-400 hover:text-white rounded-full shadow-2xl transition-all duration-200 flex items-center justify-center group"
-        title="Article Settings & Publishing Setup"
-        id="editor-settings-floating-btn"
-      >
-        <Settings className="w-5 h-5 text-neutral-400 group-hover:text-[#ff7700] transition-colors" />
-      </button>
+      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2">
+        {activeTab === 'composer' && (
+          <div className="hidden md:flex bg-[#121212] border border-[#222] px-4 py-2 rounded-full shadow-2xl items-center gap-3 text-xs font-mono text-neutral-500 mr-2">
+            <span>{getWordCount()} words</span>
+            <div className="w-px h-3 bg-[#333]"></div>
+            <span>{getReadingTime()} min read</span>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            setFormData((prev: any) => {
+              const updated = { ...prev };
+              if (!updated.excerpt) {
+                updated.excerpt = getExcerptFromContent();
+              }
+              return updated;
+            });
+            setIsPublishModalOpen(true);
+          }}
+          className="bg-[#121212] hover:bg-[#1a1a1a] border border-[#222] p-3.5 text-neutral-400 hover:text-white rounded-full shadow-2xl transition-all duration-200 flex items-center justify-center group"
+          title="Article Settings & Publishing Setup"
+          id="editor-settings-floating-btn"
+        >
+          <Settings className="w-5 h-5 text-neutral-400 group-hover:text-[#ff7700] transition-colors" />
+        </button>
+      </div>
 
       <PublishDrawer
         isOpen={isPublishModalOpen}
