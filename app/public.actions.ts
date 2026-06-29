@@ -44,14 +44,30 @@ export async function subscribeNewsletter(email: string, personas: string[], sou
       .from('subscriptions')
       .upsert(subscriptionsToInsert, { onConflict: 'subscriberId,persona' });
 
-    if (insertError) {
-      console.error('Failed to save preferences:', insertError);
-      return { success: false, error: 'Failed to save preferences. Please try again.' };
-    }
 
     return { success: true };
   } catch (err: any) {
     console.error('Subscription error:', err);
     return { success: false, error: err.message || 'An unexpected error occurred.' };
   }
+}
+
+export async function getPublicDonations() {
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
+    .from('donations')
+    .select('id, amount, publicName, createdAt, status')
+    .eq('status', 'success')
+    .order('createdAt', { ascending: false });
+    
+  if (error) {
+    console.error('Error fetching public donations:', error);
+    return [];
+  }
+  
+  // Map publicName, falling back to 'Contributor' if null
+  return data.map(d => ({
+    ...d,
+    donorName: d.publicName || 'Contributor'
+  }));
 }

@@ -57,3 +57,20 @@ export async function getIncomingDonations() {
   }
   return data || [];
 }
+
+export async function updateDonationPublicName(id: string, publicName: string | null) {
+  await verifyAuth();
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
+    .from('donations')
+    .update({ publicName })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating public name:', error);
+    throw new Error('Failed to update public name');
+  }
+  return data;
+}

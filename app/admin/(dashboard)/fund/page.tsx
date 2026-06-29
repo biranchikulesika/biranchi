@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Save, X, Eye, EyeOff, Activity, ArrowRightLeft, DollarSign, Wallet } from 'lucide-react';
-import { getRedistributionRecords, createRedistributionRecord, updateRedistributionRecord, deleteRedistributionRecord, getIncomingDonations } from '@/app/admin/actions/redistributionRecords.actions';
+import { getRedistributionRecords, createRedistributionRecord, updateRedistributionRecord, deleteRedistributionRecord, getIncomingDonations, updateDonationPublicName } from '@/app/admin/actions/redistributionRecords.actions';
 
 export default function RedistributionRecordPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -12,6 +12,9 @@ export default function RedistributionRecordPage() {
   const [totalRedirected, setTotalRedirected] = useState(0);
   const [totalCollected, setTotalCollected] = useState(0);
   
+  const [editingPublicNameId, setEditingPublicNameId] = useState<string | null>(null);
+  const [editingPublicNameValue, setEditingPublicNameValue] = useState<string>('');
+
   const [formData, setFormData] = useState<any>({ amount: 0, destination: "", description: "", proofUrl: "", donatedAt: "", transactionReference: "", hidden: false });
 
   const loadData = async () => {
@@ -63,6 +66,17 @@ export default function RedistributionRecordPage() {
       if (editingId === id) setIsEditing(false);
       loadData();
     }
+  };
+
+  const handleEditPublicName = (donation: any) => {
+    setEditingPublicNameId(donation.id);
+    setEditingPublicNameValue(donation.publicName || '');
+  };
+
+  const handleSavePublicName = async (id: string) => {
+    await updateDonationPublicName(id, editingPublicNameValue || null);
+    setEditingPublicNameId(null);
+    loadData();
   };
 
   return (
@@ -132,7 +146,8 @@ export default function RedistributionRecordPage() {
                 <thead className="bg-[#1a1a1a] text-neutral-400 border-b border-[#222]">
                   <tr>
                     <th className="px-4 py-3 font-medium">Date</th>
-                    <th className="px-4 py-3 font-medium">Donor</th>
+                    <th className="px-4 py-3 font-medium">Raw Details</th>
+                    <th className="px-4 py-3 font-medium">Public Name</th>
                     <th className="px-4 py-3 font-medium">Amount</th>
                     <th className="px-4 py-3 font-medium">Status</th>
                     <th className="px-4 py-3 font-medium">Tx ID</th>
@@ -149,7 +164,33 @@ export default function RedistributionRecordPage() {
                         {d.donorEmail && <div className="text-[10px] text-neutral-500">{d.donorEmail}</div>}
                         {d.donorPhone && <div className="text-[10px] text-neutral-500">{d.donorPhone}</div>}
                       </td>
-                      <td className="px-4 py-3 text-emerald-500 font-mono">₹{d.amount}</td>
+                      <td className="px-4 py-3 text-neutral-300">
+                        {editingPublicNameId === d.id ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editingPublicNameValue}
+                              onChange={(e) => setEditingPublicNameValue(e.target.value)}
+                              placeholder="e.g. Anonymous"
+                              className="w-full bg-[#222] border border-[#333] rounded px-2 py-1 text-sm outline-none focus:border-[#ff7700] text-neutral-200"
+                            />
+                            <button onClick={() => handleSavePublicName(d.id)} className="text-[#ff7700] hover:text-white"><Save className="w-4 h-4" /></button>
+                            <button onClick={() => setEditingPublicNameId(null)} className="text-neutral-500 hover:text-white"><X className="w-4 h-4" /></button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 group min-h-[24px]">
+                            <span className={d.publicName ? "text-neutral-200" : "text-neutral-500 italic"}>
+                              {d.publicName || 'Pending Verification'}
+                            </span>
+                            <button onClick={() => handleEditPublicName(d)} className="text-neutral-600 hover:text-[#ff7700] opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-neutral-300">
+                        ₹ {Number(d.amount).toLocaleString()}
+                      </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-1 text-[10px] uppercase tracking-wider rounded ${
                           d.status === 'success' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-yellow-500/10 text-yellow-500'

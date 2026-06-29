@@ -258,6 +258,7 @@ export interface Database {
           donorName: string | null;
           donorEmail: string | null;
           donorPhone: string | null;
+          publicName: string | null;
           razorpayOrderId: string | null;
           razorpayPaymentId: string | null;
           status: string;
@@ -270,6 +271,7 @@ export interface Database {
           donorName?: string | null;
           donorEmail?: string | null;
           donorPhone?: string | null;
+          publicName?: string | null;
           razorpayOrderId?: string | null;
           razorpayPaymentId?: string | null;
           status?: string;
@@ -282,6 +284,7 @@ export interface Database {
           donorName?: string | null;
           donorEmail?: string | null;
           donorPhone?: string | null;
+          publicName?: string | null;
           razorpayOrderId?: string | null;
           razorpayPaymentId?: string | null;
           status?: string;

@@ -281,6 +281,7 @@ CREATE TABLE IF NOT EXISTS "public"."donations" (
     "donorName" TEXT,
     "donorEmail" TEXT,
     "donorPhone" TEXT,
+    "publicName" TEXT,
     "razorpayOrderId" TEXT UNIQUE,
     "razorpayPaymentId" TEXT UNIQUE,
     "status" TEXT NOT NULL DEFAULT 'pending',

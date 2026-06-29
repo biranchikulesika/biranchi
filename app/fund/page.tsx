@@ -7,12 +7,33 @@ import { PersonaSearch } from '@/components/persona-search';
 import { getPersonaUrl } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { getRedistributionRecords } from '@/lib/queries';
+import { getPublicDonations } from '@/app/public.actions';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
 import jsPDF from 'jspdf';
 
+interface DonationRecord {
+  id: string;
+  amount: number;
+  formattedAmount: string;
+  dateStr: string;
+  donorName: string;
+}
 
+interface MonthlyCollection {
+  monthName: string;
+  monthNum: number;
+  totalAmount: number;
+  formattedAmount: string;
+  donations: DonationRecord[];
+}
 
+interface YearlyCollection {
+  year: string;
+  totalAmount: number;
+  formattedAmount: string;
+  months: MonthlyCollection[];
+}
 
 
 export default function FundPage() {
@@ -46,6 +67,21 @@ export default function FundPage() {
   const recordsPerPage = 4;
 
   const [records, setRecords] = useState<any[]>([]);
+  const [groupedDonations, setGroupedDonations] = useState<YearlyCollection[]>([]);
+  const [receivedTotal, setReceivedTotal] = useState(0);
+  const [totalDonationsCount, setTotalDonationsCount] = useState(0);
+  
+  const [expandedReceivedYears, setExpandedReceivedYears] = useState<Record<string, boolean>>({});
+  const [expandedReceivedMonths, setExpandedReceivedMonths] = useState<Record<string, boolean>>({});
+
+  const toggleReceivedYear = (year: string) => {
+    setExpandedReceivedYears(prev => ({ ...prev, [year]: !prev[year] }));
+  };
+
+  const toggleReceivedMonth = (key: string) => {
+    setExpandedReceivedMonths(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const [history, setHistory] = useState<any[]>([]);
   const [redirectedTotal, setRedirectedTotal] = useState(0);
 
@@ -57,6 +93,98 @@ export default function FundPage() {
     async function load() {
       try {
         const data = await getRedistributionRecords();
+        const incomingData = await getPublicDonations();
+        
+        if (incomingData) {
+           let rTotal = 0;
+           let tCount = incomingData.length;
+
+           const currentYear = new Date().getFullYear();
+           const currentMonthNum = new Date().getMonth(); // 0-indexed
+
+           const yearMap: Record<string, { totalAmount: number; monthMap: Record<string, MonthlyCollection> }> = {};
+
+           incomingData.forEach((d:any) => {
+              const amt = Number(d.amount) || 0;
+              rTotal += amt;
+
+              const date = new Date(d.createdAt || Date.now());
+              const yStr = date.getFullYear().toString();
+              const mNum = date.getMonth();
+              const mName = date.toLocaleDateString('en-US', { month: 'long' });
+
+              if (!yearMap[yStr]) yearMap[yStr] = { totalAmount: 0, monthMap: {} };
+              yearMap[yStr].totalAmount += amt;
+
+              if (!yearMap[yStr].monthMap[mNum]) {
+                yearMap[yStr].monthMap[mNum] = { monthName: mName, monthNum: mNum, totalAmount: 0, formattedAmount: '', donations: [] };
+              }
+
+              yearMap[yStr].monthMap[mNum].totalAmount += amt;
+              yearMap[yStr].monthMap[mNum].donations.push({
+                 id: d.id,
+                 amount: amt,
+                 formattedAmount: `₹${amt.toLocaleString()}`,
+                 dateStr: date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                 donorName: d.donorName || 'Anonymous'
+              });
+           });
+
+           // Pad current year with empty months up to current month
+           const currYStr = currentYear.toString();
+           if (!yearMap[currYStr]) yearMap[currYStr] = { totalAmount: 0, monthMap: {} };
+           
+           for (let i = 0; i <= currentMonthNum; i++) {
+             if (!yearMap[currYStr].monthMap[i]) {
+                const dummyDate = new Date(currentYear, i, 1);
+                yearMap[currYStr].monthMap[i] = {
+                   monthName: dummyDate.toLocaleDateString('en-US', { month: 'long' }),
+                   monthNum: i,
+                   totalAmount: 0,
+                   formattedAmount: '₹0',
+                   donations: []
+                };
+             }
+           }
+
+           const finalGrouped: YearlyCollection[] = Object.keys(yearMap).sort((a,b) => Number(b) - Number(a)).map(y => {
+              const yData = yearMap[y];
+              const sortedMonths = Object.values(yData.monthMap).sort((a,b) => b.monthNum - a.monthNum).map(m => {
+                 m.formattedAmount = `₹${m.totalAmount.toLocaleString()}`;
+                 return m;
+              });
+
+              return {
+                 year: y,
+                 totalAmount: yData.totalAmount,
+                 formattedAmount: `₹${yData.totalAmount.toLocaleString()}`,
+                 months: sortedMonths
+              };
+           });
+
+           setGroupedDonations(finalGrouped);
+           setReceivedTotal(rTotal);
+           setTotalDonationsCount(tCount);
+
+           // Setup default expansions
+           const initialExpYears: Record<string, boolean> = {};
+           const initialExpMonths: Record<string, boolean> = {};
+
+           finalGrouped.forEach(yg => {
+              const isCurrentYear = yg.year === currYStr;
+              initialExpYears[yg.year] = isCurrentYear;
+              
+              if (isCurrentYear) {
+                 yg.months.forEach(m => {
+                    initialExpMonths[`${yg.year}-${m.monthNum}`] = m.monthNum === currentMonthNum;
+                 });
+              }
+           });
+
+           setExpandedReceivedYears(initialExpYears);
+           setExpandedReceivedMonths(initialExpMonths);
+        }
+
         if (data) {
            // Sort by descending date
            const sorted = data.filter((r:any) => !r.hidden).sort((a:any, b:any) => new Date(b.donatedAt || 0).getTime() - new Date(a.donatedAt || 0).getTime());
@@ -568,6 +696,145 @@ export default function FundPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </section>
+
+        {/* SCREEN 1.5: GENEROSITY RECEIVED */}
+        <section id="generosity-received" className="flex flex-col gap-12 md:gap-16 pt-16 md:pt-24 border-t dark:border-stone-800/40 border-stone-200/80">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <h2 className="font-serif text-3xl md:text-4xl italic dark:text-stone-200 text-stone-800 tracking-tight">Generosity Received</h2>
+              <div className="flex flex-col gap-2 font-sans font-light text-[15px] md:text-base leading-relaxed dark:text-[#a09a8e] text-[#55514a]">
+                <p>Public records of contributions received through this page.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-6 p-6 border dark:border-stone-800/60 border-stone-200 dark:bg-[#080808] bg-white">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                 <div className="flex flex-col gap-1">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-stone-500">Lifetime Raised</span>
+                    <span className="font-sans text-2xl md:text-3xl font-medium dark:text-stone-200 text-stone-800">₹{receivedTotal.toLocaleString()}</span>
+                 </div>
+                 <div className="flex flex-col gap-1">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-stone-500">Total Donations</span>
+                    <span className="font-sans text-2xl md:text-3xl font-medium dark:text-stone-200 text-stone-800">{totalDonationsCount}</span>
+                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col border-t dark:border-stone-800/40 border-stone-200/80">
+            {groupedDonations.length === 0 ? (
+              <div className="py-12 border-b dark:border-stone-800/40 border-stone-200/80 text-left flex flex-col gap-4">
+                <p className="font-sans font-light text-[15px] dark:text-[#a09a8e] text-[#55514a]">No contributions received yet.</p>
+              </div>
+            ) : (
+              groupedDonations.map((yg) => {
+                const isYearExpanded = expandedReceivedYears[yg.year];
+                return (
+                  <div key={yg.year} className="flex flex-col border-b dark:border-stone-800/40 border-stone-200/80">
+                    <button
+                      onClick={() => toggleReceivedYear(yg.year)}
+                      className="flex justify-between items-center py-6 md:py-8 text-left focus:outline-none hover:opacity-70 transition-opacity w-full group"
+                    >
+                      <span className="font-sans font-medium text-xl md:text-2xl dark:text-stone-200 text-stone-800 flex items-center gap-4">
+                        <span className="font-mono text-[12px] opacity-40 group-hover:opacity-100 transition-opacity w-4">{isYearExpanded ? '▼' : '▶'}</span>
+                        {yg.year}
+                      </span>
+                      <span className="font-sans font-medium text-xl md:text-2xl dark:text-stone-400 text-stone-600">
+                        {yg.formattedAmount}
+                      </span>
+                    </button>
+
+                    {isYearExpanded && (
+                      <div className="flex flex-col w-full pb-8">
+                        {yg.months.map((m, mIdx) => {
+                          const monthKey = `${yg.year}-${m.monthNum}`;
+                          const isMonthExpanded = expandedReceivedMonths[monthKey];
+                          const hasDonations = m.donations.length > 0;
+                          
+                          return (
+                            <div key={monthKey} className={`flex flex-col pl-8 md:pl-12 ${mIdx !== 0 ? 'border-t dark:border-stone-800/20 border-stone-200/40' : ''}`}>
+                              <button
+                                onClick={() => toggleReceivedMonth(monthKey)}
+                                className="flex justify-between items-center py-5 text-left focus:outline-none transition-opacity w-full group hover:opacity-70 cursor-pointer"
+                              >
+                                <div className="flex items-center gap-4">
+                                  <span className="font-mono text-[10px] opacity-30 group-hover:opacity-80 transition-opacity w-4">
+                                    {isMonthExpanded ? '▼' : '▶'}
+                                  </span>
+                                  <span className="font-sans text-lg md:text-xl dark:text-stone-300 text-stone-700">
+                                    {m.monthName} {yg.year}
+                                  </span>
+                                  {hasDonations && (
+                                    <span className="hidden md:inline font-mono text-[9px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                                      {m.donations.length} {m.donations.length === 1 ? 'Donation' : 'Donations'}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="font-sans font-medium text-lg md:text-xl dark:text-stone-400 text-stone-600">
+                                  {m.formattedAmount}
+                                </span>
+                              </button>
+
+                              {isMonthExpanded && hasDonations && (
+                                <div className="flex flex-col pl-6 md:pl-12 pb-6 gap-3">
+                                  <div className="flex flex-col border dark:border-stone-800/40 border-stone-200/80 rounded-sm overflow-hidden text-left w-full">
+                                    {m.donations.map((d, dIdx) => (
+                                      <div key={d.id} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4 py-3 sm:py-2 px-3 md:px-4 transition-colors ${dIdx % 2 === 0 ? 'bg-black/5 dark:bg-white/[0.02]' : 'bg-transparent'} hover:dark:bg-white/[0.05] hover:bg-black/10`}>
+                                         
+                                         {/* Mobile Top Row / Desktop Left Side */}
+                                         <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-2">
+                                            <div className="hidden sm:block w-20 md:w-24 shrink-0 font-mono text-[9px] md:text-[10px] uppercase tracking-widest dark:text-stone-500 text-stone-400">
+                                               {d.dateStr}
+                                            </div>
+                                            <div className="font-sans font-medium text-[13px] md:text-[14px] dark:text-stone-200 text-stone-800 truncate max-w-[200px] sm:max-w-none">
+                                               {d.donorName}
+                                            </div>
+                                            
+                                            {/* Mobile Amount */}
+                                            <div className="sm:hidden font-sans font-medium text-[13px] dark:text-stone-200 text-stone-800">
+                                               {d.formattedAmount}
+                                            </div>
+                                         </div>
+
+                                         {/* Desktop Dotted Line */}
+                                         <div className="hidden sm:block flex-1 min-w-[20px] border-b border-dotted dark:border-stone-700 border-stone-300 opacity-50 relative top-[-4px]"></div>
+
+                                         {/* Mobile Bottom Row / Desktop Right Side */}
+                                         <div className="flex items-center justify-between w-full sm:w-auto">
+                                            {/* Mobile Date */}
+                                            <div className="sm:hidden font-mono text-[9px] uppercase tracking-widest dark:text-stone-500 text-stone-400">
+                                               {d.dateStr}
+                                            </div>
+                                            {/* Desktop Amount */}
+                                            <div className="hidden sm:block shrink-0 font-sans font-medium text-[14px] dark:text-stone-200 text-stone-800">
+                                               {d.formattedAmount}
+                                            </div>
+                                         </div>
+
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {isMonthExpanded && !hasDonations && (
+                                <div className="flex flex-col pl-8 md:pl-12 pb-6">
+                                  <div className="py-4 border-l-2 dark:border-stone-800 border-stone-200 pl-4 font-sans font-light text-[14px] dark:text-stone-500 text-stone-400">
+                                    No donations received this month.
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
         </section>
 
