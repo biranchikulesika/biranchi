@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import { useEditor, EditorContent, BubbleMenu, ReactNodeViewRenderer } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
@@ -14,6 +14,7 @@ import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import CodeBlockComponent from './CodeBlockComponent';
 import { common, createLowlight } from 'lowlight';
 import SlashCommand from './slashExtension';
 import getSuggestionItems from './slashSuggestion';
@@ -62,7 +63,11 @@ export default function RichTextEditor({ content, onChange, className = '', pers
         heading: { levels: [1, 2, 3] },
         codeBlock: false,
       }),
-      CodeBlockLowlight.configure({
+      CodeBlockLowlight.extend({
+        addNodeView() {
+          return ReactNodeViewRenderer(CodeBlockComponent);
+        },
+      }).configure({
         lowlight,
       }),
       Image.configure({

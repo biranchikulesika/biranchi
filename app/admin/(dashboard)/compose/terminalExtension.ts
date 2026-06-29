@@ -20,6 +20,8 @@ export default Node.create({
 
   marks: '',
 
+  code: true,
+
   defining: true,
 
   addOptions() {
