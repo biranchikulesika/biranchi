@@ -2,6 +2,15 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import TerminalBlock from './TerminalBlock';
 
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    terminal: {
+      setTerminal: () => ReturnType;
+      toggleTerminal: () => ReturnType;
+    };
+  }
+}
+
 export default Node.create({
   name: 'terminal',
 

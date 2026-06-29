@@ -1,5 +1,14 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    details: {
+      setDetails: () => ReturnType;
+      unsetDetails: () => ReturnType;
+    };
+  }
+}
+
 export default Node.create({
   name: 'details',
   group: 'block',
