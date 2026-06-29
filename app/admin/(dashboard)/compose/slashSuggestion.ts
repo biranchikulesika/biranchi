@@ -12,6 +12,10 @@ export interface CommandItemProps {
 
 export default function getSuggestionItems(items: CommandItemProps[]) {
   return {
+    char: '/',
+    command: ({ editor, range, props }: any) => {
+      props.command({ editor, range });
+    },
     items: ({ query }: { query: string }) => {
       return items.filter(item => item.title.toLowerCase().startsWith(query.toLowerCase())).slice(0, 10);
     },
@@ -60,7 +64,7 @@ export default function getSuggestionItems(items: CommandItemProps[]) {
             popup[0].hide();
             return true;
           }
-          return component.ref?.onKeyDown(props);
+          return (component.ref as any)?.onKeyDown(props);
         },
 
         onExit() {
