@@ -201,42 +201,49 @@ export default function MDXEditor({
       </div>
 
       {/* Unified Toolbar */}
-      <div className="flex items-center px-4 h-11 bg-[#181818] border-b border-[#222] shrink-0 gap-6 overflow-x-auto">
+      <div className="flex items-center px-4 h-11 bg-[#181818] border-b border-[#222] shrink-0 justify-between overflow-x-auto">
         
-        {/* Text Formatting */}
-        <div className="flex items-center gap-1">
-          <ToolbarButton icon={Bold} label="Bold (Cmd+B)" onClick={() => applyFormat('**')} />
-          <ToolbarButton icon={Italic} label="Italic (Cmd+I)" onClick={() => applyFormat('*')} />
+        <div className="flex items-center gap-6">
+          {/* Text Formatting */}
+          <div className="flex items-center gap-1">
+            <ToolbarButton icon={Bold} label="Bold (Cmd+B)" onClick={() => applyFormat('**')} />
+            <ToolbarButton icon={Italic} label="Italic (Cmd+I)" onClick={() => applyFormat('*')} />
+          </div>
+
+          <div className="w-px h-5 bg-[#333]"></div>
+
+          {/* Inline Formatting */}
+          <div className="flex items-center gap-1">
+            <ToolbarButton icon={LinkIcon} label="Link (Cmd+K)" onClick={applyLink} />
+            <ToolbarButton icon={Code} label="Inline Code" onClick={() => applyFormat('`')} />
+          </div>
+
+          <div className="w-px h-5 bg-[#333]"></div>
+
+          {/* Blocks */}
+          <div className="flex items-center gap-1">
+            <ToolbarButton icon={Quote} label="Blockquote" onClick={() => insertComponent('blockquote')} />
+            <ToolbarButton icon={LayoutTemplate} label="Code Block (Pre)" onClick={() => insertComponent('pre')} />
+            <ToolbarButton icon={TableProperties} label="Table" onClick={() => insertComponent('table')} />
+            <ToolbarButton icon={Type} label="Callout Box" onClick={() => insertComponent('Callout', { type: 'info' })} />
+          </div>
+
+          <div className="w-px h-5 bg-[#333]"></div>
+
+          {/* Media */}
+          <div className="flex items-center gap-1">
+            <ToolbarButton icon={ImageIcon} label="Insert Image via URL" onClick={() => insertSelfClosingComponent('Image', { path: 'path/to/image.jpg', alt: 'Description' })} />
+            <ToolbarButton icon={FileImage} label="Media Library" onClick={() => setIsMediaLibraryOpen(true)} />
+            <ToolbarButton icon={UploadCloud} label="Upload Image" onClick={() => fileInputRef.current?.click()} />
+            <ToolbarButton icon={Video} label="Embed YouTube" onClick={() => insertSelfClosingComponent('YouTube', { id: 'dQw4w9WgXcQ' })} />
+          </div>
         </div>
 
-        <div className="w-px h-5 bg-[#333]"></div>
-
-        {/* Inline Formatting */}
-        <div className="flex items-center gap-1">
-          <ToolbarButton icon={LinkIcon} label="Link (Cmd+K)" onClick={applyLink} />
-          <ToolbarButton icon={Code} label="Inline Code" onClick={() => applyFormat('`')} />
-        </div>
-
-        <div className="w-px h-5 bg-[#333]"></div>
-
-        {/* Blocks */}
-        <div className="flex items-center gap-1">
-          <ToolbarButton icon={Quote} label="Blockquote" onClick={() => insertComponent('blockquote')} />
-          <ToolbarButton icon={LayoutTemplate} label="Code Block (Pre)" onClick={() => insertComponent('pre')} />
-          <ToolbarButton icon={TableProperties} label="Table" onClick={() => insertComponent('table')} />
-          <ToolbarButton icon={Type} label="Callout Box" onClick={() => insertComponent('Callout', { type: 'info' })} />
-        </div>
-
-        <div className="w-px h-5 bg-[#333]"></div>
-
-        {/* Media */}
-        <div className="flex items-center gap-1">
-          <ToolbarButton icon={ImageIcon} label="Insert Image via URL" onClick={() => insertSelfClosingComponent('Image', { path: 'path/to/image.jpg', alt: 'Description' })} />
-          <ToolbarButton icon={FileImage} label="Media Library" onClick={() => setIsMediaLibraryOpen(true)} />
-          <ToolbarButton icon={UploadCloud} label="Upload Image" onClick={() => fileInputRef.current?.click()} />
-          <ToolbarButton icon={Video} label="Embed YouTube" onClick={() => insertSelfClosingComponent('YouTube', { id: 'dQw4w9WgXcQ' })} />
-        </div>
-
+        {actionButtons && (
+          <div className="flex items-center gap-2 ml-4 shrink-0">
+            {actionButtons}
+          </div>
+        )}
       </div>
 
       {/* VS Code Breadcrumbs */}
@@ -263,12 +270,6 @@ export default function MDXEditor({
           placeholder="Subtitle"
           className="flex-1 bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 min-w-[150px] py-0 italic"
         />
-
-        {actionButtons && (
-          <div className="flex items-center gap-2 ml-4">
-            {actionButtons}
-          </div>
-        )}
       </div>
 
       <input
