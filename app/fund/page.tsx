@@ -11,7 +11,7 @@ import { getPublicDonations } from '@/app/public.actions';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
 import { Logo } from '@/components/ui/logo';
-import { submitFundContribution } from '@/app/public.actions';
+
 import jsPDF from 'jspdf';
 
 interface DonationRecord {
