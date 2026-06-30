@@ -4,6 +4,7 @@ import { getPersonaUrl } from '@/lib/utils';
 import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { PersonaSearch } from '@/components/persona-search';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Logo } from '@/components/ui/logo';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
 
 export const metadata: Metadata = {
@@ -16,8 +17,8 @@ export default function TermsPage() {
     <div className="w-full min-h-screen dark:bg-[#050505] bg-[#F5F5F2] dark:text-[#e5e5e5] text-[#2B2B28] flex flex-col font-sans overflow-x-hidden relative dark:selection:bg-stone-800 selection:bg-stone-300 dark:selection:text-white selection:text-black">
       {/* Global Header */}
       <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 dark:bg-[#050505]/80 bg-[#F5F5F2]/80 backdrop-blur-md border-b dark:border-stone-900/50 border-[#ECEBE6]">
-        <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
-          BIRANCHI
+        <Link href={getPersonaUrl('main')} className="hover:opacity-70 transition-opacity">
+          <Logo />
         </Link>
         <div className="flex items-center gap-1 md:gap-2">
           <DesktopNav persona="main" />

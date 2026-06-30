@@ -10,6 +10,8 @@ import { getRedistributionRecords } from '@/lib/queries';
 import { getPublicDonations } from '@/app/public.actions';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
+import { Logo } from '@/components/ui/logo';
+import { submitFundContribution } from '@/app/public.actions';
 import jsPDF from 'jspdf';
 
 interface DonationRecord {
@@ -485,8 +487,8 @@ export default function FundPage() {
       >
         {/* Global Header */}
         <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 dark:bg-[#050505]/80 bg-[#F5F5F2]/80 backdrop-blur-md border-b dark:border-stone-900/50 border-[#ECEBE6]">
-          <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
-            BIRANCHI
+          <Link href={getPersonaUrl('main')} className="hover:opacity-70 transition-opacity">
+            <Logo />
           </Link>
           <div className="flex items-center gap-1 md:gap-2">
           <DesktopNav persona="main" />
@@ -628,8 +630,8 @@ export default function FundPage() {
     >
       {/* Global Header */}
       <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 dark:bg-[#050505]/80 bg-[#F5F5F2]/80 backdrop-blur-md border-b dark:border-stone-900/50 border-[#ECEBE6]">
-        <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
-          BIRANCHI
+        <Link href={getPersonaUrl('main')} className="hover:opacity-70 transition-opacity">
+          <Logo />
         </Link>
         <div className="flex items-center gap-1 md:gap-2">
           <DesktopNav persona="main" />

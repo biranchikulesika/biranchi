@@ -1,13 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const FAKE_CREDENTIALS = [
-  { email: 'admin@example.com', password: 'password123' },
-  { email: 'biranchi@gmail.com', password: 'password123' },
-  { email: 'root@server.local', password: 'rootpassword' },
-  { email: 'contact@website.com', password: 'welcome123' },
-  { email: 'administrator@domain.com', password: 'qwertyuiop' },
-  { email: 'admin@system.io', password: 'securepass123' },
-  { email: 'user@test.com', password: 'password890' }
+const FAKE_EMAILS = [
+  'admin@kulesika.in',
+  'biranchi@gmail.com',
+  'keeler@proton.me',
+  'kulesika@yahoo.in',
+  'biranchi@outlook.com'
+];
+
+const FAKE_PASSWORDS = [
+  'P@ssword!',
+  'Admin@123',
+  'Biranchi@2026',
+  'Iloveyou',
+  '12345678',
+  'root',
+  'ilovebiryani'
 ];
 
 export function useFakeTyping(
@@ -25,6 +33,11 @@ export function useFakeTyping(
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const resetIdleTimerRef = useRef<() => void>(() => {});
+  const onFakeSubmitRef = useRef(onFakeSubmit);
+
+  useEffect(() => {
+    onFakeSubmitRef.current = onFakeSubmit;
+  }, [onFakeSubmit]);
   
   const realInputsRef = useRef({ email: realEmail, password: realPassword });
   
@@ -41,8 +54,11 @@ export function useFakeTyping(
   const startFakeSequence = useCallback(() => {
     if (!isIdleRef.current) return;
     
-    // Pick random credentials
-    const cred = FAKE_CREDENTIALS[Math.floor(Math.random() * FAKE_CREDENTIALS.length)];
+    // Pick random email and password independently
+    const cred = {
+      email: FAKE_EMAILS[Math.floor(Math.random() * FAKE_EMAILS.length)],
+      password: FAKE_PASSWORDS[Math.floor(Math.random() * FAKE_PASSWORDS.length)]
+    };
     
     let currentPhase = 'email';
     let charIndex = 0;
@@ -78,20 +94,20 @@ export function useFakeTyping(
           currentPhase = 'submit';
           animationRef.current = setTimeout(() => {
              if (!isIdleRef.current) return;
-             onFakeSubmit(cred.email, cred.password);
+             onFakeSubmitRef.current(cred.email, cred.password);
              
              // Wait briefly, then reset completely to normal screen and restart idle timer
              animationRef.current = setTimeout(() => {
                if (!isIdleRef.current) return;
                resetIdleTimerRef.current();
-             }, 1000);
+             }, 3000);
           }, Math.random() * 600 + 300); // Pause before submit
         }
       }
     };
 
     typeNextChar();
-  }, [onFakeSubmit]);
+  }, []);
 
   const resetIdleTimer = useCallback(() => {
     stopFakeTyping();
@@ -133,14 +149,14 @@ export function useFakeTyping(
   useEffect(() => {
     const handleActivity = () => resetIdleTimer();
     
-    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('click', handleActivity);
     window.addEventListener('keydown', handleActivity);
     window.addEventListener('touchstart', handleActivity);
     
     resetIdleTimer();
 
     return () => {
-      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('click', handleActivity);
       window.removeEventListener('keydown', handleActivity);
       window.removeEventListener('touchstart', handleActivity);
       stopFakeTyping();

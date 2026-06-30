@@ -17,7 +17,14 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
 
   const supabase = createBrowserClient(
     supabaseUrl,
-    supabaseKey
+    supabaseKey,
+    {
+      auth: {
+        experimental: {
+          passkey: true,
+        },
+      },
+    }
   );
 
   useEffect(() => {

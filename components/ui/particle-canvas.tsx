@@ -3,9 +3,14 @@
 import { useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 
-export function ParticleCanvas() {
+export function ParticleCanvas({ text = "See everyday moments from your digital garden." }: { text?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const textRef = useRef(text);
   const { theme, resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    textRef.current = text;
+  }, [text]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,6 +23,59 @@ export function ParticleCanvas() {
     let dpr = window.devicePixelRatio || 1;
 
     let boids: Boid[] = [];
+    
+    let obstacleData: Uint8ClampedArray | null = null;
+    let obstacleWidth = 0;
+    let obstacleHeight = 0;
+    let currentRenderedText = "";
+
+    const createObstacleMap = (textToRender: string) => {
+      const offscreen = document.createElement('canvas');
+      offscreen.width = width;
+      offscreen.height = height;
+      const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
+      if (!offCtx) return;
+
+      offCtx.fillStyle = 'white';
+      offCtx.textAlign = 'center';
+      offCtx.textBaseline = 'middle';
+      
+      let fontSize = 48; 
+      if (width >= 768) fontSize = 72;
+      if (width >= 1024) fontSize = 88;
+      
+      offCtx.font = `bold ${fontSize}px ui-serif, Georgia, Cambria, "Times New Roman", Times, serif`;
+      
+      const words = textToRender.split(' ');
+      const lines = [];
+      let currentLine = words[0];
+      const maxWidth = width * 0.8;
+      
+      for (let i = 1; i < words.length; i++) {
+          const testLine = currentLine + " " + words[i];
+          const metrics = offCtx.measureText(testLine);
+          if (metrics.width > maxWidth) {
+              lines.push(currentLine);
+              currentLine = words[i];
+          } else {
+              currentLine = testLine;
+          }
+      }
+      lines.push(currentLine);
+      
+      const lineHeight = fontSize * 0.9;
+      const startY = height / 2 - (lines.length * lineHeight) / 2 + (lineHeight / 2);
+      
+      lines.forEach((line, index) => {
+          (offCtx as any).letterSpacing = '-0.05em';
+          offCtx.fillText(line, width / 2, startY + index * lineHeight);
+      });
+      
+      obstacleWidth = width;
+      obstacleHeight = height;
+      obstacleData = offCtx.getImageData(0, 0, width, height).data;
+      currentRenderedText = textToRender;
+    };
 
     const setSize = () => {
       width = canvas.parentElement?.clientWidth || window.innerWidth;
@@ -27,6 +85,7 @@ export function ParticleCanvas() {
       ctx.scale(dpr, dpr);
       
       initBoids();
+      createObstacleMap(textRef.current);
     };
 
     class Boid {
@@ -37,6 +96,7 @@ export function ParticleCanvas() {
       size: number;
       maxSpeed: number;
       steerStrength: number;
+      stuckFrames: number;
       
       constructor() {
         this.x = Math.random() * width;
@@ -48,6 +108,7 @@ export function ParticleCanvas() {
         this.size = Math.random() * 1.5 + 1.5;
         this.maxSpeed = Math.random() * 1.5 + 1.0;
         this.steerStrength = Math.random() * 0.05 + 0.02;
+        this.stuckFrames = 0;
       }
 
       update(time: number, mouseX: number, mouseY: number) {
@@ -66,6 +127,53 @@ export function ParticleCanvas() {
         let targetVx = Math.cos(flowAngle) * this.maxSpeed;
         let targetVy = Math.sin(flowAngle) * this.maxSpeed;
         
+        // Text collision check (organic deflection using alpha gradients)
+        if (obstacleData) {
+          let cx = Math.floor(this.x);
+          let cy = Math.floor(this.y);
+          if (cx >= 0 && cx < obstacleWidth && cy >= 0 && cy < obstacleHeight) {
+            let alpha = obstacleData[(cy * obstacleWidth + cx) * 4 + 3];
+            if (alpha > 10) {
+              this.stuckFrames++;
+              
+              if (this.stuckFrames > 45) {
+                // Particle has been trapped for too long! Respawn at a random edge.
+                if (Math.random() > 0.5) {
+                  this.x = Math.random() > 0.5 ? -20 : width + 20;
+                  this.y = Math.random() * height;
+                } else {
+                  this.x = Math.random() * width;
+                  this.y = Math.random() > 0.5 ? -20 : height + 20;
+                }
+                this.stuckFrames = 0;
+              } else {
+                // We hit the text! Compute surface normal using alpha gradient
+                let left = cx > 3 ? obstacleData[(cy * obstacleWidth + (cx - 3)) * 4 + 3] : 0;
+                let right = cx < obstacleWidth - 3 ? obstacleData[(cy * obstacleWidth + (cx + 3)) * 4 + 3] : 0;
+                let up = cy > 3 ? obstacleData[((cy - 3) * obstacleWidth + cx) * 4 + 3] : 0;
+                let down = cy < obstacleHeight - 3 ? obstacleData[((cy + 3) * obstacleWidth + cx) * 4 + 3] : 0;
+                
+                let gradX = right - left;
+                let gradY = down - up;
+                
+                if (gradX !== 0 || gradY !== 0) {
+                  // Steer strongly AWAY from the gradient (which points into the text)
+                  let len = Math.sqrt(gradX*gradX + gradY*gradY);
+                  targetVx = -(gradX / len) * this.maxSpeed * 4;
+                  targetVy = -(gradY / len) * this.maxSpeed * 4;
+                } else {
+                  targetVx = -this.vx * 2 + (Math.random() - 0.5); // Add jitter to unstuck
+                  targetVy = -this.vy * 2 + (Math.random() - 0.5);
+                }
+              }
+            } else {
+              this.stuckFrames = 0;
+            }
+          } else {
+            this.stuckFrames = 0;
+          }
+        }
+
         // Mouse scattering (panic reaction when cursor gets near)
         let dx = mouseX - this.x;
         let dy = mouseY - this.y;
@@ -73,9 +181,9 @@ export function ParticleCanvas() {
         
         if (dist < 200 && mouseX !== -1000) {
           const panic = (200 - dist) / 200;
-          // Flee violently away from mouse
-          targetVx -= (dx / dist) * panic * this.maxSpeed * 4;
-          targetVy -= (dy / dist) * panic * this.maxSpeed * 4;
+          // Flee violently away from mouse, overpowering any text collisions
+          targetVx -= (dx / dist) * panic * this.maxSpeed * 8;
+          targetVy -= (dy / dist) * panic * this.maxSpeed * 8;
         }
         
         // Smoothly steer towards the target velocity (creates organic, non-robotic turns)
@@ -152,6 +260,10 @@ export function ParticleCanvas() {
       time += 16; 
       
       const isDark = document.documentElement.classList.contains('dark');
+
+      if (textRef.current && textRef.current !== currentRenderedText) {
+        createObstacleMap(textRef.current);
+      }
 
       for (let i = 0; i < boids.length; i++) {
         boids[i].update(time, mouse.x, mouse.y);

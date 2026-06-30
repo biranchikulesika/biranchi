@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DesktopNav, MobileNav } from '@/components/nav-links';
 import { PersonaSearch } from '@/components/persona-search';
+import { Logo } from '@/components/ui/logo';
 import { getPersonaUrl } from '@/lib/utils';
 import { ArrowUpRight } from 'lucide-react';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
@@ -53,8 +54,8 @@ export default function AboutPage() {
       />
       {/* Global Header */}
       <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 dark:bg-[#050505]/80 bg-[#F5F5F2]/80 backdrop-blur-md border-b dark:border-stone-900/50 border-[#ECEBE6]">
-        <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
-          BIRANCHI
+        <Link href={getPersonaUrl('main')} className="hover:opacity-70 transition-opacity">
+          <Logo />
         </Link>
         <div className="flex items-center gap-1 md:gap-2">
           <DesktopNav persona="main" />
