@@ -265,8 +265,8 @@ export default function LoginPage() {
             <form className="w-full space-y-2" onSubmit={handleSubmit}>
               <div className="relative">
                 <label htmlFor="email" className="sr-only">Email ID</label>
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <AtSign className="h-4 w-4 text-stone-400 dark:text-stone-500" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <AtSign className="h-5 w-5 text-stone-400 dark:text-stone-500" />
                 </div>
                 <input
                   id="email"
@@ -285,7 +285,7 @@ export default function LoginPage() {
                   }}
                   onFocus={handleInputFocus}
                   onBlur={handleEmailBlur}
-                  className={`block w-full rounded-[3px] border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-10 pr-2 py-[9px] text-[12px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300 ${emailError ? 'border-red-500' : ''
+                  className={`block w-full rounded-md border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-11 pr-3 py-2.5 text-[15px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300 ${emailError ? 'border-red-500' : ''
                     }`}
                   placeholder={isFakeTyping ? "" : "Email ID"}
                 />
@@ -293,8 +293,8 @@ export default function LoginPage() {
 
               <div className="relative">
                 <label htmlFor="password" className="sr-only">Password</label>
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <KeyRound className="h-4 w-4 text-stone-400 dark:text-stone-500" />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <KeyRound className="h-5 w-5 text-stone-400 dark:text-stone-500" />
                 </div>
                 <input
                   id="password"
@@ -312,7 +312,7 @@ export default function LoginPage() {
                   }}
                   onFocus={handleInputFocus}
                   onBlur={handleInputBlur}
-                  className="block w-full rounded-[3px] border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-10 pr-10 py-[9px] text-[12px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300"
+                  className="block w-full rounded-md border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-11 pr-11 py-2.5 text-[15px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300"
                   placeholder={isFakeTyping ? "" : "Password"}
                 />
                 {currentPassword && !isFakeTyping && (
@@ -322,14 +322,14 @@ export default function LoginPage() {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
                     tabIndex={-1}
                   >
-                    <div className="relative w-4 h-4">
+                    <div className="relative w-5 h-5">
                       <motion.div
                         initial={false}
                         animate={{ opacity: showPassword ? 0 : 1, scale: showPassword ? 0.8 : 1 }}
                         transition={{ duration: 0.2 }}
                         className="absolute inset-0"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-5 h-5" />
                       </motion.div>
                       <motion.div
                         initial={false}
@@ -337,7 +337,7 @@ export default function LoginPage() {
                         transition={{ duration: 0.2 }}
                         className="absolute inset-0"
                       >
-                        <EyeOff className="w-4 h-4" />
+                        <EyeOff className="w-5 h-5" />
                       </motion.div>
                     </div>
                   </button>
@@ -348,7 +348,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !currentEmail || !currentPassword || currentPassword.length < 8 || !!emailError}
-                  className="w-full flex justify-center rounded-[8px] bg-[#0095f6] hover:bg-[#1877f2] px-4 py-1.5 text-[14px] font-semibold text-white focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                  className="w-full flex justify-center rounded-[8px] bg-[#0095f6] hover:bg-[#1877f2] px-4 py-2.5 text-[15px] font-semibold text-white focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
