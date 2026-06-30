@@ -259,12 +259,12 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane (Form Area) */}
-      <div className="w-full h-full md:w-[450px] lg:w-[500px] flex flex-col items-center justify-center p-6 md:p-8 relative dark:bg-[#000000] bg-[#FFFFFF]">
+      <div className={`w-full h-full md:w-[450px] lg:w-[500px] flex flex-col items-center px-6 pb-6 md:p-8 relative dark:bg-[#000000] bg-[#FFFFFF] transition-all duration-500 ${isInputFocused ? 'justify-start pt-[44px] md:justify-center md:pt-8' : 'justify-center pt-6'}`}>
 
         <motion.div
           initial={{ y: 20, opacity: 0 }}
-          animate={{ y: isInputFocused ? -20 : 0, opacity: 1 }}
-          transition={{ duration: isInputFocused ? 0.3 : 0.8, delay: isInputFocused ? 0 : 0.2 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
           className="w-full max-w-[350px] flex flex-col items-center z-10"
         >
           {/* Main Login Box */}
