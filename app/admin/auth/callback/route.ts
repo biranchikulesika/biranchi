@@ -7,6 +7,17 @@ export async function GET(request: Request) {
   const code = searchParams.get('code');
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get('next') ?? '/admin';
+  const errorParam = searchParams.get('error');
+  const errorDescription = searchParams.get('error_description');
+  const provider = searchParams.get('provider');
+
+  if (errorParam) {
+    const providerQuery = provider ? `&provider=${provider}` : '';
+    if (errorDescription?.includes('Signups not allowed')) {
+      return NextResponse.redirect(`${origin}/admin/login?error=not_registered${providerQuery}`);
+    }
+    return NextResponse.redirect(`${origin}/admin/login?error=${errorParam}${providerQuery}`);
+  }
 
   if (code) {
     const cookieStore = await cookies();

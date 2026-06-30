@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2, KeyRound, AtSign, Eye, EyeOff } from 'lucide-react';
@@ -34,6 +34,18 @@ export default function LoginPage() {
   const [invalidCredentials, setInvalidCredentials] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+  const searchParams = useSearchParams();
+  const errorParam = searchParams?.get('error');
+  const providerParam = searchParams?.get('provider');
+
+  useEffect(() => {
+    if (errorParam === 'not_registered') {
+      const providerName = providerParam
+        ? (providerParam.toLowerCase() === 'github' ? 'GitHub' : providerParam.charAt(0).toUpperCase() + providerParam.slice(1))
+        : 'OAuth';
+      setEmailError(`We could not find any account associated with your ${providerName} account.`);
+    }
+  }, [errorParam, providerParam]);
 
   useEffect(() => {
     setQuoteIndex(Math.floor(Math.random() * QUOTES.length));
@@ -145,7 +157,7 @@ export default function LoginPage() {
     setLoading(true);
     clearStatus();
 
-    const redirectUrl = `${window.location.origin}/admin/auth/callback?next=/admin`;
+    const redirectUrl = `${window.location.origin}/admin/auth/callback?next=/admin&provider=${provider}`;
 
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider,
