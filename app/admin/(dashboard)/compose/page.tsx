@@ -531,39 +531,38 @@ function ComposePageContent() {
   return (
     <div className={`w-full bg-[#0a0a0a] text-neutral-200 flex flex-col font-sans selection:bg-[#222] ${activeTab === 'preview' ? 'min-h-screen' : 'h-screen overflow-hidden'}`}>
 
+      {/* Top Navigation Bar */}
+      <div className="w-full h-12 bg-[#111] border-b border-[#222] flex items-center justify-between px-4 shrink-0 z-10">
+        <Link
+          href="/admin/library"
+          className="text-neutral-400 hover:text-white flex items-center gap-2 text-[13px] font-sans transition-colors bg-[#1a1a1a] px-3 py-1.5 rounded-md border border-[#333] hover:border-[#555]"
+          title="Back to Library"
+        >
+          <Files className="w-4 h-4" strokeWidth={1.5} /> Library
+        </Link>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setActiveTab(prev => prev === 'composer' ? 'preview' : 'composer')}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-sans text-neutral-300 hover:text-white hover:bg-[#333] transition-colors border border-transparent hover:border-[#444]"
+            title={activeTab === 'preview' ? 'Return to Editor' : 'Open Preview'}
+          >
+            {activeTab === 'preview' ? <><Undo className="w-4 h-4" strokeWidth={1.5} /> Editor</> : <><Eye className="w-4 h-4" strokeWidth={1.5} /> Preview</>}
+          </button>
+          <button
+            onClick={() => setIsPublishModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-1.5 rounded-md text-[13px] font-medium font-sans bg-[#ff7700] text-white hover:bg-[#e66a00] transition-colors shadow-sm"
+            title="Publish Settings"
+          >
+            <CloudUpload className="w-4 h-4" strokeWidth={1.5} /> Publish
+          </button>
+        </div>
+      </div>
+
       {/* Main Row */}
       <div className="flex-1 min-h-0 w-full flex flex-row">
         
-        {/* Activity Bar (Left) */}
-        <div className="w-12 bg-[#111] border-r border-[#222] flex flex-col items-center py-3 justify-between shrink-0">
-          <div className="flex flex-col gap-4 w-full items-center">
-            <Link
-              href="/admin/library"
-              className="p-2 text-neutral-500 hover:text-white transition-colors"
-              title="Back to Library"
-            >
-              <Files className="w-6 h-6" strokeWidth={1.5} />
-            </Link>
-          </div>
-          <div className="flex flex-col gap-4 w-full items-center mb-2">
-            <button
-              type="button"
-              onClick={() => setActiveTab(prev => prev === 'composer' ? 'preview' : 'composer')}
-              className={`p-2 transition-colors ${activeTab === 'preview' ? 'text-white' : 'text-neutral-500 hover:text-white'}`}
-              title={activeTab === 'preview' ? 'Return to Editor' : 'Open Preview'}
-            >
-              {activeTab === 'preview' ? <Undo className="w-6 h-6" strokeWidth={1.5} /> : <Eye className="w-6 h-6" strokeWidth={1.5} />}
-            </button>
-            <button
-              onClick={() => setIsPublishModalOpen(true)}
-              className="p-2 text-neutral-500 hover:text-white transition-colors"
-              title="Publish Settings"
-            >
-              <CloudUpload className="w-6 h-6" strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
-
         {/* Editor or Preview Pane */}
         <div className={`flex-1 min-w-0 flex flex-col bg-[#0a0a0a] ${activeTab === 'preview' ? 'overflow-y-auto' : 'overflow-hidden'}`}>
           {dbError && (
