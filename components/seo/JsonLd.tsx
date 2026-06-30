@@ -110,7 +110,7 @@ interface WebSiteJsonLdProps {
 
 export function WebSiteJsonLd({
   name = SITE_NAME,
-  description = 'Personal digital garden and portfolio of Biranchi Kulesika, featuring the Builder, Operator, Thinker, and Wanderer personas.',
+  description = 'A personal ecosystem showcasing four personas: Builder, Operator, Thinker, and Wanderer',
   url = SITE_URL,
 }: WebSiteJsonLdProps = {}) {
   const data = {

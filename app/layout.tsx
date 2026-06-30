@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     default: 'Biranchi',
     template: '%s | Biranchi',
   },
-  description: 'Personal digital garden and portfolio of Biranchi Kulesika, featuring the Builder, Operator, Thinker, and Wanderer personas.',
+  description: 'A personal ecosystem showcasing four personas: Builder, Operator, Thinker, and Wanderer',
   authors: [{ name: AUTHOR.name, url: AUTHOR.url }],
   creator: AUTHOR.name,
   publisher: AUTHOR.name,
