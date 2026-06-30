@@ -48,10 +48,6 @@ export default function MDXPreview({ content, persona = 'builder', title = '', s
 
   // Determine styles based on persona similar to PostRenderer
   const getProseClass = (p: string) => {
-    if (p === 'wanderer') return 'bg-background text-foreground';
-    if (p === 'thinker') return 'bg-background text-foreground';
-    if (p === 'builder') return 'bg-background text-foreground';
-    if (p === 'operator') return 'bg-background text-foreground';
     return 'bg-background text-foreground';
   };
 
@@ -67,7 +63,7 @@ export default function MDXPreview({ content, persona = 'builder', title = '', s
   const postMock = {
     title: title || 'Untitled Post',
     subtitle: subtitle || '',
-    persona: persona,
+    persona: persona === 'unassigned' ? 'thinker' : persona,
     publishedAt: new Date().toISOString(),
     readingTime: readingTime,
     content: content,

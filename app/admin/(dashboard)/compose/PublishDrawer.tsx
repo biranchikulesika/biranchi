@@ -336,6 +336,10 @@ export default function PublishDrawer({
             <button
               type="button"
               onClick={async () => {
+                if (formData.persona === 'unassigned' || !formData.persona) {
+                  alert("Please assign a persona (builder, operator, thinker, wanderer) before publishing.");
+                  return;
+                }
                 if (!formData.title?.trim() || getWordCount() === 0) {
                   alert("Cannot publish an empty post. Both title and content are required.");
                   return;
@@ -353,9 +357,10 @@ export default function PublishDrawer({
                 
                 await handleSavePost(false);
               }}
-              disabled={saving}
-              className="px-5 py-2 bg-[#ff7700] hover:bg-[#ff881a] text-black font-bold text-xs font-sans uppercase rounded flex items-center gap-1.5 transition-colors"
+              disabled={saving || formData.persona === 'unassigned'}
+              className={`px-5 py-2 font-bold text-xs font-sans uppercase rounded flex items-center gap-1.5 transition-colors ${formData.persona === 'unassigned' ? 'bg-[#555] text-[#999] cursor-not-allowed' : 'bg-[#ff7700] hover:bg-[#ff881a] text-black'}`}
               id="drawer-confirm-publish-btn"
+              title={formData.persona === 'unassigned' ? "Select a persona before publishing" : ""}
             >
               {saving ? (
                 <>

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Plus, X, Image as ImageIcon, GripVertical, Check, RefreshCw,
   Trash2, UploadCloud, Send, Undo, Redo, MessageSquare, List, Settings,
-  Files, Eye, CloudUpload, ChevronUp
+  Files, Eye, CloudUpload, ChevronUp, ChevronRight
 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import { getPosts, createPost, updatePost, checkSlugExists } from '@/app/admin/actions/posts.actions';
@@ -126,6 +126,42 @@ async function getUniqueSlug(baseSlug: string, currentId: string | null, current
   }
 }
 
+import { EditorTab } from './MDXEditor';
+
+export type TabData = {
+  id: string; // unique tab identifier
+  dbId: string | null;
+  formData: any;
+  richTextContent: string;
+  pasteTagsText: string;
+  wasPublished: boolean;
+  saveStatus: string;
+  initialSlug: string;
+  isDirty?: boolean;
+}
+
+const defaultFormData = {
+  persona: 'unassigned',
+  title: '',
+  subtitle: '',
+  byline: '',
+  slug: '',
+  oldSlugs: [],
+  excerpt: '',
+  coverImageUrl: '',
+  coverImageAlt: 'Cover Image',
+  coverImageCaption: '',
+  coverImageLocation: '',
+  coverImageCredit: '',
+  autoCoverImage: true,
+  content: '',
+  tags: [],
+  publishedAt: '',
+  featured: false,
+  hidden: false,
+  status: 'draft'
+};
+
 function ComposePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -138,11 +174,82 @@ function ComposePageContent() {
   const [dbError, setDbError] = useState<string | null>(null);
 
   // Advanced publishing configuration states
-  const [currentPostId, setCurrentPostId] = useState<string | null>(null);
-  const [saveStatus, setSaveStatus] = useState<string>('Saved');
+  // Multi-tab State
+  const [tabs, setTabs] = useState<TabData[]>([
+    {
+      id: generateUniqueId(),
+      dbId: null,
+      formData: { ...defaultFormData, persona: targetPersona || 'unassigned' },
+      richTextContent: '',
+      pasteTagsText: '',
+      wasPublished: false,
+      saveStatus: 'Saved',
+      initialSlug: ''
+    }
+  ]);
+  const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
+  const [isDraftsModalOpen, setIsDraftsModalOpen] = useState(false);
+  const [draftsList, setDraftsList] = useState<any[]>([]);
+
+  // Derived state for the active tab
+  const activeTabData = tabs.find(t => t.id === activeTabId) || tabs[0];
+  const formData = activeTabData.formData;
+  const richTextContent = activeTabData.richTextContent;
+  const pasteTagsText = activeTabData.pasteTagsText;
+  const currentPostId = activeTabData.dbId;
+  const saveStatus = activeTabData.saveStatus;
+  const wasPublished = activeTabData.wasPublished;
+  const initialSlug = activeTabData.initialSlug;
+
+  // Setters bridging the gap for the active tab
+  const updateActiveTab = (updater: (prev: TabData) => TabData) => {
+    setTabs(prev => prev.map(t => t.id === activeTabId ? updater(t) : t));
+  };
+
+  const setFormData = (updater: any) => {
+    updateActiveTab(t => ({
+      ...t,
+      formData: typeof updater === 'function' ? updater(t.formData) : { ...t.formData, ...updater },
+      isDirty: true
+    }));
+  };
+
+  const setRichTextContent = (content: string) => {
+    updateActiveTab(t => ({ ...t, richTextContent: content, isDirty: true }));
+  };
+
+  const setPasteTagsText = (text: string) => {
+    updateActiveTab(t => ({ ...t, pasteTagsText: text, isDirty: true }));
+  };
+
+  const setCurrentPostId = (id: string | null) => {
+    updateActiveTab(t => ({ ...t, dbId: id }));
+  };
+
+  const setSaveStatus = (status: string) => {
+    updateActiveTab(t => ({ ...t, saveStatus: status }));
+  };
+
+  const setWasPublished = (published: boolean) => {
+    updateActiveTab(t => ({ ...t, wasPublished: published }));
+  };
+  
+  const setInitialSlug = (slug: string) => {
+    updateActiveTab(t => ({ ...t, initialSlug: slug }));
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      if (currentPostId) {
+        window.history.replaceState(null, '', `/admin/compose?id=${currentPostId}`);
+      } else {
+        window.history.replaceState(null, '', `/admin/compose`);
+      }
+    }
+  }, [activeTabId, currentPostId, loading]);
+
+  // UI States (Shared across tabs or specific to the drawer)
   const [isEditingExcerpt, setIsEditingExcerpt] = useState(false);
-  const [initialSlug, setInitialSlug] = useState('');
-  const [wasPublished, setWasPublished] = useState(false);
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isCustomizingUrl, setIsCustomizingUrl] = useState(false);
   const [customUrlVal, setCustomUrlVal] = useState('');
@@ -157,31 +264,21 @@ function ComposePageContent() {
   const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
   const [slashMenuBlockId, setSlashMenuBlockId] = useState<string | null>(null);
 
-  // Core Form Data
-  const [formData, setFormData] = useState<any>({
-    persona: '',
-    title: '',
-    subtitle: '',
-    byline: '',
-    slug: '',
-    oldSlugs: [],
-    excerpt: '',
-    coverImageUrl: '',
-    coverImageAlt: 'Cover Image',
-    coverImageCaption: '',
-    coverImageLocation: '',
-    coverImageCredit: '',
-    autoCoverImage: true,
-    content: '',
-    tags: [],
-    publishedAt: '',
-    featured: false,
-    hidden: false,
-    status: 'draft'
-  });
-
-  const [richTextContent, setRichTextContent] = useState('');
-  const [pasteTagsText, setPasteTagsText] = useState('');
+  useEffect(() => {
+    if (isDraftsModalOpen) {
+      const fetchDrafts = async () => {
+        try {
+          const res = await getPosts();
+          if (res.success) {
+            setDraftsList(res.data.filter((p: any) => p.status === 'draft' || !p.status));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      fetchDrafts();
+    }
+  }, [isDraftsModalOpen]);
 
   useEffect(() => {
     if (activeTab === 'preview' && richTextContent) {
@@ -229,57 +326,65 @@ function ComposePageContent() {
       const posts = postsResponse.success ? postsResponse.data : [];
 
       if (editId) {
-        const found = (posts || []).find((p: any) => p.id === editId || p.slug === editId);
-        if (found) {
-          setFormData({
-            ...found,
-            tags: found.tags || [],
-            oldSlugs: found.oldSlugs || []
-          });
-          setCurrentPostId(found.id);
-          setInitialSlug(found.slug || '');
-          setWasPublished(found.status === 'published' && !!found.publishedAt);
-          let htmlContent = found.draftContent || found.content || '';
-          try {
-              const maybeJson = JSON.parse(htmlContent);
-              if (Array.isArray(maybeJson)) {
-                  htmlContent = compileFromBlocks(maybeJson);
-              }
-          } catch (e) {
-              // It's already HTML
+        setTabs(prev => {
+          const existing = prev.find(t => t.dbId === editId || t.formData.slug === editId);
+          if (existing) {
+             setTimeout(() => setActiveTabId(existing.id), 0);
+             return prev;
           }
-          setRichTextContent(htmlContent);
-          setPasteTagsText((found.tags || []).join(', '));
-        } else {
-          router.push('/admin/compose');
-        }
-      } else {
-        const defaultPersona = targetPersona || 'builder';
-        setFormData({
-          persona: defaultPersona,
-          title: '',
-          subtitle: '',
-          byline: '',
-          slug: '',
-          oldSlugs: [],
-          excerpt: '',
-          coverImageUrl: '',
-          coverImageAlt: 'Cover Image',
-          coverImageCaption: '',
-          coverImageLocation: '',
-          coverImageCredit: '',
-          autoCoverImage: true,
-          content: '',
-          tags: [],
-          publishedAt: '',
-          featured: false,
-          hidden: false,
-          status: 'draft'
+          
+          const found = (posts || []).find((p: any) => p.id === editId || p.slug === editId);
+          if (found) {
+            let htmlContent = found.draftContent || found.content || '';
+            try {
+                const maybeJson = JSON.parse(htmlContent);
+                if (Array.isArray(maybeJson)) {
+                    htmlContent = compileFromBlocks(maybeJson);
+                }
+            } catch (e) {}
+            
+            const newTab: TabData = {
+              id: generateUniqueId(),
+              dbId: found.id,
+              formData: { ...found, tags: found.tags || [], oldSlugs: found.oldSlugs || [] },
+              richTextContent: htmlContent,
+              pasteTagsText: (found.tags || []).join(', '),
+              wasPublished: found.status === 'published' && !!found.publishedAt,
+              saveStatus: 'Saved',
+              initialSlug: found.slug || '',
+              isDirty: false
+            };
+            setTimeout(() => setActiveTabId(newTab.id), 0);
+            return [...prev, newTab];
+          } else {
+             setTimeout(() => router.push('/admin/compose'), 0);
+             return prev;
+          }
         });
-        setCurrentPostId(null);
-        setInitialSlug('');
-        setWasPublished(false);
-        setRichTextContent('');
+      } else {
+        setTabs(prev => {
+          const defaultPersona = targetPersona || 'unassigned';
+          // Check if there is already an empty draft for this persona
+          const emptyTab = prev.find(t => !t.dbId && !t.richTextContent && t.formData.title === '' && t.formData.persona === defaultPersona);
+          if (emptyTab) {
+            setTimeout(() => setActiveTabId(emptyTab.id), 0);
+            return prev;
+          }
+          
+          const newTab: TabData = {
+            id: generateUniqueId(),
+            dbId: null,
+            formData: { ...defaultFormData, persona: defaultPersona },
+            richTextContent: '',
+            pasteTagsText: '',
+            wasPublished: false,
+            saveStatus: 'Saved',
+            initialSlug: '',
+            isDirty: false
+          };
+          setTimeout(() => setActiveTabId(newTab.id), 0);
+          return [...prev, newTab];
+        });
       }
     } catch (e) {
       console.error('Error in workspace composer initialization: ', e);
@@ -321,11 +426,11 @@ function ComposePageContent() {
 
   // Continuous Autosave Implementation with dynamic content-driven extraction
   const isInitialMount = useRef(true);
-  const lastSavedPayloadRef = useRef<string | null>(null);
+  const lastSavedPayloadRef = useRef<Record<string, string>>({});
 
   // Show "Unsaved" immediately upon any state updates
   useEffect(() => {
-    if (loading) return;
+    if (loading || !activeTabId) return;
 
     const splitTags = pasteTagsText.split(',').map(t => t.trim()).filter(Boolean);
     const currentPayloadStr = JSON.stringify({
@@ -339,13 +444,12 @@ function ComposePageContent() {
       tags: splitTags,
     });
 
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      lastSavedPayloadRef.current = currentPayloadStr;
+    if (!lastSavedPayloadRef.current[activeTabId]) {
+      lastSavedPayloadRef.current[activeTabId] = currentPayloadStr;
       return;
     }
 
-    if (lastSavedPayloadRef.current === currentPayloadStr) {
+    if (lastSavedPayloadRef.current[activeTabId] === currentPayloadStr) {
       return; // No actual content delta
     }
 
@@ -405,7 +509,7 @@ function ComposePageContent() {
         if (currentPostId) {
           const updateRes = await updatePost(currentPostId, payload);
           if (!updateRes.success) throw new Error("error" in updateRes ? updateRes.error : "Error");
-          lastSavedPayloadRef.current = currentPayloadStr;
+          lastSavedPayloadRef.current[activeTabId] = currentPayloadStr;
           if (payload.slug !== formData.slug) {
             setFormData((prev: any) => ({ ...prev, slug: payload.slug }));
           }
@@ -415,12 +519,14 @@ function ComposePageContent() {
           const created = createdRes.data;
           if (created && created.id) {
             setCurrentPostId(created.id);
-            lastSavedPayloadRef.current = currentPayloadStr;
+            lastSavedPayloadRef.current[activeTabId] = currentPayloadStr;
             setFormData((prev: any) => ({ ...prev, slug: created.slug || payload.slug }));
-            router.replace(`/admin/compose?id=${created.id}`, { scroll: false });
+            // Instead of router.replace, just update the URL silently
+            window.history.replaceState(null, '', `/admin/compose?id=${created.id}`);
           }
         }
         setSaveStatus(formData.status === 'published' ? 'Saved' : 'Saved as draft');
+        updateActiveTab(t => ({ ...t, isDirty: false }));
       } catch (err) {
         console.error('Autosave error:', err);
         setSaveStatus('Error saving');
@@ -570,6 +676,35 @@ function ComposePageContent() {
                       }}
                       subtitle={formData.subtitle}
                       onSubtitleChange={(subtitle) => setFormData((prev: any) => ({ ...prev, subtitle }))}
+                      tabs={tabs.map(t => ({ id: t.id, title: t.formData.title, isDirty: t.isDirty }))}
+                      activeTabId={activeTabId}
+                      onTabSelect={(id) => setActiveTabId(id)}
+                      onTabClose={(id) => {
+                        setTabs(prev => {
+                          const newTabs = prev.filter(t => t.id !== id);
+                          if (newTabs.length === 0) {
+                            const emptyTab: TabData = {
+                              id: generateUniqueId(), dbId: null, formData: { ...defaultFormData, persona: 'unassigned' },
+                              richTextContent: '', pasteTagsText: '', wasPublished: false, saveStatus: 'Saved', initialSlug: '', isDirty: false
+                            };
+                            setTimeout(() => setActiveTabId(emptyTab.id), 0);
+                            return [emptyTab];
+                          }
+                          if (activeTabId === id) {
+                            setTimeout(() => setActiveTabId(newTabs[0].id), 0);
+                          }
+                          return newTabs;
+                        });
+                      }}
+                      onNewTab={() => {
+                        const newTab: TabData = {
+                          id: generateUniqueId(), dbId: null, formData: { ...defaultFormData, persona: 'unassigned' },
+                          richTextContent: '', pasteTagsText: '', wasPublished: false, saveStatus: 'Saved', initialSlug: '', isDirty: false
+                        };
+                        setTabs(prev => [...prev, newTab]);
+                        setActiveTabId(newTab.id);
+                      }}
+                      onOpenDrafts={() => setIsDraftsModalOpen(true)}
                       actionButtons={
                         <>
                           <button
@@ -716,7 +851,64 @@ function ComposePageContent() {
         isEditingExcerpt={isEditingExcerpt}
         setIsEditingExcerpt={setIsEditingExcerpt}
       />
-</div>
+      
+      {/* Drafts Modal */}
+      {isDraftsModalOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[#1e1e1e] border border-[#333] rounded-lg w-full max-w-lg shadow-2xl flex flex-col max-h-[80vh]">
+            <div className="flex items-center justify-between p-4 border-b border-[#333]">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300">Open Draft</h2>
+              <button onClick={() => setIsDraftsModalOpen(false)} className="text-neutral-500 hover:text-white transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
+              {draftsList.length === 0 ? (
+                <div className="p-8 text-center text-neutral-500 text-sm italic">
+                  No drafts found.
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {draftsList.map(draft => (
+                    <button
+                      key={draft.id}
+                      onClick={() => {
+                        setIsDraftsModalOpen(false);
+                        const existingTab = tabs.find(t => t.dbId === draft.id);
+                        if (existingTab) {
+                          setActiveTabId(existingTab.id);
+                        } else {
+                          const newTab: TabData = {
+                            id: generateUniqueId(),
+                            dbId: draft.id,
+                            formData: { ...draft, tags: draft.tags || [], oldSlugs: draft.oldSlugs || [] },
+                            richTextContent: draft.draftContent || draft.content || '',
+                            pasteTagsText: (draft.tags || []).join(', '),
+                            wasPublished: draft.status === 'published' && !!draft.publishedAt,
+                            saveStatus: 'Saved',
+                            initialSlug: draft.slug || '',
+                            isDirty: false
+                          };
+                          setTabs(prev => [...prev, newTab]);
+                          setActiveTabId(newTab.id);
+                        }
+                      }}
+                      className="w-full flex items-center justify-between p-3 rounded bg-[#1e1e1e] hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-[#444] text-left group"
+                    >
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm text-neutral-200 truncate">{draft.title || 'Untitled'}</span>
+                        <span className="text-xs text-neutral-500 truncate">{draft.persona || 'unassigned'} • {new Date(draft.updatedAt || draft.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-[#ff7700] shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

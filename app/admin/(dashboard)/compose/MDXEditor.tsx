@@ -2,10 +2,16 @@
 
 import { useState, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FileImage, Search, Heading1, Heading2, Heading3, List, ListOrdered, Minus, Link2, ChevronRight, ChevronLeft, Columns } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FileImage, Search, Heading1, Heading2, Heading3, List, ListOrdered, Minus, Link2, ChevronRight, ChevronLeft, Columns, Plus, FolderOpen } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import MediaLibraryModal from './MediaLibraryModal';
 import MDXPreview from './MDXPreview';
+
+export type EditorTab = {
+  id: string;
+  title: string;
+  isDirty?: boolean;
+};
 
 interface MDXEditorProps {
   content: string;
@@ -18,6 +24,14 @@ interface MDXEditorProps {
   subtitle: string;
   onSubtitleChange: (subtitle: string) => void;
   actionButtons?: React.ReactNode;
+  
+  // Tab props
+  tabs?: EditorTab[];
+  activeTabId?: string;
+  onTabSelect?: (id: string) => void;
+  onTabClose?: (id: string) => void;
+  onNewTab?: () => void;
+  onOpenDrafts?: () => void;
 }
 
 const componentLibrary = [
@@ -46,7 +60,13 @@ export default function MDXEditor({
   subtitle,
   onSubtitleChange,
   actionButtons,
-  onPersonaChange
+  onPersonaChange,
+  tabs = [],
+  activeTabId,
+  onTabSelect,
+  onTabClose,
+  onNewTab,
+  onOpenDrafts
 }: MDXEditorProps) {
   const monaco = useMonaco();
   const [isUploading, setIsUploading] = useState(false);
@@ -217,15 +237,35 @@ export default function MDXEditor({
     <div className={`flex flex-col h-full bg-[#1e1e1e] border-l border-[#222] ${className}`} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
       
       {/* VS Code Editor Tabs */}
-      <div className="flex bg-[#111111] h-[35px] shrink-0 overflow-x-auto custom-scrollbar">
-        {/* Active Tab */}
-        <div className="flex items-center h-full px-3 bg-[#1e1e1e] border-t-2 border-t-[#007acc] text-[#cccccc] cursor-pointer min-w-[140px] max-w-[200px] group transition-colors">
-          <Type className="w-3.5 h-3.5 text-[#519aba] mr-2 shrink-0" />
-          <span className="text-[13px] font-sans truncate select-none flex-1">
-            {displayTabName.replace(/^-+|-+$/g, '') || 'untitled.mdx'}
-          </span>
-          <X className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 hover:bg-[#333] rounded p-0.5 transition-all shrink-0" />
-        </div>
+      <div className="flex bg-[#111111] h-[35px] shrink-0 overflow-x-auto custom-scrollbar relative">
+        {tabs.map(tab => {
+          const isSelected = activeTabId === tab.id;
+          const displayTabName = (tab.title || 'untitled').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.mdx';
+          return (
+            <div 
+              key={tab.id}
+              onClick={() => onTabSelect?.(tab.id)}
+              className={`flex items-center h-full px-3 cursor-pointer min-w-[140px] max-w-[200px] group transition-colors border-r border-[#111111] ${isSelected ? 'bg-[#1e1e1e] border-t-2 border-t-[#007acc] text-[#cccccc]' : 'bg-[#2d2d2d] text-[#888888] hover:bg-[#2a2d2e]'}`}
+            >
+              <Type className={`w-3.5 h-3.5 mr-2 shrink-0 ${isSelected ? 'text-[#519aba]' : 'text-[#888888]'}`} />
+              <span className="text-[13px] font-sans truncate select-none flex-1">
+                {displayTabName.replace(/^-+|-+$/g, '') || 'untitled.mdx'}
+                {tab.isDirty && <span className="ml-1 opacity-70">*</span>}
+              </span>
+              <X 
+                onClick={(e) => { e.stopPropagation(); onTabClose?.(tab.id); }}
+                className={`w-4 h-4 ml-2 rounded p-0.5 transition-all shrink-0 ${isSelected ? 'opacity-0 group-hover:opacity-100 hover:bg-[#333]' : 'opacity-0 group-hover:opacity-100 hover:bg-[#444]'}`} 
+              />
+            </div>
+          );
+        })}
+        
+        <button onClick={onNewTab} className="h-full px-3 flex items-center text-[#888] hover:text-white hover:bg-[#333] transition-colors" title="New Draft">
+          <Plus className="w-4 h-4" />
+        </button>
+        <button onClick={onOpenDrafts} className="h-full px-3 flex items-center text-[#888] hover:text-white hover:bg-[#333] transition-colors" title="Open Existing Draft">
+          <FolderOpen className="w-4 h-4" />
+        </button>
         
         {/* Empty space next to tab */}
         <div className="flex-1 bg-[#111111]"></div>
@@ -364,6 +404,18 @@ export default function MDXEditor({
                   formatOnPaste: true,
                 }}
               />
+              {!content && (
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                  <div className="text-center opacity-40 select-none max-w-sm px-6">
+                    <p className="font-serif italic text-lg text-neutral-400">
+                      "The scariest moment is always just before you start."
+                    </p>
+                    <p className="font-sans text-xs uppercase tracking-widest mt-3 text-neutral-500">
+                      — Stephen King
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Draggable Divider */}
