@@ -2,9 +2,10 @@
 
 import { useState, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FileImage, Search, Heading1, Heading2, Heading3, List, ListOrdered, Minus, Link2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FileImage, Search, Heading1, Heading2, Heading3, List, ListOrdered, Minus, Link2, ChevronRight, ChevronLeft, Columns } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import MediaLibraryModal from './MediaLibraryModal';
+import MDXPreview from './MDXPreview';
 
 interface MDXEditorProps {
   content: string;
@@ -49,9 +50,36 @@ export default function MDXEditor({
   const [isUploading, setIsUploading] = useState(false);
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSplitView, setIsSplitView] = useState(false);
+  const [editorWidthPercent, setEditorWidthPercent] = useState(50);
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const container = containerRef.current;
+    if (!container) return;
+    const containerRect = container.getBoundingClientRect();
+    
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      let newPercent = ((moveEvent.clientX - containerRect.left) / containerRect.width) * 100;
+      if (newPercent < 20) newPercent = 20;
+      if (newPercent > 80) newPercent = 80;
+      setEditorWidthPercent(newPercent);
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = 'default';
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    document.body.style.cursor = 'col-resize';
+  };
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
@@ -296,32 +324,74 @@ export default function MDXEditor({
               placeholder="Subtitle"
               className="flex-1 bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 min-w-[150px] py-0 italic"
             />
+            <button
+              onClick={() => setIsSplitView(!isSplitView)}
+              className={`ml-2 p-1 rounded-sm flex items-center justify-center transition-colors ${isSplitView ? 'bg-[#333] text-white' : 'hover:bg-[#2a2a2a] text-[#888] hover:text-[#ccc]'}`}
+              title="Toggle Split Preview"
+            >
+              <Columns className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          <div className="flex-1 relative">
-            <Editor
-              height="100%"
-              defaultLanguage="mdx"
-              language="mdx"
-              theme="vs-dark"
-              value={content}
-              onChange={(val) => onChange(val || '')}
-              onMount={handleEditorDidMount}
-              options={{
-                minimap: { enabled: false },
-                wordWrap: 'on',
-                lineNumbers: 'on',
-                scrollBeyondLastLine: false,
-                smoothScrolling: true,
-                padding: { top: 24, bottom: 48 },
-                fontFamily: 'var(--font-mono)',
-                fontSize: 14,
-                bracketPairColorization: { enabled: true },
-                autoClosingBrackets: 'always',
-                autoClosingQuotes: 'always',
-                formatOnPaste: true,
-              }}
-            />
+          <div className="flex-1 flex flex-row relative min-h-0" ref={containerRef}>
+            {/* Left Editor */}
+            <div 
+              className="relative h-full min-w-0" 
+              style={{ width: isSplitView ? `${editorWidthPercent}%` : '100%' }}
+            >
+              <Editor
+                height="100%"
+                defaultLanguage="mdx"
+                language="mdx"
+                theme="vs-dark"
+                value={content}
+                onChange={(val) => onChange(val || '')}
+                onMount={handleEditorDidMount}
+                options={{
+                  minimap: { enabled: false },
+                  wordWrap: 'on',
+                  lineNumbers: 'on',
+                  scrollBeyondLastLine: false,
+                  smoothScrolling: true,
+                  padding: { top: 24, bottom: 48 },
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 14,
+                  bracketPairColorization: { enabled: true },
+                  autoClosingBrackets: 'always',
+                  autoClosingQuotes: 'always',
+                  formatOnPaste: true,
+                }}
+              />
+            </div>
+
+            {/* Draggable Divider */}
+            {isSplitView && (
+              <div 
+                className="w-1.5 bg-[#181818] border-x border-[#222] hover:bg-[#007acc] cursor-col-resize transition-colors z-10 shrink-0 relative"
+                onMouseDown={handleMouseDown}
+              >
+                {/* Visual handle */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1 pointer-events-none opacity-50">
+                  <div className="w-0.5 h-1 bg-[#888] rounded-full"></div>
+                  <div className="w-0.5 h-1 bg-[#888] rounded-full"></div>
+                  <div className="w-0.5 h-1 bg-[#888] rounded-full"></div>
+                </div>
+              </div>
+            )}
+
+            {/* Right Preview */}
+            {isSplitView && (
+              <div 
+                className="relative h-full overflow-hidden bg-background" 
+                style={{ width: `calc(${100 - editorWidthPercent}% - 6px)` }}
+              >
+                <MDXPreview 
+                  content={content} 
+                  persona={persona} 
+                  className="!h-full !border-none !rounded-none !m-0 !p-6"
+                />
+              </div>
+            )}
           </div>
         </div>
 
