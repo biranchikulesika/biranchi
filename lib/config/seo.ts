@@ -10,7 +10,7 @@ export const SITE_URL =
     ? `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
     : 'https://biranchi.kulesika.in';
 
-export const SITE_NAME = 'Biranchi';
+export const SITE_NAME = 'Biranchi Kulesika';
 
 export const AUTHOR = {
   name: 'Biranchi Kulesika',
@@ -46,7 +46,7 @@ export const PERSONA_META = {
     ogImage: '/images/og-fallback-operator.png',
   },
   main: {
-    title: 'Biranchi',
+    title: 'Biranchi Kulesika',
     description: 'A personal ecosystem showcasing four personas: Builder, Operator, Thinker, and Wanderer',
     ogImage: '/images/og-main.png',
   },
