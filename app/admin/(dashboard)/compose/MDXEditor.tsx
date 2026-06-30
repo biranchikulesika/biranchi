@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FolderImage } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FileImage } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import MediaLibraryModal from './MediaLibraryModal';
 
@@ -211,7 +211,7 @@ export default function MDXEditor({
         {/* Media */}
         <div className="flex items-center gap-1">
           <ToolbarButton icon={ImageIcon} label="Insert Image via URL" onClick={() => insertSelfClosingComponent('Image', { path: 'path/to/image.jpg', alt: 'Description' })} />
-          <ToolbarButton icon={FolderImage} label="Media Library" onClick={() => setIsMediaLibraryOpen(true)} />
+          <ToolbarButton icon={FileImage} label="Media Library" onClick={() => setIsMediaLibraryOpen(true)} />
           <ToolbarButton icon={UploadCloud} label="Upload Image" onClick={() => fileInputRef.current?.click()} />
           <ToolbarButton icon={Video} label="Embed YouTube" onClick={() => insertSelfClosingComponent('YouTube', { id: 'dQw4w9WgXcQ' })} />
         </div>
