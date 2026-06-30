@@ -259,7 +259,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane (Form Area) */}
-      <div className={`w-full h-full md:w-[450px] lg:w-[500px] flex flex-col items-center px-6 pb-6 md:p-8 relative dark:bg-[#000000] bg-[#FFFFFF] transition-all duration-500 ${isInputFocused ? 'justify-start pt-[44px] md:justify-center md:pt-8' : 'justify-center pt-6'}`}>
+      <div className={`w-full h-full md:w-[450px] lg:w-[500px] flex flex-col items-center px-6 pb-6 md:p-8 relative dark:bg-[#000000] bg-[#FFFFFF] transition-all duration-500 ${isInputFocused ? 'justify-start pt-4 md:justify-center md:pt-8' : 'justify-center pt-6'}`}>
 
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -466,25 +466,35 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Footer */}
-        <div className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0">
-          <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
-          <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
-          <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
-          <Link href={getPersonaUrl('operator')} className="hover:underline">Operator</Link>
-          <Link href={getPersonaUrl('thinker')} className="hover:underline">Thinker</Link>
-          <Link href={getPersonaUrl('wanderer')} className="hover:underline">Wanderer</Link>
-          <Link href={getPersonaUrl('main', '/blogs')} className="hover:underline">Blog</Link>
-          <Link href={getPersonaUrl('main', '/fund')} className="hover:underline">Fund</Link>
-          <Link href={getPersonaUrl('main', '/terms')} className="hover:underline">Terms</Link>
-          <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
-          <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
-          <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
-          <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
+        <AnimatePresence>
+          {!isInputFocused && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0"
+            >
+              <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
+              <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
+              <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
+              <Link href={getPersonaUrl('operator')} className="hover:underline">Operator</Link>
+              <Link href={getPersonaUrl('thinker')} className="hover:underline">Thinker</Link>
+              <Link href={getPersonaUrl('wanderer')} className="hover:underline">Wanderer</Link>
+              <Link href={getPersonaUrl('main', '/blogs')} className="hover:underline">Blog</Link>
+              <Link href={getPersonaUrl('main', '/fund')} className="hover:underline">Fund</Link>
+              <Link href={getPersonaUrl('main', '/terms')} className="hover:underline">Terms</Link>
+              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
+              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
+              <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
 
-          <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
-            <span>© 2026 Biranchi Kulesika</span>
-          </div>
-        </div>
+              <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
+                <span>© 2026 Biranchi Kulesika</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>
