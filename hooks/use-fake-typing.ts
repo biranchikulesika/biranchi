@@ -30,9 +30,10 @@ export function useFakeTyping(
   const isIdleRef = useRef(false);
   const isFocusedRef = useRef(false);
   const isHoveringRef = useRef(false);
+  const isInitialLoadRef = useRef(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
-  const resetIdleTimerRef = useRef<() => void>(() => {});
+  const resetIdleTimerRef = useRef<(fromActivity?: boolean) => void>(() => {});
   const onFakeSubmitRef = useRef(onFakeSubmit);
 
   useEffect(() => {
@@ -109,20 +110,27 @@ export function useFakeTyping(
     typeNextChar();
   }, []);
 
-  const resetIdleTimer = useCallback(() => {
+  const resetIdleTimer = useCallback((fromActivity: boolean = false) => {
     stopFakeTyping();
+    
+    if (fromActivity) {
+      isInitialLoadRef.current = false;
+    }
     
     if (isFocusedRef.current || isHoveringRef.current || realInputsRef.current.email !== '' || realInputsRef.current.password !== '') {
       return; // Don't become idle if input is focused, hovered, or has text
     }
     
+    const delay = isInitialLoadRef.current ? 10000 : 6000;
+    
     timeoutRef.current = setTimeout(() => {
+      isInitialLoadRef.current = false;
       if (!isFocusedRef.current && !isHoveringRef.current && realInputsRef.current.email === '' && realInputsRef.current.password === '') {
         isIdleRef.current = true;
         setIsFakeTyping(true);
         startFakeSequence();
       }
-    }, 5000); // 5 seconds of inactivity
+    }, delay); // 10s initial, 6s subsequent
   }, [stopFakeTyping, startFakeSequence]);
 
   useEffect(() => {
@@ -143,11 +151,11 @@ export function useFakeTyping(
 
   const handleMouseLeave = useCallback(() => {
     isHoveringRef.current = false;
-    resetIdleTimer();
+    resetIdleTimer(true);
   }, [resetIdleTimer]);
 
   useEffect(() => {
-    const handleActivity = () => resetIdleTimer();
+    const handleActivity = () => resetIdleTimer(true);
     
     window.addEventListener('click', handleActivity);
     window.addEventListener('keydown', handleActivity);
@@ -170,7 +178,7 @@ export function useFakeTyping(
 
   const handleInputBlur = () => {
     isFocusedRef.current = false;
-    resetIdleTimer();
+    resetIdleTimer(true);
   };
 
   return {

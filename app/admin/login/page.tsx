@@ -34,6 +34,7 @@ export default function LoginPage() {
   const [invalidCredentials, setInvalidCredentials] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const searchParams = useSearchParams();
   const errorParam = searchParams?.get('error');
   const providerParam = searchParams?.get('provider');
@@ -199,18 +200,38 @@ export default function LoginPage() {
     <div className="h-[100dvh] w-full dark:text-[#F5F5F5] text-[#262626] font-sans selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white flex flex-col md:flex-row relative overflow-hidden select-none">
 
       {/* Return & Theme Toggle (Mobile & Desktop Absolute Positioning) */}
-      <div className="absolute top-6 left-6 md:top-8 md:left-8 z-50">
-        <Link
-          href={getPersonaUrl('main')}
-          className="hover:opacity-70 transition-opacity"
-        >
-          <Logo />
-        </Link>
-      </div>
+      <AnimatePresence>
+        {!isInputFocused && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-6 left-6 md:top-8 md:left-8 z-50"
+          >
+            <Link
+              href={getPersonaUrl('main')}
+              className="hover:opacity-70 transition-opacity"
+            >
+              <Logo />
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div className="absolute top-6 right-6 md:top-8 md:right-8 z-50">
-        <ThemeToggle />
-      </div>
+      <AnimatePresence>
+        {!isInputFocused && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-6 right-6 md:top-8 md:right-8 z-50"
+          >
+            <ThemeToggle />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Left Pane (Desktop Only) */}
       <div className="hidden md:flex flex-1 relative flex-col items-center justify-center border-r-[2px] dark:border-stone-800 border-stone-200 dark:bg-[#0A0A0A] bg-[#FAFAFA]">
@@ -283,8 +304,14 @@ export default function LoginPage() {
                       if (invalidCredentials) setInvalidCredentials(false);
                     }
                   }}
-                  onFocus={handleInputFocus}
-                  onBlur={handleEmailBlur}
+                  onFocus={(e) => {
+                    handleInputFocus();
+                    setIsInputFocused(true);
+                  }}
+                  onBlur={(e) => {
+                    handleEmailBlur();
+                    setIsInputFocused(false);
+                  }}
                   className={`block w-full rounded-md border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-11 pr-3 py-2.5 text-[15px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300 ${emailError ? 'border-red-500' : ''
                     }`}
                   placeholder={isFakeTyping ? "" : "Email ID"}
@@ -310,8 +337,14 @@ export default function LoginPage() {
                       if (invalidCredentials) setInvalidCredentials(false);
                     }
                   }}
-                  onFocus={handleInputFocus}
-                  onBlur={handleInputBlur}
+                  onFocus={(e) => {
+                    handleInputFocus();
+                    setIsInputFocused(true);
+                  }}
+                  onBlur={(e) => {
+                    handleInputBlur();
+                    setIsInputFocused(false);
+                  }}
                   className="block w-full rounded-md border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-11 pr-11 py-2.5 text-[15px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300"
                   placeholder={isFakeTyping ? "" : "Password"}
                 />
@@ -433,25 +466,35 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Footer */}
-        <div className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0">
-          <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
-          <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
-          <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
-          <Link href={getPersonaUrl('operator')} className="hover:underline">Operator</Link>
-          <Link href={getPersonaUrl('thinker')} className="hover:underline">Thinker</Link>
-          <Link href={getPersonaUrl('wanderer')} className="hover:underline">Wanderer</Link>
-          <Link href={getPersonaUrl('main', '/blogs')} className="hover:underline">Blog</Link>
-          <Link href={getPersonaUrl('main', '/fund')} className="hover:underline">Fund</Link>
-          <Link href={getPersonaUrl('main', '/terms')} className="hover:underline">Terms</Link>
-          <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
-          <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
-          <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
-          <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
+        <AnimatePresence>
+          {!isInputFocused && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0"
+            >
+              <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
+              <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
+              <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
+              <Link href={getPersonaUrl('operator')} className="hover:underline">Operator</Link>
+              <Link href={getPersonaUrl('thinker')} className="hover:underline">Thinker</Link>
+              <Link href={getPersonaUrl('wanderer')} className="hover:underline">Wanderer</Link>
+              <Link href={getPersonaUrl('main', '/blogs')} className="hover:underline">Blog</Link>
+              <Link href={getPersonaUrl('main', '/fund')} className="hover:underline">Fund</Link>
+              <Link href={getPersonaUrl('main', '/terms')} className="hover:underline">Terms</Link>
+              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
+              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
+              <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
 
-          <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
-            <span>© 2026 Biranchi Kulesika</span>
-          </div>
-        </div>
+              <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
+                <span>© 2026 Biranchi Kulesika</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>
