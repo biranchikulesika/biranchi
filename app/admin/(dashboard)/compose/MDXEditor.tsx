@@ -15,6 +15,7 @@ interface MDXEditorProps {
   onTitleChange: (title: string) => void;
   subtitle: string;
   onSubtitleChange: (subtitle: string) => void;
+  actionButtons?: React.ReactNode;
 }
 
 const componentLibrary = [
@@ -41,7 +42,8 @@ export default function MDXEditor({
   title,
   onTitleChange,
   subtitle,
-  onSubtitleChange
+  onSubtitleChange,
+  actionButtons
 }: MDXEditorProps) {
   const monaco = useMonaco();
   const [isUploading, setIsUploading] = useState(false);
@@ -261,6 +263,12 @@ export default function MDXEditor({
           placeholder="Subtitle"
           className="flex-1 bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 min-w-[150px] py-0 italic"
         />
+
+        {actionButtons && (
+          <div className="flex items-center gap-2 ml-4">
+            {actionButtons}
+          </div>
+        )}
       </div>
 
       <input

@@ -531,35 +531,6 @@ function ComposePageContent() {
   return (
     <div className={`w-full bg-[#0a0a0a] text-neutral-200 flex flex-col font-sans selection:bg-[#222] ${activeTab === 'preview' ? 'min-h-screen' : 'h-screen overflow-hidden'}`}>
 
-      {/* Top Navigation Bar */}
-      <div className="w-full h-12 bg-[#111] border-b border-[#222] flex items-center justify-between px-4 shrink-0 z-10">
-        <Link
-          href="/admin/library"
-          className="text-neutral-400 hover:text-white flex items-center gap-2 text-[13px] font-sans transition-colors bg-[#1a1a1a] px-3 py-1.5 rounded-md border border-[#333] hover:border-[#555]"
-          title="Back to Library"
-        >
-          <Files className="w-4 h-4" strokeWidth={1.5} /> Library
-        </Link>
-
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setActiveTab(prev => prev === 'composer' ? 'preview' : 'composer')}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-sans text-neutral-300 hover:text-white hover:bg-[#333] transition-colors border border-transparent hover:border-[#444]"
-            title={activeTab === 'preview' ? 'Return to Editor' : 'Open Preview'}
-          >
-            {activeTab === 'preview' ? <><Undo className="w-4 h-4" strokeWidth={1.5} /> Editor</> : <><Eye className="w-4 h-4" strokeWidth={1.5} /> Preview</>}
-          </button>
-          <button
-            onClick={() => setIsPublishModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-1.5 rounded-md text-[13px] font-medium font-sans bg-[#ff7700] text-white hover:bg-[#e66a00] transition-colors shadow-sm"
-            title="Publish Settings"
-          >
-            <CloudUpload className="w-4 h-4" strokeWidth={1.5} /> Publish
-          </button>
-        </div>
-      </div>
-
       {/* Main Row */}
       <div className="flex-1 min-h-0 w-full flex flex-row">
         
@@ -597,11 +568,45 @@ function ComposePageContent() {
                       }}
                       subtitle={formData.subtitle}
                       onSubtitleChange={(subtitle) => setFormData((prev: any) => ({ ...prev, subtitle }))}
+                      actionButtons={
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setActiveTab('preview')}
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-sans text-neutral-300 hover:text-white hover:bg-[#333] transition-colors border border-transparent hover:border-[#444]"
+                            title="Open Preview"
+                          >
+                            <Eye className="w-3.5 h-3.5" strokeWidth={1.5} /> Preview
+                          </button>
+                          <button
+                            onClick={() => setIsPublishModalOpen(true)}
+                            className="flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-medium font-sans bg-[#ff7700] text-white hover:bg-[#e66a00] transition-colors shadow-sm"
+                            title="Publish Settings"
+                          >
+                            <CloudUpload className="w-3.5 h-3.5" strokeWidth={1.5} /> Publish
+                          </button>
+                        </>
+                      }
                     />
                   </div>
                 </main>
               ) : (
-                <div className="w-full h-full min-h-screen bg-transparent">
+                <div className="w-full h-full min-h-screen bg-transparent relative">
+                    <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+                       <button
+                         type="button"
+                         onClick={() => setActiveTab('composer')}
+                         className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-sans bg-[#111] border border-[#333] text-neutral-300 hover:text-white hover:bg-[#222] transition-colors shadow-lg"
+                       >
+                         <Undo className="w-4 h-4" strokeWidth={1.5} /> Editor
+                       </button>
+                       <button
+                         onClick={() => setIsPublishModalOpen(true)}
+                         className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-medium font-sans bg-[#ff7700] text-white hover:bg-[#e66a00] transition-colors shadow-lg"
+                       >
+                         <CloudUpload className="w-4 h-4" strokeWidth={1.5} /> Publish
+                       </button>
+                    </div>
                     <PostRenderer
                       post={{
                         id: currentPostId || 'preview-draft',
