@@ -12,6 +12,7 @@ interface MDXEditorProps {
   onChange: (content: string) => void;
   className?: string;
   persona?: string;
+  onPersonaChange?: (persona: string) => void;
   title: string;
   onTitleChange: (title: string) => void;
   subtitle: string;
@@ -44,7 +45,8 @@ export default function MDXEditor({
   onTitleChange,
   subtitle,
   onSubtitleChange,
-  actionButtons
+  actionButtons,
+  onPersonaChange
 }: MDXEditorProps) {
   const monaco = useMonaco();
   const [isUploading, setIsUploading] = useState(false);
@@ -304,7 +306,7 @@ export default function MDXEditor({
           <div className="flex items-center h-[26px] bg-[#1e1e1e] px-4 text-[#cccccc] shrink-0 text-[12px] font-sans shadow-[0_1px_2px_rgba(0,0,0,0.2)] z-10 relative">
             <span className="opacity-60 font-mono">biranchi</span>
             <span className="mx-2 opacity-40">›</span>
-            <span className="opacity-60 font-mono">admin</span>
+            <span className="opacity-60 font-mono">{persona}</span>
             <span className="mx-2 opacity-40">›</span>
             <span className="opacity-60 font-mono">compose</span>
             <span className="mx-2 opacity-40">›</span>

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Plus, X, Image as ImageIcon, GripVertical, Check, RefreshCw,
   Trash2, UploadCloud, Send, Undo, Redo, MessageSquare, List, Settings,
-  Files, Eye, CloudUpload
+  Files, Eye, CloudUpload, ChevronUp
 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import { getPosts, createPost, updatePost, checkSlugExists } from '@/app/admin/actions/posts.actions';
@@ -147,6 +147,7 @@ function ComposePageContent() {
   const [isCustomizingUrl, setIsCustomizingUrl] = useState(false);
   const [customUrlVal, setCustomUrlVal] = useState('');
   const [urlValidationError, setUrlValidationError] = useState<string | null>(null);
+  const [isPersonaMenuOpen, setIsPersonaMenuOpen] = useState(false);
 
   // MDX Preview State
   const [compiledMdx, setCompiledMdx] = useState<any>(null);
@@ -559,6 +560,7 @@ function ComposePageContent() {
                       content={richTextContent} 
                       onChange={setRichTextContent} 
                       persona={formData.persona}
+                      onPersonaChange={(persona) => setFormData((prev: any) => ({ ...prev, persona }))}
                       title={formData.title}
                       onTitleChange={(title) => {
                         setFormData((prev: any) => ({ ...prev, title }));
@@ -646,10 +648,39 @@ function ComposePageContent() {
             <Check className="w-3 h-3" />
             {saveStatus}
           </span>
-          <span className="flex items-center gap-1.5 uppercase hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">
-            <div className={`w-2 h-2 rounded-full ${activePersonaParams.color.replace('text-', 'bg-')}`} />
-            {personaDisplayLabel[formData.persona] || 'Writing'}
-          </span>
+          <div className="relative">
+            <button 
+              onClick={() => setIsPersonaMenuOpen(!isPersonaMenuOpen)}
+              className="flex items-center gap-1.5 uppercase hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors outline-none"
+            >
+              <div className={`w-2 h-2 rounded-full ${activePersonaParams.color.replace('text-', 'bg-')}`} />
+              {personaDisplayLabel[formData.persona] || 'Writing'}
+              <ChevronUp className="w-3 h-3 ml-0.5 opacity-70" />
+            </button>
+
+            {isPersonaMenuOpen && (
+              <div className="absolute bottom-full left-0 mb-1 w-48 bg-[#252526] border border-[#454545] shadow-lg rounded-md py-1 z-50 text-[#cccccc]">
+                {Object.keys(personaInfoMap).map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setFormData((prev: any) => ({ ...prev, persona: key }));
+                      setIsPersonaMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 hover:bg-[#094771] hover:text-white transition-colors flex items-center gap-2 ${formData.persona === key ? 'bg-[#37373d]' : ''}`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${personaInfoMap[key].color.replace('text-', 'bg-')}`} />
+                    <span className="uppercase text-[10px] tracking-wider">{key}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {/* Click away overlay */}
+            {isPersonaMenuOpen && (
+              <div className="fixed inset-0 z-40" onClick={() => setIsPersonaMenuOpen(false)} />
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <span className="font-mono hover:bg-[#ffffff22] px-1 cursor-pointer transition-colors">{getWordCount()} words</span>
