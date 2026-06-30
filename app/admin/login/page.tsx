@@ -263,17 +263,17 @@ export default function LoginPage() {
 
         <motion.div
           initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          animate={{ y: isInputFocused ? -20 : 0, opacity: 1 }}
+          transition={{ duration: isInputFocused ? 0.3 : 0.8, delay: isInputFocused ? 0 : 0.2 }}
           className="w-full max-w-[350px] flex flex-col items-center z-10"
         >
           {/* Main Login Box */}
           <div
-            className="w-full flex flex-col items-center mb-2 md:mb-3 pt-4 md:pt-10"
+            className={`w-full flex flex-col items-center transition-all duration-300 ${isInputFocused ? 'mb-1 md:mb-2 pt-0 md:pt-2' : 'mb-2 md:mb-3 pt-4 md:pt-10'}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <h1 className="text-3xl md:text-5xl font-serif font-light tracking-tight md:tracking-tighter mb-6 md:mb-10 dark:text-white text-black whitespace-nowrap">
+            <h1 className={`text-3xl md:text-5xl font-serif font-light tracking-tight md:tracking-tighter dark:text-white text-black whitespace-nowrap transition-all duration-300 ${isInputFocused ? 'mb-3 md:mb-6' : 'mb-6 md:mb-10'}`}>
               Biranch
               <span className="relative inline-flex flex-col items-center">
                 <span className="text-transparent">i</span>
@@ -466,35 +466,25 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Footer */}
-        <AnimatePresence>
-          {!isInputFocused && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.2 }}
-              className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0"
-            >
-              <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
-              <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
-              <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
-              <Link href={getPersonaUrl('operator')} className="hover:underline">Operator</Link>
-              <Link href={getPersonaUrl('thinker')} className="hover:underline">Thinker</Link>
-              <Link href={getPersonaUrl('wanderer')} className="hover:underline">Wanderer</Link>
-              <Link href={getPersonaUrl('main', '/blogs')} className="hover:underline">Blog</Link>
-              <Link href={getPersonaUrl('main', '/fund')} className="hover:underline">Fund</Link>
-              <Link href={getPersonaUrl('main', '/terms')} className="hover:underline">Terms</Link>
-              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
-              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
-              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
-              <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
+        <div className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0">
+          <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
+          <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
+          <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
+          <Link href={getPersonaUrl('operator')} className="hover:underline">Operator</Link>
+          <Link href={getPersonaUrl('thinker')} className="hover:underline">Thinker</Link>
+          <Link href={getPersonaUrl('wanderer')} className="hover:underline">Wanderer</Link>
+          <Link href={getPersonaUrl('main', '/blogs')} className="hover:underline">Blog</Link>
+          <Link href={getPersonaUrl('main', '/fund')} className="hover:underline">Fund</Link>
+          <Link href={getPersonaUrl('main', '/terms')} className="hover:underline">Terms</Link>
+          <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
+          <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
+          <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
+          <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
 
-              <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
-                <span>© 2026 Biranchi Kulesika</span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
+            <span>© 2026 Biranchi Kulesika</span>
+          </div>
+        </div>
 
       </div>
     </div>
