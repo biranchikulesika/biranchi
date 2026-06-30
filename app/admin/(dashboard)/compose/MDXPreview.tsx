@@ -1,19 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MDXRenderer } from '@/lib/mdx/renderer';
 import { Loader2 } from 'lucide-react';
-// Import the compile utility from a server action if needed, or we can compile on client
-// For now, we will do a simple client-side fetch to a local api route, or use an action
 import { compileMDXAction } from './actions'; 
+import PostRenderer from '@/components/post-renderer/PostRenderer';
 
 interface MDXPreviewProps {
   content: string;
   persona?: string;
+  title?: string;
+  subtitle?: string;
   className?: string;
 }
 
-export default function MDXPreview({ content, persona = 'builder', className = '' }: MDXPreviewProps) {
+export default function MDXPreview({ content, persona = 'builder', title = '', subtitle = '', className = '' }: MDXPreviewProps) {
   const [compiled, setCompiled] = useState<any>(null);
   const [isCompiling, setIsCompiling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,34 +48,57 @@ export default function MDXPreview({ content, persona = 'builder', className = '
 
   // Determine styles based on persona similar to PostRenderer
   const getProseClass = (p: string) => {
-    if (p === 'wanderer') return 'prose-stone font-serif bg-background text-foreground';
-    if (p === 'thinker') return 'prose-stone font-serif bg-background text-foreground';
-    if (p === 'builder') return 'prose-neutral font-sans bg-background text-foreground prose-invert';
-    if (p === 'operator') return 'prose-emerald font-mono bg-background text-foreground';
-    return 'prose-stone font-serif bg-background text-foreground';
+    if (p === 'wanderer') return 'bg-background text-foreground';
+    if (p === 'thinker') return 'bg-background text-foreground';
+    if (p === 'builder') return 'bg-background text-foreground';
+    if (p === 'operator') return 'bg-background text-foreground';
+    return 'bg-background text-foreground';
+  };
+
+  const getWordCount = () => {
+    if (!content) return 0;
+    const cleanText = content.replace(/<[^>]*>/g, '').trim();
+    if (!cleanText) return 0;
+    return cleanText.split(/\s+/).filter(Boolean).length;
+  };
+
+  const readingTime = Math.max(1, Math.ceil(getWordCount() / 220));
+
+  const postMock = {
+    title: title || 'Untitled Post',
+    subtitle: subtitle || '',
+    persona: persona,
+    publishedAt: new Date().toISOString(),
+    readingTime: readingTime,
+    content: content,
+    slug: 'preview-draft'
   };
 
   return (
-    <div className={`relative h-[600px] overflow-y-auto border border-border rounded-lg bg-background p-8 ${className}`}>
+    <div className={`relative h-full overflow-hidden rounded-lg bg-background ${className}`}>
       {isCompiling && (
-        <div className="absolute top-4 right-4 text-primary">
+        <div className="absolute top-4 right-4 text-primary z-50 bg-background/50 p-1 rounded-full backdrop-blur-sm">
           <Loader2 className="w-5 h-5 animate-spin" />
         </div>
       )}
       
       {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg font-mono text-sm mb-4">
+        <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg font-mono text-sm m-4 z-50 relative">
           Error: {error}
         </div>
       )}
 
-      <div className={`prose max-w-none ${getProseClass(persona)} leading-[1.8]`}>
-        {compiled ? (
-          <MDXRenderer source={compiled} />
-        ) : (
-          !error && <div className="text-muted-foreground italic font-sans text-sm">Start typing to see preview...</div>
-        )}
-      </div>
+      {compiled ? (
+        <PostRenderer 
+          postOnly 
+          post={postMock} 
+          slug="preview-draft" 
+          allPosts={[]} 
+          compiledMdx={compiled} 
+        />
+      ) : (
+        !error && <div className="text-muted-foreground italic font-sans text-sm p-8">Start typing to see preview...</div>
+      )}
     </div>
   );
 }

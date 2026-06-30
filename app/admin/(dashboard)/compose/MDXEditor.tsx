@@ -388,7 +388,9 @@ export default function MDXEditor({
                 <MDXPreview 
                   content={content} 
                   persona={persona} 
-                  className="!h-full !border-none !rounded-none !m-0 !p-6"
+                  title={title}
+                  subtitle={subtitle}
+                  className="!h-full !border-none !rounded-none !m-0"
                 />
               </div>
             )}

@@ -75,9 +75,10 @@ export interface PostRendererProps {
   allPosts: any[];
   fallbackPersona?: string;
   compiledMdx?: any;
+  postOnly?: boolean;
 }
 
-export default function PostRenderer({ post, slug, allPosts, fallbackPersona, compiledMdx }: PostRendererProps) {
+export default function PostRenderer({ post, slug, allPosts, fallbackPersona, compiledMdx, postOnly }: PostRendererProps) {
   const [copied, setCopied] = useState(false);
   const [, setScrollPercent] = useState(0);
   const [, setShowToTop] = useState(false);
@@ -980,6 +981,19 @@ export default function PostRenderer({ post, slug, allPosts, fallbackPersona, co
   const CurrentFooter = { thinker: FooterThinker, builder: FooterBuilder, operator: FooterOperator, wanderer: FooterWanderer, main: FooterMain }[p] || FooterMain;
   const personaCapitalized = p.charAt(0).toUpperCase() + p.slice(1);
   const mobileNavBg = "bg-background";
+
+  if (postOnly) {
+    return (
+      <div className={`w-full h-full overflow-y-auto ${theme.wrapper} p-6`}>
+        <article className="flex w-full max-w-3xl mx-auto flex-col">
+          {renderArticleHeader()}
+          {renderArticleBody()}
+          {renderContextMarker()}
+          {renderShareSection()}
+        </article>
+      </div>
+    );
+  }
 
   return (
     <motion.div
