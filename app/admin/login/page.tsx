@@ -196,7 +196,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen dark:text-[#F5F5F5] text-[#262626] font-sans selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white flex flex-col md:flex-row relative overflow-hidden select-none">
+    <div className="h-[100dvh] w-full dark:text-[#F5F5F5] text-[#262626] font-sans selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white flex flex-col md:flex-row relative overflow-hidden select-none">
 
       {/* Return & Theme Toggle (Mobile & Desktop Absolute Positioning) */}
       <div className="absolute top-6 left-6 md:top-8 md:left-8 z-50">
@@ -238,21 +238,21 @@ export default function LoginPage() {
       </div>
 
       {/* Right Pane (Form Area) */}
-      <div className="w-full md:w-[450px] lg:w-[500px] flex flex-col items-center justify-center p-8 min-h-screen relative dark:bg-[#000000] bg-[#FFFFFF] pb-32 md:pb-8">
+      <div className="w-full h-full md:w-[450px] lg:w-[500px] flex flex-col items-center justify-center p-6 md:p-8 relative dark:bg-[#000000] bg-[#FFFFFF]">
 
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="w-full max-w-[350px] flex flex-col items-center mt-12 md:mt-0"
+          className="w-full max-w-[350px] flex flex-col items-center z-10"
         >
           {/* Main Login Box */}
           <div
-            className="w-full flex flex-col items-center mb-3 pt-10"
+            className="w-full flex flex-col items-center mb-2 md:mb-3 pt-4 md:pt-10"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <h1 className="text-4xl md:text-5xl font-serif font-light tracking-tight md:tracking-tighter mb-10 dark:text-white text-black whitespace-nowrap">
+            <h1 className="text-3xl md:text-5xl font-serif font-light tracking-tight md:tracking-tighter mb-6 md:mb-10 dark:text-white text-black whitespace-nowrap">
               Biranch
               <span className="relative inline-flex flex-col items-center">
                 <span className="text-transparent">i</span>
@@ -376,48 +376,48 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="flex w-full items-center my-6">
+              <div className="flex w-full items-center my-4 md:my-6">
                 <div className="flex-grow border-t border-stone-200 dark:border-stone-800"></div>
                 <span className="mx-4 text-[13px] text-[#737373] dark:text-[#A8A8A8]">or continue with</span>
                 <div className="flex-grow border-t border-stone-200 dark:border-stone-800"></div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 w-full">
+              <div className="grid grid-cols-3 gap-2 md:gap-3 w-full">
                 <button
                   type="button"
                   onClick={() => handleOAuthLogin('google')}
                   disabled={loading}
-                  className="flex flex-col items-center justify-center py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
+                  className="flex flex-col items-center justify-center py-2 md:py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
                 >
-                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[24px] w-[24px] mb-2">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[20px] w-[20px] md:h-[24px] md:w-[24px] mb-1 md:mb-2">
                     <path d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.28027 6.60998L5.27028 9.70498C6.21525 6.86002 8.87028 4.75 12.0003 4.75Z" fill="#EA4335" />
                     <path d="M23.49 12.275C23.49 11.49 23.415 10.73 23.3 10H12V14.51H18.47C18.18 15.99 17.34 17.25 16.08 18.1L19.945 21.1C22.2 19.01 23.49 15.92 23.49 12.275Z" fill="#4285F4" />
                     <path d="M5.26498 14.2949C5.02498 13.5699 4.88501 12.7999 4.88501 11.9999C4.88501 11.1999 5.01998 10.4299 5.26498 9.7049L1.275 6.60986C0.46 8.22986 0 10.0599 0 11.9999C0 13.9399 0.46 15.7699 1.28 17.3899L5.26498 14.2949Z" fill="#FBBC05" />
                     <path d="M12.0004 24.0001C15.2404 24.0001 17.9654 22.935 19.9454 21.095L16.0804 18.095C15.0054 18.82 13.6204 19.245 12.0004 19.245C8.8704 19.245 6.21537 17.135 5.26538 14.29L1.27539 17.385C3.25539 21.31 7.3104 24.0001 12.0004 24.0001Z" fill="#34A853" />
                   </svg>
-                  <span className="text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">Google</span>
+                  <span className="text-[12px] md:text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">Google</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleOAuthLogin('github')}
                   disabled={loading}
-                  className="flex flex-col items-center justify-center py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
+                  className="flex flex-col items-center justify-center py-2 md:py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
                 >
-                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[24px] w-[24px] mb-2 fill-[#24292F] dark:fill-[#FFFFFF]">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[20px] w-[20px] md:h-[24px] md:w-[24px] mb-1 md:mb-2 fill-[#24292F] dark:fill-[#FFFFFF]">
                     <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
                   </svg>
-                  <span className="text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">GitHub</span>
+                  <span className="text-[12px] md:text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">GitHub</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handlePasskeyLogin}
                   disabled={loading}
-                  className="flex flex-col items-center justify-center py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
+                  className="flex flex-col items-center justify-center py-2 md:py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
                 >
-                  <KeyRound className="h-[24px] w-[24px] mb-2 text-stone-700 dark:text-stone-300" />
-                  <span className="text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">Passkey</span>
+                  <KeyRound className="h-[20px] w-[20px] md:h-[24px] md:w-[24px] mb-1 md:mb-2 text-stone-700 dark:text-stone-300" />
+                  <span className="text-[12px] md:text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">Passkey</span>
                 </button>
               </div>
 
@@ -433,7 +433,7 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Footer */}
-        <div className="absolute bottom-6 w-full flex flex-wrap justify-center gap-x-4 gap-y-2 px-8 text-[12px] text-[#737373] dark:text-[#A8A8A8]">
+        <div className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0">
           <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
           <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
           <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
@@ -448,7 +448,7 @@ export default function LoginPage() {
           <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
           <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
 
-          <div className="w-full flex justify-center gap-4 mt-2">
+          <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
             <span>© 2026 Biranchi Kulesika</span>
           </div>
         </div>
