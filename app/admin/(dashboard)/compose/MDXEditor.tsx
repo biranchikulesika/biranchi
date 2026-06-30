@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FileImage } from 'lucide-react';
+import { Bold, Italic, Link as LinkIcon, Image as ImageIcon, Code, Type, LayoutTemplate, Quote, TableProperties, Video, X, UploadCloud, FileImage, Search, Heading1, Heading2, Heading3, List, ListOrdered, Minus, Link2 } from 'lucide-react';
 import { uploadImage } from '@/lib/supabase/storage';
 import MediaLibraryModal from './MediaLibraryModal';
 
@@ -17,6 +17,22 @@ interface MDXEditorProps {
   onSubtitleChange: (subtitle: string) => void;
 }
 
+const componentLibrary = [
+  { name: 'Callout', tag: 'Callout', props: { type: 'info' }, icon: Type, description: 'Highlighted info box', selfClosing: false },
+  { name: 'YouTube', tag: 'YouTube', props: { id: 'dQw4w9WgXcQ' }, icon: Video, description: 'Embed a YouTube video', selfClosing: true },
+  { name: 'Image', tag: 'Image', props: { path: 'path/to/image.jpg', alt: 'Description' }, icon: ImageIcon, description: 'MDX native image', selfClosing: true },
+  { name: 'Table', tag: 'table', props: {}, icon: TableProperties, description: 'Standard HTML table', selfClosing: false },
+  { name: 'Blockquote', tag: 'blockquote', props: {}, icon: Quote, description: 'Standard blockquote', selfClosing: false },
+  { name: 'Pre', tag: 'pre', props: {}, icon: Code, description: 'Code block wrapper', selfClosing: false },
+  { name: 'Heading 1', tag: 'h1', props: {}, icon: Heading1, description: 'Main page heading', selfClosing: false },
+  { name: 'Heading 2', tag: 'h2', props: {}, icon: Heading2, description: 'Section heading', selfClosing: false },
+  { name: 'Heading 3', tag: 'h3', props: {}, icon: Heading3, description: 'Subsection heading', selfClosing: false },
+  { name: 'Unordered List', tag: 'ul', props: {}, icon: List, description: 'Bulleted list', selfClosing: false },
+  { name: 'Ordered List', tag: 'ol', props: {}, icon: ListOrdered, description: 'Numbered list', selfClosing: false },
+  { name: 'Horizontal Rule', tag: 'hr', props: {}, icon: Minus, description: 'Thematic break', selfClosing: true },
+  { name: 'Link', tag: 'a', props: { href: 'https://example.com' }, icon: Link2, description: 'Hyperlink', selfClosing: false },
+];
+
 export default function MDXEditor({ 
   content, 
   onChange, 
@@ -30,6 +46,7 @@ export default function MDXEditor({
   const monaco = useMonaco();
   const [isUploading, setIsUploading] = useState(false);
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<any>(null);
 
@@ -148,6 +165,8 @@ export default function MDXEditor({
       }
     }
   };
+
+  const filteredComponents = componentLibrary.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const displayTabName = (title || 'untitled').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.mdx';
 
@@ -292,6 +311,52 @@ export default function MDXEditor({
                 formatOnPaste: true,
               }}
             />
+          </div>
+        </div>
+
+        {/* Right Sidebar Component Library */}
+        <div className="w-72 border-l border-[#222] bg-[#0a0a0a] flex flex-col h-full shrink-0">
+          <div className="p-3 border-b border-[#222] bg-[#111]">
+            <h3 className="text-[11px] font-sans uppercase tracking-widest text-neutral-400 mb-3 flex items-center gap-2">
+              <LayoutTemplate className="w-3.5 h-3.5" /> Component Library
+            </h3>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+              <input 
+                type="text" 
+                placeholder="Search components..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1a1a1a] border border-[#222] rounded-md py-1.5 pl-9 pr-3 text-xs font-sans text-neutral-300 focus:outline-none focus:border-[#555] transition-colors"
+              />
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
+            <div className="space-y-1">
+              {filteredComponents.length > 0 ? filteredComponents.map((comp) => {
+                const Icon = comp.icon;
+                return (
+                  <button
+                    key={comp.name}
+                    onClick={() => comp.selfClosing ? insertSelfClosingComponent(comp.tag, comp.props) : insertComponent(comp.tag, comp.props)}
+                    className="w-full text-left p-2 rounded-md hover:bg-[#1a1a1a] transition-colors flex items-start gap-3 group"
+                  >
+                    <div className="p-1.5 bg-[#111] border border-[#222] rounded mt-0.5 group-hover:border-[#333] transition-colors">
+                      <Icon className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium font-sans text-neutral-300 group-hover:text-white transition-colors">{comp.name}</div>
+                      <div className="text-[11px] font-sans text-neutral-500 truncate mt-0.5">{comp.description}</div>
+                    </div>
+                  </button>
+                );
+              }) : (
+                <div className="p-4 text-center text-xs font-sans text-neutral-500">
+                  No components found.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
