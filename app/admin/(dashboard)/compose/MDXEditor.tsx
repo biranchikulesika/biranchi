@@ -246,32 +246,6 @@ export default function MDXEditor({
         )}
       </div>
 
-      {/* VS Code Breadcrumbs */}
-      <div className="flex items-center h-[26px] bg-[#1e1e1e] px-4 text-[#cccccc] shrink-0 text-[12px] font-sans shadow-[0_1px_2px_rgba(0,0,0,0.2)] z-10 relative">
-        <span className="opacity-60 font-mono">biranchi</span>
-        <span className="mx-2 opacity-40">›</span>
-        <span className="opacity-60 font-mono">admin</span>
-        <span className="mx-2 opacity-40">›</span>
-        <span className="opacity-60 font-mono">compose</span>
-        <span className="mx-2 opacity-40">›</span>
-        
-        <input 
-          type="text" 
-          value={title} 
-          onChange={(e) => onTitleChange(e.target.value)} 
-          placeholder="Post Title"
-          className="bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 w-32 lg:w-48 shrink-0 py-0"
-        />
-        <span className="mx-2 opacity-40">›</span>
-        <input 
-          type="text"
-          value={subtitle}
-          onChange={(e) => onSubtitleChange(e.target.value)}
-          placeholder="Subtitle"
-          className="flex-1 bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 min-w-[150px] py-0 italic"
-        />
-      </div>
-
       <input
         type="file"
         ref={fileInputRef}
@@ -296,6 +270,33 @@ export default function MDXEditor({
       <div className="flex flex-1 min-h-0 relative">
         {/* Editor Area */}
         <div className="flex-1 min-w-0 flex flex-col relative h-full">
+          
+          {/* VS Code Breadcrumbs */}
+          <div className="flex items-center h-[26px] bg-[#1e1e1e] px-4 text-[#cccccc] shrink-0 text-[12px] font-sans shadow-[0_1px_2px_rgba(0,0,0,0.2)] z-10 relative">
+            <span className="opacity-60 font-mono">biranchi</span>
+            <span className="mx-2 opacity-40">›</span>
+            <span className="opacity-60 font-mono">admin</span>
+            <span className="mx-2 opacity-40">›</span>
+            <span className="opacity-60 font-mono">compose</span>
+            <span className="mx-2 opacity-40">›</span>
+            
+            <input 
+              type="text" 
+              value={title} 
+              onChange={(e) => onTitleChange(e.target.value)} 
+              placeholder="Post Title"
+              className="bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 w-32 lg:w-48 shrink-0 py-0"
+            />
+            <span className="mx-2 opacity-40">›</span>
+            <input 
+              type="text"
+              value={subtitle}
+              onChange={(e) => onSubtitleChange(e.target.value)}
+              placeholder="Subtitle"
+              className="flex-1 bg-transparent border-none outline-none text-[#cccccc] placeholder-[#666] focus:ring-0 min-w-[150px] py-0 italic"
+            />
+          </div>
+
           <div className="flex-1 relative">
             <Editor
               height="100%"
