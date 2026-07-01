@@ -8,6 +8,7 @@
 // Which repos to monitor
 const WATCHED_REPOS = [
   { owner: 'biranchikulesika', repo: '4life' },
+{ owner: 'biranchikulesika', repo: 'linkinbio' },
   { owner: 'biranchikulesika', repo: 'pracg' },
   { owner: 'biranchikulesika', repo: 'biranchi' },
   { owner: 'biranchikulesika', repo: 'velcroso' },
