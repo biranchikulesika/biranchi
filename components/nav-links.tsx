@@ -6,11 +6,24 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { getPersonaUrl } from '@/lib/utils';
+import { createAuthClient } from '@/lib/supabase/auth-client';
 
 export function DesktopNav({ persona }: { persona?: 'main' | 'builder' | 'operator' | 'thinker' | 'wanderer' }) {
   const pathname = usePathname();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   let currentPersona: 'main' | 'builder' | 'operator' | 'thinker' | 'wanderer' = persona || 'main';
   
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createAuthClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsAuthenticated(true);
+      }
+    };
+    checkAuth();
+  }, []);
+
   if (!persona) {
     if (pathname.startsWith('/builder')) currentPersona = 'builder';
     else if (pathname.startsWith('/operator')) currentPersona = 'operator';
@@ -34,15 +47,22 @@ export function DesktopNav({ persona }: { persona?: 'main' | 'builder' | 'operat
           {link.name}
         </Link>
       ))}
-      <Link href={getPersonaUrl('main', '/fund')} className="opacity-80 hover:opacity-100 transition-all border border-current/30 px-4 py-1.5 hover:bg-current/5">
-        Fund
-      </Link>
+      {isAuthenticated ? (
+        <Link href="/admin" className="opacity-80 hover:opacity-100 transition-all border border-current/30 px-4 py-1.5 hover:bg-current/5">
+          Admin
+        </Link>
+      ) : (
+        <Link href={getPersonaUrl('main', '/fund')} className="opacity-80 hover:opacity-100 transition-all border border-current/30 px-4 py-1.5 hover:bg-current/5">
+          Fund
+        </Link>
+      )}
     </nav>
   );
 }
 
 export function MobileNav({ mobileBgColor, persona }: { mobileBgColor: string, persona?: 'main' | 'builder' | 'operator' | 'thinker' | 'wanderer' }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const pathname = usePathname();
@@ -63,6 +83,17 @@ export function MobileNav({ mobileBgColor, persona }: { mobileBgColor: string, p
     { name: 'Blogs', path: blogPath },
     { name: 'Newsletter', path: getPersonaUrl(currentPersona, '/newsletter') },
   ];
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createAuthClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsAuthenticated(true);
+      }
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -109,13 +140,23 @@ export function MobileNav({ mobileBgColor, persona }: { mobileBgColor: string, p
               </Link>
             ))}
             <div className={`my-1 border-t border-border`}></div>
-            <Link
-              href={getPersonaUrl('main', '/fund')}
-              onClick={() => setIsOpen(false)}
-              className={`mx-2 my-2 px-4 py-2 text-[10px] tracking-[0.2em] uppercase transition-colors text-center rounded opacity-80 hover:opacity-100 border border-border hover:bg-muted font-light`}
-            >
-              Fund
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                href="/admin"
+                onClick={() => setIsOpen(false)}
+                className={`mx-2 my-2 px-4 py-2 text-[10px] tracking-[0.2em] uppercase transition-colors text-center rounded opacity-80 hover:opacity-100 border border-border hover:bg-muted font-light`}
+              >
+                Admin
+              </Link>
+            ) : (
+              <Link
+                href={getPersonaUrl('main', '/fund')}
+                onClick={() => setIsOpen(false)}
+                className={`mx-2 my-2 px-4 py-2 text-[10px] tracking-[0.2em] uppercase transition-colors text-center rounded opacity-80 hover:opacity-100 border border-border hover:bg-muted font-light`}
+              >
+                Fund
+              </Link>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

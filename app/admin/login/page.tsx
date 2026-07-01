@@ -1,20 +1,27 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
-import { motion } from 'motion/react';
-import { Loader2, AtSign, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Loader2, KeyRound, AtSign, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { getPersonaUrl } from '@/lib/utils';
+import { SOCIAL_LINKS } from '@/lib/config/socials';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { DesktopNav, MobileNav } from '@/components/nav-links';
-import { PersonaSearch } from '@/components/persona-search';
 import { ParticleCanvas } from '@/components/ui/particle-canvas';
+import { Logo } from '@/components/ui/logo';
 import { useFakeTyping } from '@/hooks/use-fake-typing';
 import { useAuthSequence } from '@/hooks/use-auth-sequence';
 import { authenticateUser } from './actions';
 
+const QUOTES = [
+  "People have so many good things to say about you. Just you have to die first.",
+  "People are not thinking about you. They are busy thinking about what you think of them.",
+  "You cannot make everyone happy. Be clear about whom you're trying to impress.",
+  "You can lie to everyone, but never to yourself.",
+  "Your decision should come from a point of awareness, not from ignorance."
+];
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -22,6 +29,38 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [failedAttemptText, setFailedAttemptText] = useState("I'm Biranchi");
+  const [invalidCredentials, setInvalidCredentials] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const searchParams = useSearchParams();
+  const errorParam = searchParams?.get('error');
+  const providerParam = searchParams?.get('provider');
+
+  useEffect(() => {
+    if (errorParam === 'not_registered') {
+      const providerName = providerParam
+        ? (providerParam.toLowerCase() === 'github' ? 'GitHub' : providerParam.charAt(0).toUpperCase() + providerParam.slice(1))
+        : 'OAuth';
+      setEmailError(`We could not find any account associated with your ${providerName} account.`);
+    }
+  }, [errorParam, providerParam]);
+
+  useEffect(() => {
+    setQuoteIndex(Math.floor(Math.random() * QUOTES.length));
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (invalidCredentials) {
+      const timer = setTimeout(() => {
+        setInvalidCredentials(false);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [invalidCredentials]);
 
   const router = useRouter();
 
@@ -38,7 +77,7 @@ export default function LoginPage() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 3000);
   };
 
   const {
@@ -69,7 +108,14 @@ export default function LoginPage() {
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        experimental: {
+          passkey: true,
+        },
+      },
+    }
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,263 +123,380 @@ export default function LoginPage() {
     setLoading(true);
     clearStatus();
 
-    // Fast path: Immediately attempt to authenticate.
     const { error: signInError } = await authenticateUser(email, password);
 
     if (signInError) {
-      // Drama path for attackers/failures: Waste their time with fake verifying sequences
       await runVerificationSequence();
-      
+
+      const texts = ["I'm Biranchi", "Yes, I'm Biranchi", "I love Biranchi"];
+      setFailedAttemptText(texts[Math.floor(Math.random() * texts.length)]);
+      setFailedAttempts(prev => prev + 1);
+      setInvalidCredentials(true);
+
       setLoading(false);
-      setPassword('');
-      showFailureMessage();
-      setTimeout(() => {
-        document.getElementById('password')?.focus();
-      }, 50);
+
+      if (failedAttempts >= 1) {
+        setEmail('');
+        setPassword('');
+        setTimeout(() => {
+          document.getElementById('email')?.focus();
+        }, 50);
+      } else {
+        setPassword('');
+        setTimeout(() => {
+          document.getElementById('password')?.focus();
+        }, 50);
+      }
       return;
     }
 
-    // Success path for the owner: Instant login, absolutely zero drama!
     router.push('/admin');
     router.refresh();
   };
 
-  const handleGoogleLogin = async () => {
+  const handleOAuthLogin = async (provider: 'google' | 'facebook' | 'azure' | 'github') => {
     setLoading(true);
     clearStatus();
 
-    const redirectUrl = `${window.location.origin}/admin/auth/callback?next=/admin`;
+    const redirectUrl = `${window.location.origin}/admin/auth/callback?next=/admin&provider=${provider}`;
 
     const { error: signInError } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider,
       options: {
         redirectTo: redirectUrl,
       },
     });
 
     if (signInError) {
-      showFailureMessage();
+      const texts = ["I'm Biranchi", "Yes, I'm Biranchi", "I love Biranchi"];
+      setFailedAttemptText(texts[Math.floor(Math.random() * texts.length)]);
+      setFailedAttempts(prev => prev + 1);
+      setInvalidCredentials(true);
       setLoading(false);
+      return;
     }
   };
 
+  const handlePasskeyLogin = async () => {
+    setLoading(true);
+    clearStatus();
+
+    const { error: signInError } = await supabase.auth.signInWithPasskey();
+
+    if (signInError) {
+      const texts = ["I'm Biranchi", "Yes, I'm Biranchi", "I love Biranchi"];
+      setFailedAttemptText(texts[Math.floor(Math.random() * texts.length)]);
+      setFailedAttempts(prev => prev + 1);
+      setInvalidCredentials(true);
+      setLoading(false);
+      return;
+    }
+
+    router.push('/admin');
+    router.refresh();
+  };
+
   return (
-    <div className="dark:bg-[#050505] bg-[#F5F5F2] min-h-screen dark:text-[#e5e5e5] text-[#2B2B28] font-sans selection:bg-stone-300 dark:selection:bg-stone-800 selection:text-black dark:selection:text-white flex flex-col relative overflow-hidden select-none">
+    <div className="h-[100dvh] w-full dark:text-[#F5F5F5] text-[#262626] font-sans selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white flex flex-col md:flex-row relative overflow-hidden select-none">
 
-      {/* Global Header */}
-      <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 dark:bg-[#050505]/80 bg-[#F5F5F2]/80 backdrop-blur-md border-b dark:border-stone-900/50 border-[#ECEBE6]">
-        <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
-          BIRANCHI
-        </Link>
-        <div className="flex items-center gap-1 md:gap-2">
-          <DesktopNav persona="main" />
-          <PersonaSearch mobileBgColor="dark:bg-[#050505] bg-[#F5F5F2]" />
-          <ThemeToggle />
-          <MobileNav persona="main" mobileBgColor="dark:bg-[#050505] bg-[#F5F5F2]" />
-        </div>
-      </header>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-1 flex-col items-center justify-center pt-24 relative"
-      >
-        {/* Background Particle Canvas */}
-        <div id="particle-canvas-container" className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-1000 opacity-60">
-          <ParticleCanvas />
-        </div>
-
-        {/* Back to main site link */}
-        <div className="absolute top-6 left-6 md:top-10 md:left-10 z-20">
-          <Link
-            href={getPersonaUrl('main')}
-            className="font-mono text-[10px] tracking-[0.2em] uppercase dark:text-stone-400 text-stone-500 hover:text-foreground transition-colors"
+      {/* Return & Theme Toggle (Mobile & Desktop Absolute Positioning) */}
+      <AnimatePresence>
+        {!isInputFocused && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-6 left-6 md:top-8 md:left-8 z-50"
           >
-            ← Return
-          </Link>
+            <Link
+              href={getPersonaUrl('main')}
+              className="hover:opacity-70 transition-opacity"
+            >
+              <Logo />
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {!isInputFocused && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-6 right-6 md:top-8 md:right-8 z-50"
+          >
+            <ThemeToggle />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Left Pane (Desktop Only) */}
+      <div className="hidden md:flex flex-1 relative flex-col items-center justify-center border-r-[2px] dark:border-stone-800 border-stone-200 dark:bg-[#0A0A0A] bg-[#FAFAFA]">
+        {/* Particle Canvas replaces the images from Instagram */}
+        <div id="particle-canvas-container" className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-1000 opacity-60">
+          {isMounted && <ParticleCanvas text={QUOTES[quoteIndex]} />}
         </div>
+
+        <div className="absolute inset-0 z-0 flex flex-col items-center justify-center p-8 md:p-16 text-center pointer-events-none select-none overflow-hidden">
+          <AnimatePresence mode="wait">
+            {isMounted && (
+              <motion.h1
+                key={quoteIndex}
+                initial={{ opacity: 0, filter: 'blur(10px)', scale: 0.98 }}
+                animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
+                exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.02 }}
+                transition={{ duration: 1.2, ease: "easeInOut" }}
+                className="text-4xl md:text-6xl lg:text-[4.5rem] font-serif font-bold tracking-tighter dark:text-stone-800/80 text-stone-200/80 leading-[0.9] mix-blend-multiply dark:mix-blend-screen max-w-[80vw] md:max-w-[40vw]"
+              >
+                {QUOTES[quoteIndex]}
+              </motion.h1>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Right Pane (Form Area) */}
+      <div className={`w-full h-full md:w-[450px] lg:w-[500px] flex flex-col items-center px-6 pb-6 md:p-8 relative dark:bg-[#000000] bg-[#FFFFFF] transition-all duration-500 ${isInputFocused ? 'justify-start pt-4 md:justify-center md:pt-8' : 'justify-center pt-6'}`}>
 
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-        className="relative z-10 w-full max-w-[420px] px-6 flex flex-col items-center -mt-12"
-      >
-        {/* Floating Status Message to prevent layout shift */}
-        <div className="absolute bottom-[calc(100%+1.5rem)] left-0 w-full flex justify-center pointer-events-none px-6">
-          {authStatus !== 'idle' && statusMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              className={`rounded-2xl border px-5 py-3.5 shadow-lg backdrop-blur-2xl max-w-[320px] w-full pointer-events-auto transition-colors ${
-                  authStatus === 'success'
-                    ? 'dark:bg-emerald-950/40 bg-emerald-50/80 dark:border-emerald-900/30 border-emerald-200/50 dark:shadow-emerald-900/10'
-                    : 'dark:bg-black/40 bg-white/60 dark:border-white/[0.08] border-black/[0.04] shadow-[0_4px_20px_rgb(0,0,0,0.05)] dark:shadow-none'
-                }`}
-            >
-              <h3 className={`text-[13px] font-medium text-center whitespace-pre-wrap leading-relaxed ${
-                  authStatus === 'success'
-                    ? 'dark:text-emerald-400 text-emerald-600'
-                    : 'text-foreground'
-                }`}>
-                {statusMessage}
-              </h3>
-            </motion.div>
-          )}
-        </div>
-
-        <div 
-          className="relative w-full dark:bg-white/[0.04] bg-white/20 backdrop-blur-[40px] rounded-[2.5rem] border dark:border-white/[0.12] border-white/40 p-8 md:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.08)] dark:shadow-[0_0_80px_rgba(255,255,255,0.04)] transition-all overflow-hidden"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          className="w-full max-w-[350px] flex flex-col items-center z-10"
         >
-          {/* Subtle rim light effect */}
-          <div className="absolute inset-0 rounded-[2.5rem] pointer-events-none border dark:border-white/[0.1] border-white/60" style={{ mixBlendMode: 'overlay' }}></div>
-          <div className="absolute inset-0 rounded-[2.5rem] pointer-events-none dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]"></div>
-          
-          <div className="text-center mb-10 relative z-10">
-            <h1 className="text-3xl md:text-[34px] font-serif font-light tracking-tight text-foreground">
-              Biranchi CMS
+          {/* Main Login Box */}
+          <div
+            className={`w-full flex flex-col items-center transition-all duration-300 ${isInputFocused ? 'mb-1 md:mb-2 pt-0 md:pt-2' : 'mb-2 md:mb-3 pt-4 md:pt-10'}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <h1 className={`text-3xl md:text-5xl font-serif font-light tracking-tight md:tracking-tighter dark:text-white text-black whitespace-nowrap transition-all duration-300 ${isInputFocused ? 'mb-3 md:mb-6' : 'mb-6 md:mb-10'}`}>
+              Biranch
+              <span className="relative inline-flex flex-col items-center">
+                <span className="text-transparent">i</span>
+                <span className="absolute bottom-0 text-current">ı</span>
+                <span className="absolute top-[0.15em] left-[50%] -translate-x-[50%] w-[0.15em] h-[0.15em] rounded-full bg-amber-600 dark:bg-amber-400" />
+              </span>
+              &nbsp;CMS
             </h1>
-          </div>
 
-          <form className="space-y-3 relative z-10" onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors group-focus-within:text-foreground z-20">
-                    <AtSign strokeWidth={1.25} className={`h-[18px] w-[18px] transition-colors ${emailError ? 'text-stone-500 dark:text-stone-400' : 'text-primary/30 group-focus-within:text-foreground'}`} />
-                  </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required={!isFakeTyping}
-                    readOnly={isFakeTyping}
-                    value={currentEmail}
-                    onChange={(e) => {
-                      if (!isFakeTyping) {
-                        setEmail(e.target.value);
-                        if (emailError) setEmailError(null);
-                      }
-                    }}
-                    onFocus={handleInputFocus}
-                    onBlur={handleEmailBlur}
-                    className={`block w-full rounded-2xl border py-3 pl-11 pr-4 text-[14px] shadow-sm focus:outline-none transition-all cursor-text relative z-10 read-only:focus:ring-0 read-only:focus:border-transparent ${
-                      emailError
-                        ? 'dark:bg-white/[0.04] bg-black/[0.02] backdrop-blur-md dark:border-stone-400/40 border-stone-400/50 text-foreground placeholder:text-primary/50 focus:border-stone-400 dark:focus:border-stone-300 focus:ring-4 focus:ring-stone-500/10 hover:dark:bg-white/[0.06] hover:bg-black/[0.04]'
-                        : 'dark:bg-white/[0.02] bg-white/30 backdrop-blur-md dark:border-white/[0.1] border-black/[0.05] text-foreground placeholder:text-primary/30 focus:border-black/20 dark:focus:border-white/20 focus:ring-4 focus:ring-black/5 dark:focus:ring-white/5 focus:bg-white/50 dark:focus:bg-white/[0.05] hover:dark:bg-white/[0.04] hover:bg-white/40 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]'
-                    }`}
-                    placeholder={isFakeTyping ? "" : "Email address"}
-                  />
+            <form className="w-full space-y-2" onSubmit={handleSubmit}>
+              <div className="relative">
+                <label htmlFor="email" className="sr-only">Email ID</label>
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <AtSign className="h-5 w-5 text-stone-400 dark:text-stone-500" />
                 </div>
-                {emailError && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -5 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    className="text-stone-600 dark:text-stone-400 text-[11px] font-medium pl-1 mt-2"
-                  >
-                    {emailError}
-                  </motion.p>
-                )}
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required={!isFakeTyping}
+                  readOnly={isFakeTyping}
+                  value={currentEmail}
+                  onChange={(e) => {
+                    if (!isFakeTyping) {
+                      setEmail(e.target.value);
+                      if (emailError) setEmailError(null);
+                      if (invalidCredentials) setInvalidCredentials(false);
+                    }
+                  }}
+                  onFocus={(e) => {
+                    handleInputFocus();
+                    setIsInputFocused(true);
+                  }}
+                  onBlur={(e) => {
+                    handleEmailBlur();
+                    setIsInputFocused(false);
+                  }}
+                  className={`block w-full rounded-md border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-11 pr-3 py-2.5 text-[15px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300 ${emailError ? 'border-red-500' : ''
+                    }`}
+                  placeholder={isFakeTyping ? "" : "Email ID"}
+                />
               </div>
 
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors group-focus-within:text-foreground">
-                    <KeyRound strokeWidth={1.25} className="h-[18px] w-[18px] text-primary/30 group-focus-within:text-foreground transition-colors" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type={isFakeTyping ? 'text' : (showPassword ? 'text' : 'password')}
-                    autoComplete="current-password"
-                    required={!isFakeTyping}
-                    readOnly={isFakeTyping}
-                    value={currentPassword}
-                    onChange={(e) => {
-                      if (!isFakeTyping) setPassword(e.target.value);
-                    }}
-                    onFocus={handleInputFocus}
-                    onBlur={handleInputBlur}
-                    className="block w-full rounded-2xl dark:bg-white/[0.02] bg-white/30 backdrop-blur-md border dark:border-white/[0.1] border-black/[0.05] py-3 pl-11 pr-11 text-[14px] text-foreground shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-primary/30 focus:border-black/20 dark:focus:border-white/20 focus:ring-4 focus:ring-black/5 dark:focus:ring-white/5 focus:bg-white/50 dark:focus:bg-white/[0.05] focus:outline-none transition-all hover:dark:bg-white/[0.04] hover:bg-white/40 read-only:focus:ring-0 read-only:focus:border-transparent cursor-text relative z-10"
-                    placeholder={isFakeTyping ? "" : "Password"}
-                  />
+              <div className="relative">
+                <label htmlFor="password" className="sr-only">Password</label>
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <KeyRound className="h-5 w-5 text-stone-400 dark:text-stone-500" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type={isFakeTyping ? 'text' : (showPassword ? 'text' : 'password')}
+                  autoComplete="current-password"
+                  required={!isFakeTyping}
+                  readOnly={isFakeTyping}
+                  value={currentPassword}
+                  onChange={(e) => {
+                    if (!isFakeTyping) {
+                      setPassword(e.target.value);
+                      if (invalidCredentials) setInvalidCredentials(false);
+                    }
+                  }}
+                  onFocus={(e) => {
+                    handleInputFocus();
+                    setIsInputFocused(true);
+                  }}
+                  onBlur={(e) => {
+                    handleInputBlur();
+                    setIsInputFocused(false);
+                  }}
+                  className="block w-full rounded-md border dark:border-stone-700 border-stone-300 dark:bg-[#121212] bg-[#FAFAFA] pl-11 pr-11 py-2.5 text-[15px] focus:outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors cursor-text read-only:focus:border-stone-300"
+                  placeholder={isFakeTyping ? "" : "Password"}
+                />
+                {currentPassword && !isFakeTyping && (
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-primary/30 hover:text-primary/60 focus:outline-none transition-colors z-20"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
                     tabIndex={-1}
                   >
-                    {showPassword ? <EyeOff strokeWidth={1.25} className="h-[18px] w-[18px]" /> : <Eye strokeWidth={1.25} className="h-[18px] w-[18px]" />}
+                    <div className="relative w-5 h-5">
+                      <motion.div
+                        initial={false}
+                        animate={{ opacity: showPassword ? 0 : 1, scale: showPassword ? 0.8 : 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0"
+                      >
+                        <Eye className="w-5 h-5" />
+                      </motion.div>
+                      <motion.div
+                        initial={false}
+                        animate={{ opacity: showPassword ? 1 : 0, scale: showPassword ? 1 : 0.8 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0"
+                      >
+                        <EyeOff className="w-5 h-5" />
+                      </motion.div>
+                    </div>
                   </button>
-                </div>
+                )}
               </div>
 
-              <div className="pt-3 pb-1 relative group w-full">
+              <div className="pt-2 relative">
                 <button
                   type="submit"
-                  disabled={loading || !currentEmail || !currentPassword || currentPassword.length < 6 || !!emailError}
-                  className="w-full flex justify-center rounded-2xl dark:bg-white bg-black px-5 py-3 text-[14px] font-medium dark:text-black text-white shadow-[0_2px_10px_rgb(0,0,0,0.1)] dark:shadow-[0_2px_20px_rgb(255,255,255,0.15)] dark:hover:bg-stone-200 hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 dark:focus:ring-offset-[#050505] disabled:opacity-40 disabled:shadow-none disabled:cursor-not-allowed transition-all duration-300"
+                  disabled={loading || !currentEmail || !currentPassword || currentPassword.length < 8 || !!emailError}
+                  className="w-full flex justify-center rounded-[8px] bg-[#0095f6] hover:bg-[#1877f2] px-4 py-2.5 text-[15px] font-semibold text-white focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <span>Sign In</span>
+                    <span>
+                      {(!currentEmail || !currentPassword || currentPassword.length < 8 || !!emailError)
+                        ? "Log in"
+                        : (failedAttempts > 0 ? failedAttemptText : "Log in")}
+                    </span>
                   )}
                 </button>
-                {/* Premium Custom Tooltip */}
-                {(!currentEmail || !currentPassword || currentPassword.length < 6 || !!emailError) && !loading && (
-                  <div className="absolute -top-11 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-black/90 dark:bg-white text-white dark:text-black text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg backdrop-blur-md z-50">
-                    Please fill in your email and password
-                    {/* Tooltip Arrow */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-black/90 dark:border-t-white"></div>
-                  </div>
-                )}
+                <div className="absolute top-full mt-1.5 left-0 w-full flex justify-center pointer-events-none">
+                  <AnimatePresence>
+                    {invalidCredentials && (
+                      <motion.span
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="text-stone-500 dark:text-stone-400 text-[12px] font-medium"
+                      >
+                        Invalid credentials entered
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
+
+              <div className="flex w-full items-center my-4 md:my-6">
+                <div className="flex-grow border-t border-stone-200 dark:border-stone-800"></div>
+                <span className="mx-4 text-[13px] text-[#737373] dark:text-[#A8A8A8]">or continue with</span>
+                <div className="flex-grow border-t border-stone-200 dark:border-stone-800"></div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 md:gap-3 w-full">
+                <button
+                  type="button"
+                  onClick={() => handleOAuthLogin('google')}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center py-2 md:py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[20px] w-[20px] md:h-[24px] md:w-[24px] mb-1 md:mb-2">
+                    <path d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.28027 6.60998L5.27028 9.70498C6.21525 6.86002 8.87028 4.75 12.0003 4.75Z" fill="#EA4335" />
+                    <path d="M23.49 12.275C23.49 11.49 23.415 10.73 23.3 10H12V14.51H18.47C18.18 15.99 17.34 17.25 16.08 18.1L19.945 21.1C22.2 19.01 23.49 15.92 23.49 12.275Z" fill="#4285F4" />
+                    <path d="M5.26498 14.2949C5.02498 13.5699 4.88501 12.7999 4.88501 11.9999C4.88501 11.1999 5.01998 10.4299 5.26498 9.7049L1.275 6.60986C0.46 8.22986 0 10.0599 0 11.9999C0 13.9399 0.46 15.7699 1.28 17.3899L5.26498 14.2949Z" fill="#FBBC05" />
+                    <path d="M12.0004 24.0001C15.2404 24.0001 17.9654 22.935 19.9454 21.095L16.0804 18.095C15.0054 18.82 13.6204 19.245 12.0004 19.245C8.8704 19.245 6.21537 17.135 5.26538 14.29L1.27539 17.385C3.25539 21.31 7.3104 24.0001 12.0004 24.0001Z" fill="#34A853" />
+                  </svg>
+                  <span className="text-[12px] md:text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">Google</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleOAuthLogin('github')}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center py-2 md:py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[20px] w-[20px] md:h-[24px] md:w-[24px] mb-1 md:mb-2 fill-[#24292F] dark:fill-[#FFFFFF]">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                  </svg>
+                  <span className="text-[12px] md:text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">GitHub</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePasskeyLogin}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center py-2 md:py-4 border border-stone-200 dark:border-stone-800 rounded-[8px] hover:bg-stone-50 dark:hover:bg-stone-900/50 transition-colors disabled:opacity-50"
+                >
+                  <KeyRound className="h-[20px] w-[20px] md:h-[24px] md:w-[24px] mb-1 md:mb-2 text-stone-700 dark:text-stone-300" />
+                  <span className="text-[12px] md:text-[14px] font-medium text-[#262626] dark:text-[#F5F5F5]">Passkey</span>
+                </button>
+              </div>
+
+              {emailError && (
+                <p className="text-red-500 text-[12px] text-center mt-4">
+                  {emailError}
+                </p>
+              )}
             </form>
-
-            <div className="relative my-5 flex items-center z-10">
-              <div className="flex-grow border-t border-black/[0.08] dark:border-white/[0.1]"></div>
-              <span className="mx-4 text-[10px] font-mono tracking-widest text-primary/30 uppercase">OR</span>
-              <div className="flex-grow border-t border-black/[0.08] dark:border-white/[0.1]"></div>
-            </div>
-
-            <div className="relative z-10">
-              <button
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-white/20 dark:bg-white/[0.02] backdrop-blur-md px-4 py-3 text-[13px] font-medium text-foreground border border-white/40 dark:border-white/[0.1] cursor-pointer hover:bg-white/60 dark:hover:bg-white/[0.08] hover:shadow-[0_4px_15px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_15px_rgba(255,255,255,0.02)] hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 dark:focus:ring-offset-[#050505] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none transition-all duration-200"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[16px] w-[16px] transition-all duration-300">
-                  <path d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.28027 6.60998L5.27028 9.70498C6.21525 6.86002 8.87028 4.75 12.0003 4.75Z" fill="#EA4335" />
-                  <path d="M23.49 12.275C23.49 11.49 23.415 10.73 23.3 10H12V14.51H18.47C18.18 15.99 17.34 17.25 16.08 18.1L19.945 21.1C22.2 19.01 23.49 15.92 23.49 12.275Z" fill="#4285F4" />
-                  <path d="M5.26498 14.2949C5.02498 13.5699 4.88501 12.7999 4.88501 11.9999C4.88501 11.1999 5.01998 10.4299 5.26498 9.7049L1.275 6.60986C0.46 8.22986 0 10.0599 0 11.9999C0 13.9399 0.46 15.7699 1.28 17.3899L5.26498 14.2949Z" fill="#FBBC05" />
-                  <path d="M12.0004 24.0001C15.2404 24.0001 17.9654 22.935 19.9454 21.095L16.0804 18.095C15.0054 18.82 13.6204 19.245 12.0004 19.245C8.8704 19.245 6.21537 17.135 5.26538 14.29L1.27539 17.385C3.25539 21.31 7.3104 24.0001 12.0004 24.0001Z" fill="#34A853" />
-                </svg>
-                Continue with Google
-              </button>
-            </div>
-
-            <div className="mt-6 flex justify-center relative z-10">
-              <span className="flex items-center gap-2.5 text-[11px] text-primary/40 font-medium tracking-wide">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500/60"></span>
-                </span>
-                Secure Workspace
-              </span>
-            </div>
           </div>
+
+
         </motion.div>
-      </motion.div>
+
+        {/* Footer */}
+        <AnimatePresence>
+          {!isInputFocused && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute bottom-4 md:bottom-6 w-full flex flex-wrap justify-center gap-x-3 gap-y-1 md:gap-x-4 md:gap-y-2 px-4 md:px-8 text-[10px] md:text-[12px] text-[#737373] dark:text-[#A8A8A8] z-0"
+            >
+              <Link href={getPersonaUrl('main')} className="hover:underline">Home</Link>
+              <Link href={getPersonaUrl('main', '/about')} className="hover:underline">About</Link>
+              <Link href={getPersonaUrl('builder')} className="hover:underline">Builder</Link>
+              <Link href={getPersonaUrl('operator')} className="hover:underline">Operator</Link>
+              <Link href={getPersonaUrl('thinker')} className="hover:underline">Thinker</Link>
+              <Link href={getPersonaUrl('wanderer')} className="hover:underline">Wanderer</Link>
+              <Link href={getPersonaUrl('main', '/blogs')} className="hover:underline">Blog</Link>
+              <Link href={getPersonaUrl('main', '/fund')} className="hover:underline">Fund</Link>
+              <Link href={getPersonaUrl('main', '/terms')} className="hover:underline">Terms</Link>
+              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:underline">LinkedIn</a>
+              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline">Twitter</a>
+              <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline">Instagram</a>
+
+              <div className="w-full flex justify-center gap-4 mt-1 md:mt-2">
+                <span>© 2026 Biranchi Kulesika</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+      </div>
     </div>
   );
 }

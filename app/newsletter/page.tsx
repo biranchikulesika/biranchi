@@ -12,6 +12,7 @@ import { getNewsletterIssues } from '@/lib/queries';
 import { subscribeNewsletter } from '@/app/public.actions';
 import { getPersonaUrl } from '@/lib/utils';
 import { SOCIAL_LINKS } from '@/lib/config/socials';
+import { Logo } from '@/components/ui/logo';
 
 interface NewsletterOption {
   id: string;
@@ -116,8 +117,8 @@ export default function MainNewsletterPage() {
     >
       {/* Global Header */}
       <header className="fixed top-0 w-full p-4 md:p-6 flex justify-between items-center z-50 dark:bg-[#050505]/80 bg-[#F5F5F2]/80 backdrop-blur-md border-b dark:border-stone-900/50 border-[#ECEBE6]">
-        <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
-          BIRANCHI
+        <Link href={getPersonaUrl('main')} className="hover:opacity-70 transition-opacity">
+          <Logo />
         </Link>
         <div className="flex items-center gap-1 md:gap-2">
           <DesktopNav persona="main" />

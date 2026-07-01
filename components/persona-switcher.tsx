@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { getPersonaUrl } from '@/lib/utils';
+import { Logo } from '@/components/ui/logo';
 import { ChevronDown } from 'lucide-react';
 
 const PERSONAS = [
@@ -31,8 +32,8 @@ export function PersonaSwitcher({ currentPersona, currentStyle }: { currentPerso
 
   return (
     <div className="relative flex items-center z-50">
-      <Link href={getPersonaUrl('main')} className="font-sans font-bold tracking-widest flex items-center hover:opacity-70 transition-opacity uppercase text-current">
-        BIRANCHI
+      <Link href={getPersonaUrl('main')} className="hover:opacity-70 transition-opacity">
+        <Logo />
       </Link>
 
       <div className="mx-2 flex items-center justify-center">

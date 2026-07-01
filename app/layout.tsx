@@ -28,8 +28,8 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Biranchi',
-    template: '%s | Biranchi',
+    default: 'Biranchi Kulesika',
+    template: '%s | Biranchi Kulesika',
   },
   description: 'Personal digital garden and portfolio of Biranchi Kulesika, featuring the Builder, Operator, Thinker, and Wanderer personas.',
   authors: [{ name: AUTHOR.name, url: AUTHOR.url }],
