@@ -18,9 +18,9 @@ export const config = {
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  // Get hostname of request (e.g. builder.biranchi.kulesika.in)
+  // Get hostname of request (e.g. builder.biranchikulesika.com)
   // In local development, this could be localhost:3000
-  let hostname = req.headers.get('host') || 'biranchi.kulesika.in';
+  let hostname = req.headers.get('host') || 'biranchikulesika.com';
 
   // Remove port if present
   hostname = hostname.split(':')[0];

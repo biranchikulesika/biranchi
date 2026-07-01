@@ -8,13 +8,13 @@ import { SOCIAL_LINKS } from './socials';
 export const SITE_URL =
   process.env.NEXT_PUBLIC_ROOT_DOMAIN
     ? `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
-    : 'https://biranchi.kulesika.in';
+    : 'https://biranchikulesika.com';
 
 export const SITE_NAME = 'Biranchi';
 
 export const AUTHOR = {
   name: 'Biranchi Kulesika',
-  url: 'https://biranchi.kulesika.in',
+  url: 'https://biranchikulesika.com',
   twitter: '@BKulesika',
   sameAs: [
     SOCIAL_LINKS.github,
